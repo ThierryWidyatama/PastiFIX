@@ -187,7 +187,7 @@
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
                     <div class="testimonial-card">
-                        <img src="{{ asset('assets/img/user1.png') }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="User 1">
+                        <img src="{{ asset('assets/img/user1.jpeg') }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="User 1">
                         <h6 class="fw-bold">Andi Pratama</h6>
                         <div class="rating-stars mb-3">
                             <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
@@ -197,7 +197,7 @@
                 </div>
                 <div class="swiper-slide">
                     <div class="testimonial-card">
-                        <img src="{{ asset('assets/img/user2.png') }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="User 2">
+                        <img src="{{ asset('assets/img/user2.jpg') }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="User 2">
                         <h6 class="fw-bold">Siti Aminah</h6>
                         <div class="rating-stars mb-3">
                             <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
