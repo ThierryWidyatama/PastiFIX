@@ -1,0 +1,497 @@
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #F8F9FA;
+    overflow: hidden;
+}
+
+.dashboard-wrapper {
+    min-height: 100vh;
+}
+
+/* =================================
+  STYLES UNTUK DESKTOP (Default)
+=================================
+*/
+
+/* Sidebar */
+.sidebar {
+    width: 280px;
+    flex-shrink: 0; /* <-- TAMBAHKAN INI */
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+    /* Style desktop: sidebar selalu terlihat */
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-logo img {
+    max-width: 100px;
+}
+
+.sidebar-nav .nav-link {
+    color: #8A8A8A;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-nav .nav-link i {
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+.sidebar-nav .nav-link:hover {
+    background-color: #FEF7DA;
+    color: #333;
+}
+
+.sidebar-nav .nav-link.active {
+    background-color: #EECB2F;
+    color: #FFFFFF;
+}
+
+/* Main Content */
+.main-content {
+    background-color: #F8F9FA;
+    width: 100%;
+    min-width: 0;
+}
+
+/* Header */
+.header-dashboard {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #EAEAEA;
+}
+
+.header-title {
+    font-weight: 500;
+    font-size: 1.75rem;
+    color: #000;
+}
+
+.header-subtitle {
+    font-weight: 300;
+    font-size: 1rem;
+    color: #8A8A8A;
+}
+
+.header-user {
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+/* Tombol Garis 3 (Sembunyi di Desktop) */
+.hamburger-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #333;
+    z-index: 1050;
+}
+
+/* Overlay (Sembunyi di Desktop) */
+.sidebar-overlay {
+    display: none;
+}
+
+
+/* Content Wrapper (Area Kuning) */
+.content-wrapper {
+    background-color: #FDD14A;
+    height: calc(100vh - 90px); /* 100% height minus header height */
+    overflow-y: auto;
+}
+
+/* General Card Style */
+.card {
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+/* Tombol Brand (Kuning) */
+.btn-brand {
+    background-color: #EECB2F;
+    color: white;
+    font-weight: 500;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    transition: all 0.3s ease;
+}
+.btn-brand:hover {
+    background-color: #d8b82a;
+    color: white;
+}
+
+/* Card 1: Profile */
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #EECB2F;
+}
+.profile-info-label {
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: #8A8A8A;
+}
+.profile-info-value {
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: #000;
+}
+
+/* Card 2: Alamat (Form Minimalis) */
+.form-minimal-input {
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid #D1D1D1;
+    border-radius: 0;
+    padding-left: 0;
+    padding-right: 0;
+    font-weight: 500;
+}
+.form-minimal-input:focus {
+    background-color: transparent;
+    box-shadow: none;
+    border-color: #EECB2F;
+}
+
+/* Card 3: Pesanan */
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+.status-dot-wrapper {
+    display: flex;
+    align-items: center;
+}
+.status-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+.dot-green { background-color: #65D269; }
+.dot-yellow { background-color: #FFD166; }
+.dot-red { background-color: #EF476F; }
+
+
+/* =================================
+  STYLES UNTUK 'MY ACTIVITY' PAGE
+=================================
+*/
+
+/* Slider Bulan */
+.month-slider-wrapper {
+    position: relative;
+    padding: 0 40px; /* Ruang untuk tombol panah */
+}
+
+.month-slider .swiper-slide {
+    /* Swiper yg mengatur lebarnya */
+}
+
+.month-slider .nav-link {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #8A8A8A;
+    padding-bottom: 10px;
+    border-bottom: 3px solid transparent;
+    text-align: center; /* Pastikan teks di tengah */
+}
+.month-slider .nav-link:hover {
+    color: #000;
+}
+.month-slider .nav-link.active {
+    color: #000;
+    font-weight: 700;
+    border-bottom-color: #EECB2F;
+}
+
+/* Tombol panah slider bulan */
+.month-slider-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.2s ease;
+}
+.month-slider-nav:hover {
+    background-color: #EECB2F;
+    color: #fff;
+    border-color: #EECB2F;
+}
+.month-slider-prev { left: 0; }
+.month-slider-next { right: 0; }
+.swiper-button-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+/* Daftar Pesanan */
+.order-item-list {
+    list-style: none;
+    padding-left: 0;
+}
+.order-item {
+    background-color: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+.order-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+.order-item-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #000;
+}
+.order-item-date {
+    font-size: 0.9rem;
+    color: #8A8A8A;
+}
+.order-item-detail {
+    font-weight: 500;
+    color: #8A8A8A;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.order-item-detail:hover {
+    color: #EECB2F;
+}
+
+/* Status Badge */
+.badge-status {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 8px;
+}
+.badge-status-green { background-color: #E6F8E7; color: #4CAF50; }
+.badge-status-yellow { background-color: #FFF8E1; color: #FF9800; }
+.badge-status-red { background-color: #FFEBEE; color: #F44336; }
+
+
+/* =================================
+  STYLES UNTUK MOBILE (Responsif)
+=================================
+*/
+
+/* Terapkan HANYA saat layar 992px atau lebih kecil */
+@media (max-width: 991.98px) {
+    
+    .hamburger-btn {
+        display: block; /* Tampilkan tombol hamburger */
+    }
+
+    .header-user span {
+        display: none; /* Sembunyikan teks "Hello Thierry" */
+    }
+    
+    .sidebar {
+        position: fixed; /* Ubah jadi 'fixed' */
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-280px); /* Sembunyikan ke kiri */
+    }
+
+    .sidebar.is-open {
+        transform: translateX(0); /* Tampilkan sidebar */
+    }
+
+    .main-content {
+        width: 100%; /* Konten jadi full width */
+        margin-left: 0;
+    }
+    
+    /* Overlay gelap saat sidebar terbuka */
+    .sidebar-overlay {
+        display: block; /* Munculkan overlay */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.4);
+        z-index: 9;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease;
+    }
+    
+    .sidebar-overlay.is-open {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* =================================
+  STYLES UNTUK 'ACCOUNT SETTING' PAGE
+=================================
+*/
+
+/* Untuk teks statis yang punya garis bawah (seperti email) */
+.form-minimal-static {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #000;
+    padding: 8px 0;
+    border-bottom: 2px solid #D1D1D1;
+}
+
+/* Label untuk field password */
+.form-minimal-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #8A8A8A;
+    margin-bottom: 0.25rem;
+}
+
+/* =================================
+  STYLES UNTUK 'ACTIVITY DETAIL' PAGE
+=================================
+*/
+
+/* Info list di kiri atas */
+.order-detail-info .info-item {
+    margin-bottom: 12px;
+}
+.order-detail-info .info-label {
+    font-size: 0.95rem;
+    color: #8A8A8A;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+.order-detail-info .info-value {
+    font-size: 1rem;
+    color: #000;
+    font-weight: 500;
+}
+
+/* Timeline Pengerjaan */
+.timeline-wrapper {
+    /* [REQUEST] Ini dia yg bikin bisa scroll */
+    max-height: 210px; /* Kira2 3 item */
+    overflow-y: auto;
+    padding-right: 10px; /* Kasih ruang buat scrollbar */
+}
+
+.timeline-stepper {
+    list-style: none;
+    padding-left: 0;
+}
+
+.timeline-step {
+    display: flex;
+    align-items: flex-start; /* 'flex-start' agar sejajar dari atas */
+    min-height: 60px;
+}
+
+.timeline-step-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.timeline-step-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #D1D1D1;
+}
+
+.timeline-step-line {
+    width: 2px;
+    height: 42px; /* Jarak antar dot */
+    background-color: #D1D1D1;
+}
+
+/* Sembunyikan garis di item terakhir */
+.timeline-step:last-child .timeline-step-line {
+    display: none;
+}
+
+.timeline-step-content .date {
+    font-weight: 500;
+    color: #000;
+}
+.timeline-step-content .day {
+    font-size: 0.9rem;
+    color: #8A8A8A;
+}
+
+
+/* Card Mandor di kanan */
+.mandor-card {
+    background-color: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.mandor-card img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+.mandor-card-name {
+    font-weight: 700;
+    color: #000;
+    font-size: 1.1rem;
+}
+
+
+/* Rincian Harga */
+.price-list-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    margin-bottom: 12px;
+}
+.price-list-item .label {
+    color: #8A8A8A;
+    font-weight: 500;
+}
+.price-list-item .value {
+    font-weight: 500;
+    color: #333;
+}
+
+.price-total .label,
+.price-total .value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+}
