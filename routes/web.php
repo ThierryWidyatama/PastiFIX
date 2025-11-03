@@ -5,6 +5,8 @@ use App\Models\Option;
 use App\Livewire\Counter;
 use App\Livewire\ShowPayload;
 use Illuminate\Support\Facades\Route;
+
+// KONTROLLER BAWAAN PROYEK TEMANMU
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BahasaController;
 use App\Http\Controllers\BidangHukumController;
@@ -12,35 +14,45 @@ use App\Http\Controllers\LogsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OptionController;
-use App\Http\Controllers\ReverbController;
-use App\Http\Controllers\FakultasController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JenisDokumenController;
-use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\TwoFactorController;
-use App\Http\Controllers\MataKuliahController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\UserProfileController;
-use App\Http\Controllers\MatkulMahasiswaController;
 use App\Http\Controllers\ModulePermissionController;
-use App\Http\Controllers\ModuleSocialMediaController;
 use App\Http\Controllers\OpdController;
 use App\Http\Controllers\PencarianController;
-use App\Http\Controllers\ProdukHukumController;
 use App\Http\Controllers\SettingLandingPageController;
 use App\Http\Controllers\TipeDokumenController;
 
+
+/*
+|--------------------------------------------------------------------------
+| [PERBAIKAN BUG] KITA PISAHKAN DUA DASHBOARD CONTROLLER
+|--------------------------------------------------------------------------
+|
+| 1. Ini adalah Controller bawaan Metronic untuk Admin (/dashboard)
+|
+*/
+use App\Http\Controllers\DashboardController;
+
+/*
+|
+| 2. Ini adalah Controller YANG KITA BUAT untuk User (/profil)
+| Kita kasih 'alias' (nama panggilan) 'UserDashboardController' biar nggak tabrakan.
+|
+*/
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
+
+
+/*
+|--------------------------------------------------------------------------
+| Rute Publik (Landing Page & Auth)
+|--------------------------------------------------------------------------
+*/
+// Rute Landing Page (Ini sudah benar)
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
-Route::get('/home', [LandingPageController::class, 'index'])->name('home');
 
-Route::get('/login', function () {
-    if (auth()->check()) {
-        return redirect('/dashboard');
-    }
-    return app(AuthController::class)->index();
-})->name('login');
-
-
+// Rute Autentikasi (INI BLOK PERBAIKANNYA)
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/auth', [AuthController::class, 'auth'])->name('login.auth');
 Route::get('/registration', [AuthController::class, 'registration'])->name('register');
@@ -53,9 +65,22 @@ Route::get('2fa/verify-link', [TwoFactorController::class, 'verifyLink'])->name(
 Route::get('/produk-hukum', [PencarianController::class, 'index'])->name('produk-hukum');
 
 
+/*
+|--------------------------------------------------------------------------
+| Rute yang Dilindungi (Harus Login)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rute Dashboard ADMIN (Bawaan Metronic)
+    | Menggunakan "DashboardController" (tanpa alias)
+    |--------------------------------------------------------------------------
+    */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-    //User Profile
+    
+    //User Profile Bawaan Metronic
     Route::get('/user-profile', [UserProfileController::class, 'index'])->name('user-profile.index');
     Route::post('/user-profile/update/{id}', [UserProfileController::class, 'updateProfile'])->name('user-profile.update');
     Route::post('/user-profile/update/password/{id}', [UserProfileController::class, 'updatePassword'])->name('user-profile.password.update');
@@ -64,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user-profile/verify/email/{id}', [UserProfileController::class, 'verifyemail'])->name('user-profile.email.verify');
     Route::get('/user-profile/verify/verify-email', [UserProfileController::class, 'verifyEmailLink'])->name('user-profile.email.verify-link');
 
-    //User
+    //User Management Bawaan Metronic
     Route::resource('user', UserController::class);
     Route::get('/user-destroy/{id}', [UserController::class, 'destroy']);
     Route::get('/user-reset/{id}', [UserController::class, 'resetPass']);
@@ -75,7 +100,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user-form-import', [UserController::class, 'formImport']);
     Route::post('/user-proses-import', [UserController::class, 'prosesImport']);
 
-    //Module
+    //Module Bawaan Metronic
     Route::prefix('modules')->group(function () {
         Route::get('/', [ModuleController::class, 'index'])->name('modules.index');
         Route::get('/json', [ModuleController::class, 'json']);
@@ -86,36 +111,14 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::resource('modules', ModuleController::class);
 
-    //log
+    //Log Bawaan Metronic
     Route::get('logs/data', [LogsController::class, 'data'])->name('logs.data');
     Route::resource('logs', LogsController::class);
 
-    //Option
+    //Option Bawaan Metronic
     Route::resource('option', OptionController::class)->only(['index', 'update']);
 
-    //Fakultas
-    // Route::get('fakultas/data', [FakultasController::class, 'data'])->name('fakultas.data');
-    // Route::post('fakultas/select', [FakultasController::class, 'fakultasSelect'])->name('fakultas.select');
-    // Route::resource('fakultas', FakultasController::class);
-
-    //Mata Kuliah
-    // Route::get('mata-kuliah/data', [MataKuliahController::class, 'data'])->name('mata-kuliah.data');
-    // Route::get('mata-kuliah/data', [MataKuliahController::class, 'data'])->name('mata-kuliah.data');
-    // Route::resource('mata-kuliah', MataKuliahController::class);
-
-    //Mahasiswa
-    // Route::get('mahasiswa/data', [MahasiswaController::class, 'data'])->name('mahasiswa.data');
-    // Route::resource('mahasiswa', MahasiswaController::class);
-
-    //Matkul Mahasiswa
-    // Route::get('matkul-mahasiswa/data', [MatkulMahasiswaController::class, 'data'])->name('matkul-mahasiswa.data');
-    // Route::post('matkul-mahasiswa/select', [MatkulMahasiswaController::class, 'matkulMhsSelect'])->name('matkul-mahasiswa.select');
-    // Route::get('matkul-mahasiswa/{id}', [MatkulMahasiswaController::class, 'index'])->name('matkul-mahasiswa.index');
-    // Route::get('matkul-mahasiswa/{id}/create', [MatkulMahasiswaController::class, 'create'])->name('matkul-mahasiswa.create');
-    // Route::post('matkul-mahasiswa/store', [MatkulMahasiswaController::class, 'store'])->name('matkul-mahasiswa.store');
-    // Route::resource('matkul-mahasiswa', MatkulMahasiswaController::class)->except(['index', 'create']);
-
-    //Module Permission
+    //Module Permission Bawaan Metronic
     Route::get('/module-permission', [ModulePermissionController::class, 'index'])->name('module-permission.index');
     Route::get('/module-permission/detail/{id}', [ModulePermissionController::class, 'show'])->name('module-permission.show');
     Route::get('/module-permission/data', [ModulePermissionController::class, 'data'])->name('module-permission.data');
@@ -127,36 +130,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/module-permission/roles/{id}', [ModulePermissionController::class, 'roles'])->name('module-permission.roles');
     Route::post('/module-permission/roles/store', [ModulePermissionController::class, 'roles_store'])->name('module-permission.role_store');
 
-    // Setting Landing Page
+    // Setting Landing Page Bawaan Metronic
     Route::resource('setting-landing-page', SettingLandingPageController::class)->only(['index', 'update']);
 
-    // Module Social Media
-    // Route::get('master-social-media/data', [ModuleSocialMediaController::class, 'data'])->name('master-social-media.data');
-    // Route::resource('master-social-media', ModuleSocialMediaController::class);
-
-    // Master Produk Hukum
-    Route::get('master-produk-hukum/data', [ProdukHukumController::class, 'data'])->name('master-produk-hukum.data');
-    Route::get('master-produk-hukum/subjek', [ProdukHukumController::class, 'subjekSelect'])->name('master-produk-hukum.subjekSelect');
-    Route::post('master-produk-hukum/selectProdukHukum', [ProdukHukumController::class, 'selectProdukHukum'])->name('master-produk-hukum.selectProdukHukum');
-    Route::resource('master-produk-hukum', ProdukHukumController::class);
-
-    Route::get('master-tipe-dokumen/data', [TipeDokumenController::class, 'data'])->name('master-tipe-dokumen.data');
-    Route::resource('master-tipe-dokumen', TipeDokumenController::class);
-
-    Route::get('master-jenis-dokumen/data', [JenisDokumenController::class, 'data'])->name('master-jenis-dokumen.data');
-    Route::resource('master-jenis-dokumen', JenisDokumenController::class);
-
-    Route::get('master-bidang-hukum/data', [BidangHukumController::class, 'data'])->name('master-bidang-hukum.data');
-    Route::resource('master-bidang-hukum', BidangHukumController::class);
-    
-    Route::get('master-bahasa/data', [BahasaController::class, 'data'])->name('master-bahasa.data');
-    Route::resource('master-bahasa', BahasaController::class);
-
-    Route::get('master-opd/data', [OpdController::class, 'data'])->name('master-opd.data');
-    Route::resource('master-opd', OpdController::class);
-
-
-    //route utk select2
+    //Route Select2 Bawaan Metronic
     Route::post('master-tipe-dokumen/tipeDokumenSelect', [TipeDokumenController::class, 'tipeDokumenSelect'])->name('master-tipe-dokumen.tipeDokumenSelect');
     Route::post('master-jenis-dokumen/jenisDokumenSelect', [JenisDokumenController::class, 'jenisDokumenSelect'])->name('master-jenis-dokumen.jenisDokumenSelect');
     Route::post('master-bidang-hukum/bidHukumSelect', [BidangHukumController::class, 'bidHukumSelect'])->name('master-bidang-hukum.bidHukumSelect');
@@ -164,5 +141,24 @@ Route::middleware(['auth'])->group(function () {
     Route::post('master-bahasa/bahasaSelect', [BahasaController::class, 'bahasaSelect'])->name('master-bahasa.bahasaSelect');
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | Rute Dashboard USER (Buatan Kita)
+    | Menggunakan "UserDashboardController" (dengan alias)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/profil', [UserDashboardController::class, 'showProfile'])->name('profil');
+    
+    Route::get('/profil/activity', function () {
+        return view('user.activity');
+    })->name('profil.activity'); // <-- [FIX] Kasih nama
+
+    Route::get('/profil/settings', function () {
+        return view('user.settings');
+    })->name('profil.settings'); // <-- [FIX] Kasih nama
+
+    Route::get('/profil/activity/detail', function () {
+        return view('user.activity-detail');
+    })->name('profil.activity.detail'); // <-- [FIX] Kasih nama
 
 });

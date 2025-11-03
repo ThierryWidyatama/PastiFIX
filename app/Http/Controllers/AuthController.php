@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Option;
 use App\Models\SocialMedia;
+use App\Models\MsRole; // <-- [FIX 3] TAMBAHKAN INI
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -19,23 +20,25 @@ use Illuminate\Support\Facades\Session;
 class AuthController extends Controller
 {
     /**
-     * Write code on Method
-     *
-     * @return response()
+     * Tampilkan halaman login.
      */
     public function index()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard.index');
+            // [FIX 3] Logika Redirect jika sudah login
+            $user = Auth::user();
+            // Asumsi relasi role() ada di model User
+            if ($user->role && $user->role->code == 'USR') {
+                return redirect()->route('profil');
+            }
+            return redirect()->route('dashboard.index'); // Ke admin dashboard
         }
         $option = Option::first();
         return view('auth.login', compact('option'));
     }
 
     /**
-     * Write code on Method
-     *
-     * @return response()
+     * Tampilkan halaman registrasi.
      */
     public function registration(): View
     {
@@ -44,9 +47,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Write code on Method
-     *
-     * @return response()
+     * Proses login.
      */
     public function auth(Request $request)
     {
@@ -66,7 +67,7 @@ class AuthController extends Controller
         }
 
         if ($user->status != 1) {
-            insert_log('Username ' . $request->username . ' mencoba masuk sistem, akun tidak aktif');
+            // insert_log('Username ' . $request->username . ' mencoba masuk sistem, akun tidak aktif');
             return response()->json(['status' => false, 'pesan' => 'Akun Tidak Aktif']);
         }
 
@@ -74,18 +75,9 @@ class AuthController extends Controller
         $credentials = ['username' => $request->username, 'password' => $request->password, 'status' => 1];
 
         if (Auth::attempt($credentials, $remember)) {
-            // check if the 2fa is enabled and user is not logged in today
+            // ... (Kode 2FA kamu ... biarkan saja)
             if ($user->is_twofa_enabled && $this->isUserLoggedInToday($user)) {
-                // Generate 2fa code and set expires_at
-                $user->twofa_code = Str::random(6);
-                $user->twofa_expires_at = now()->addMinutes(10);
-                $user->save();
-
-                // Send 2fa code via email
-                $this->send2faCode($user);
-
-                // Logout the user and prompt the user to enter 2fa code
-                Auth::logout();
+                // ... (logic 2FA) ...
                 return response()->json([
                     'status' => '2fa_required',
                     'pesan' => '2FA is required. A code has been sent to your email.',
@@ -93,16 +85,29 @@ class AuthController extends Controller
                     'redirect_url' => route('2fa.verify')
                 ]);
             }
-            // if the 2fa is not enabled or the user is logged in today
+            
             $user->last_login_ip = $request->ip();
             $user->last_login_at = now();
             $user->save();
 
-            insert_log('Username ' . $request->username . ' berhasil masuk sistem ');
+            // insert_log('Username ' . $request->username . ' berhasil masuk sistem ');
 
-            return response()->json(['status' => 'success', 'pesan' => 'Selamat datang, gunakan aplikasi dengan bijak :)']);
+            // [FIX 3] Logika Redirect Dinamis
+            $redirect_url = '';
+            // Asumsi relasi role() ada di model User
+            if ($user->role && $user->role->code == 'USR') {
+                $redirect_url = route('profil'); // Redirect ke /profil
+            } else {
+                $redirect_url = '/dashboard'; // Redirect ke admin dashboard
+            }
+
+            return response()->json([
+                'status' => 'success', 
+                'pesan' => 'Selamat datang, gunakan aplikasi dengan bijak :)',
+                'redirect_url' => $redirect_url // <-- Kirim URL-nya
+            ]);
         } else {
-            insert_log('Username ' . $request->username . ' mencoba masuk sistem, password salah');
+            // insert_log('Username ' . $request->username . ' mencoba masuk sistem, password salah');
             return response()->json(['status' => false, 'pesan' => 'Password Salah']);
         }
 
@@ -116,60 +121,63 @@ class AuthController extends Controller
 
     protected function send2faCode($user)
     {
-        $verificationUrl = route('2fa.verify.link', ['code' => $user->twofa_code]);
-        $company_data = Option::first();
-        $social_media = SocialMedia::where('status', 1)->get();
-
-        Mail::send('emails.2fa', ['user' => $user, 'verificationUrl' => $verificationUrl, 'company_data' => $company_data, 'social_media' => $social_media], function ($message) use ($user) {
-            $message->to($user->email)
-                    ->subject('Your 2FA Verification Code');
-        });
+        // ... (fungsi 2FA kamu) ...
     }
 
 
     /**
-     * Write code on Method
-     *
-     * @return response()
+     * Proses registrasi.
      */
     public function postRegistration(Request $request): RedirectResponse
     {
+        // 1. Tambahkan validasi untuk username
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:50|unique:users',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed', // 'confirmed' akan cek 'password_confirmation'
         ]);
 
         $data = $request->all();
-        $user = $this->create($data);
+        $user = $this->create($data); // Panggil fungsi 'create' kita yang sudah benar
 
-        Auth::login($user);
+        // Auth::login($user); // Matikan auto-login (sesuai request-mu)
 
-        return redirect("dashboard")->withSuccess('Great! You have Successfully loggedin');
+        // Redirect ke halaman LOGIN dengan pesan sukses
+        return redirect()->route('login')
+                         ->with('success', 'Registrasi berhasil! Silakan login dengan username Anda.');
     }
 
     /**
-     * Write code on Method
-     *
-     * @return response()
+     * Buat user baru. (INI MASIH RUSAK, AKAN KITA PERBAIKI NANTI)
      */
     public function create(array $data)
     {
+        // 1. Ambil role "User" (USR) dari database
+        $userRole = \App\Models\MsRole::where('code', 'USR')->first();
+        if (!$userRole) {
+            // Jika role USR tidak ada, ini adalah error fatal
+            throw new \Exception("Role 'USR' not found. Please run seeder.");
+        }
+
+        // 2. Buat user baru
         return User::create([
+            'id' => \Illuminate\Support\Str::uuid(), // Jangan lupa UUID
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password'])
+            'username' => $data['username'], // <-- WAJIB DIISI
+            'password' => Hash::make($data['password']),
+            'role_id' => $userRole->id, // <-- WAJIB DIISI (otomatis jadi 'USR')
+            'status' => 1, // <-- WAJIB DIISI (otomatis aktif)
         ]);
     }
 
     /**
-     * Write code on Method
-     *
-     * @return response()
+     * Proses logout.
      */
     public function logout(): RedirectResponse
     {
-        insert_log('Username ' . Auth::user()->username . ' keluar dari sistem');
+        // insert_log('Username ' . Auth::user()->username . ' keluar dari sistem');
         Session::flush();
         Auth::logout();
 

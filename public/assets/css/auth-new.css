@@ -1,0 +1,223 @@
+/* public/assets/css/auth-new.css */
+
+body.auth-page-new {
+    font-family: 'Outfit', sans-serif;
+    /* Gradasi Linear sesuai permintaan */
+    background: linear-gradient(to right, white 45%, #FEC81A 55%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.auth-container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+    min-height: 700px;
+    background-color: #fff;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Bagian Kiri (Putih) */
+.auth-container-left {
+    width: 50%;
+    padding: 40px;
+    z-index: 2;
+}
+
+/* Ini adalah "S-Curve" Estetik-nya */
+.auth-container-left::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 50%;
+    width: 150px; /* Lebar lengkungan */
+    height: 100%;
+    background-color: #FEC81A;
+    /* Keajaiban "S-Curve" */
+    border-radius: 0 60% 60% 0 / 0 50% 50% 0;
+    transform: translateX(50%);
+    box-shadow: 10px 0 20px -10px rgba(0, 0, 0, 0.2);
+}
+
+.auth-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #000;
+}
+.auth-logo img {
+    height: 50px;
+    margin-right: 15px;
+}
+.auth-logo span {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+
+/* Bagian Kanan (Form) */
+.auth-container-right {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    z-index: 1;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Tabs Sign In / Sign Up */
+.auth-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+.auth-tabs a {
+    flex: 1;
+    text-align: center;
+    padding-bottom: 1rem;
+    text-decoration: none;
+    color: #8A8A8A;
+    font-weight: 500;
+    font-size: 1.1rem;
+    position: relative;
+}
+.auth-tabs a.active {
+    color: #000;
+    font-weight: 700;
+}
+/* Indikator Kuning */
+.auth-tabs a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #FEC81A;
+    border-radius: 3px;
+}
+
+/* Form Minimalis (Garis Bawah) */
+.form-group-minimal {
+    position: relative;
+    margin-bottom: 2rem;
+}
+.form-group-minimal label {
+    font-size: 0.9rem;
+    color: #8A8A8A;
+    font-weight: 500;
+}
+.form-control-minimal {
+    border: none;
+    border-bottom: 2px solid #D1D1D1;
+    border-radius: 0;
+    padding: 8px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    width: 100%;
+    background: none;
+}
+.form-control-minimal:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: #FEC81A;
+}
+
+/* Tombol */
+.btn-brand-auth {
+    background-color: #FEC81A;
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+.btn-brand-auth:hover {
+    background-color: #e4b518;
+    color: #000;
+}
+
+/* Links */
+.link-forgot {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #8A8A8A;
+    text-decoration: none;
+}
+.link-forgot:hover {
+    color: #FEC81A;
+}
+
+.link-register {
+    font-weight: 700;
+    color: #FEC81A;
+    text-decoration: none;
+}
+
+/* Social Media Icons */
+.social-icons {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+.social-icons a {
+    margin: 0 10px;
+    font-size: 1.3rem;
+    color: #8A8A8A;
+    transition: color 0.3s ease;
+}
+.social-icons a:hover {
+    color: #FEC81A;
+}
+
+/* Responsif untuk Mobile */
+@media (max-width: 991.98px) {
+    body.auth-page-new {
+        background: #FEC81A; /* Full kuning di mobile */
+    }
+    
+    .auth-container {
+        flex-direction: column;
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+        background: none;
+    }
+    
+    .auth-container-left {
+        width: 100%;
+        background-color: #fff;
+        padding: 20px;
+        /* S-Curve di-setting ulang jadi lengkungan bawah */
+        border-radius: 0 0 40% 40% / 0 0 30% 30%;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    .auth-container-left::before {
+        display: none; /* Sembunyikan S-Curve */
+    }
+
+    .auth-container-right {
+        width: 100%;
+        padding: 20px;
+    }
+    .auth-card {
+        width: 100%;
+        padding: 20px;
+    }
+}

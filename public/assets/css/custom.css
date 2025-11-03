@@ -1,0 +1,204 @@
+/* GENERAL STYLING */
+body {
+    font-family: 'Outfit', sans-serif;
+}
+
+.section-padding {
+    padding: 100px 0;
+}
+
+.section-title {
+    font-size: 64px;
+    font-weight: 700;
+}
+
+.section-subtitle {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.btn-brand {
+    background-color: #EECB2F;
+    color: white;
+    border-color: #EECB2F;
+}
+
+.btn-brand:hover {
+    background-color: #d8b82a;
+    border-color: #d8b82a;
+    color: white;
+}
+
+.btn-outline-brand {
+    border-color: #EECB2F;
+    color: #EECB2F;
+}
+
+.btn-outline-brand:hover {
+    background-color: #EECB2F;
+    color: white;
+}
+
+
+/* NAVBAR */
+.navbar {
+    transition: background-color 0.3s ease, padding 0.3s ease;
+}
+
+.navbar.scrolled {
+    background-color: rgba(18, 18, 18, 0.8);
+    backdrop-filter: blur(10px);
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    color: white;
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:hover {
+    color: #EECB2F;
+}
+
+
+/* SECTION 1: HERO */
+#home {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../img/section1.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#home h1 {
+    font-size: 64px;
+    font-weight: 700;
+}
+
+#home p {
+    font-weight: 500;
+}
+
+
+/* SECTION 3: SERVICE (FLIP CARD) */
+.flip-card {
+    background-color: transparent;
+    width: 100%;
+    height: 482px; /* Disesuaikan dengan request */
+    perspective: 1000px;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 0.375rem; /* sama dengan border-radius card bootstrap */
+}
+
+.flip-card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ini kuncinya agar gambar menyesuaikan */
+    border-radius: 0.375rem;
+}
+
+.flip-card-back {
+    background-color: white;
+    color: black;
+    transform: rotateY(180deg);
+    border: 4px solid #EECB2F;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+
+/* SECTION 4: WHY US & STATS BAR */
+.icon-box {
+    display: flex;
+    align-items: flex-start;
+}
+
+.icon-box .icon {
+    font-size: 2.5rem;
+    color: #EECB2F;
+    margin-right: 20px;
+}
+
+.stats-bar {
+    background-image: url('../img/section4bar.png');
+    background-size: cover;
+    background-position: center;
+    padding: 35px 0;
+}
+
+
+/* SECTION 5: TESTIMONI (SWIPERJS) */
+.testimonial-slider {
+    width: 100%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.testimonial-slider .swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 320px;
+    transition: transform 0.5s;
+    opacity: 0.5;
+    transform: scale(0.8);
+}
+
+.testimonial-slider .swiper-slide-active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.testimonial-card {
+    background: #fff;
+    border: 2px solid #EECB2F;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.rating-stars i {
+    color: #EECB2F;
+}
+
+/* FOOTER */
+.footer-section {
+    background-color: #4B4B4B;
+    padding: 80px 0 30px 0;
+}
+
+.social-icons a {
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #EECB2F !important;
+}

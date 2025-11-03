@@ -6,10 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasUuids;
 
     protected $keyType = 'string'; // UUID is a string
     public $incrementing = false;
@@ -28,6 +29,9 @@ class User extends Authenticatable
         'avatar',
         'password',
         'email',
+        'username',
+        'role_id', // <-- [FIX] TAMBAHKAN INI
+        'status',  // <-- [FIX] TAMBAHKAN INI
         'is_twofa_enabled',
         'twofa_code',
         'twofa_expires_at'
@@ -69,6 +73,16 @@ class User extends Authenticatable
     public function logs()
     {
         return $this->hasMany(Logs  ::class, 'user_id', 'id');
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 
 }

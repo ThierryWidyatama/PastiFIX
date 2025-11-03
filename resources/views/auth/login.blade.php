@@ -1,231 +1,103 @@
 <!DOCTYPE html>
-<!--
-Author: Keenthemes
-Product Name: MetronicProduct Version: 8.2.7
-Purchase: https://1.envato.market/EA4JP
-Website: http://www.keenthemes.com
-Contact: support@keenthemes.com
-Follow: www.twitter.com/keenthemes
-Dribbble: www.dribbble.com/keenthemes
-Like: www.facebook.com/keenthemes
-License: For each use you must have a valid license purchased only from above link in order to legally use the theme for your project.
--->
 <html lang="en">
-<!--begin::Head-->
-
 <head>
     <base href="../../../" />
-    <title>{{$global_option->name}}</title>
+    <title>PastiFIX - Login</title>
     <meta charset="utf-8" />
-    <meta name="description"
-        content="{{$global_option->description}}" />
-    <meta name="keywords"
-        content="{{$global_option->keywords}}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title"
-        content="{{$global_option->name}}" />
-    <meta property="og:url" content="{{ url()->current() }}" />
-    <meta property="og:site_name" content="{{$global_option->name}}" />
-    <link rel="shortcut icon" href="{{ $global_option->favicon ? $global_option->favicon : asset('media/logos/favicon.ico') }}" />
-    <!--begin::Fonts(mandatory for all pages)-->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
-    <!--end::Fonts-->
-    <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
-    <link href="{{ asset('plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
-    <!--end::Global Stylesheets Bundle-->
-    <script>
-        // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking)
-        if (window.top != window.self) {
-            window.top.location.replace(window.self.location.href);
-        }
-    </script>
-</head>
-<!--end::Head-->
-<!--begin::Body-->
+    <link rel="shortcut icon" href="{{ asset('assets/img/logo.png') }}" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<body id="kt_body" class="auth-bg">
-    <!--begin::Theme mode setup on page load-->
-    <script>
-        var defaultThemeMode = "light";
-        var themeMode;
-        if (document.documentElement) {
-            if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
-                themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
-            } else {
-                if (localStorage.getItem("data-bs-theme") !== null) {
-                    themeMode = localStorage.getItem("data-bs-theme");
-                } else {
-                    themeMode = defaultThemeMode;
-                }
-            }
-            if (themeMode === "system") {
-                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-            }
-            document.documentElement.setAttribute("data-bs-theme", themeMode);
-        }
-    </script>
-    <!--end::Theme mode setup on page load-->
-    <!--begin::Main-->
-    <!--begin::Root-->
-    <div class="d-flex flex-column flex-root">
-        <!--begin::Authentication - Sign-in -->
-        <div class="d-flex flex-column flex-lg-row flex-column-fluid">
-            <!--begin::Body-->
-            <div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-1">
-                <!--begin::Form-->
-                <div class="d-flex flex-center flex-column flex-lg-row-fluid">
-                    <!--begin::Wrapper-->
-                    <div class="w-lg-500px p-10">
-                        <!--begin::Form-->
-                        <form class="form w-100" novalidate="novalidate" id="login_form"
-                            action="{{ route('login.auth') }}" method="POST">
-                            @csrf <!--begin::Heading-->
-                            <div class="text-center mb-11">
-                                <!--begin::Title-->
-                                <h1 class="text-gray-900 fw-bolder mb-3">Sign In</h1>
-                                <!--end::Title-->
-                                <!--begin::Subtitle-->
-                                <div class="text-gray-500 fw-semibold fs-6"> Silahkan login untuk melanjutkan
-                                </div>
-                                <!--end::Subtitle=-->
-                            </div>
-                            <!--begin::Heading-->
-                            <!--begin::Separator-->
-                            <div class="separator separator-content my-14">
-                                <span class="w-125px text-gray-500 fw-semibold fs-7"></span>
-                            </div>
-                            <!--end::Separator-->
-                            <!--begin::Input group=-->
-                            <div class="fv-row mb-8">
-                                <!--begin::username-->
-                                <input type="text" placeholder="Username" name="username" autocomplete="off"
-                                    class="form-control bg-transparent" />
-                                <!--end::username-->
-                            </div>
-                            <!--end::Input group=-->
-                            <div class="position-relative mb-3">
-                                <input class="form-control bg-transparent" type="password" placeholder="Password"
-                                    name="password" autocomplete="off" />
-                                <span class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
-                                    data-kt-password-meter-control="visibility">
-                                    <i class="ki-duotone ki-eye-slash fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
-                                    <i class="ki-duotone ki-eye fs-2 d-none">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i>
-                                </span>
-                            </div>
-                            <!--end::Input group=-->
-                            <div class="g-recaptcha mb-4" data-sitekey="{{ env('CAPTCHA_SITE_KEY') }}"
-                                data-action="LOGIN"></div>
-                            <div class="fv-row mb-4">
-                                <label class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="remember_me" value="1" />
-                                    <span class="form-check-label fw-semibold text-gray-700 fs-base ms-1">Remember me
-                                </label>
-                            </div>
-                            <!--begin::Wrapper-->
-                            <div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
-                                <div></div>
-                                <!--begin::Link-->
-                                <a href="authentication/layouts/corporate/reset-password.html"
-                                    class="link-primary">Forgot Password ?</a>
-                                <!--end::Link-->
-                            </div>
-                            <!--end::Wrapper-->
-                            <!--begin::Submit button-->
-                            <div class="d-grid mb-10">
-                                <button type="submit" id="login_submit" class="btn btn-primary"data-action='submit'>
-                                    <!--begin::Indicator label-->
-                                    <span class="indicator-label">Sign In</span>
-                                    <!--end::Indicator label-->
-                                </button>
-                            </div>
-                            <!--end::Submit button-->
-                            <!--begin::Sign up-->
-                            <div class="text-gray-500 text-center fw-semibold fs-6">Not a Member yet?
-                                <a href="{{route('register')}}" class="link-primary">Sign up</a>
-                            </div>
-                            <!--end::Sign up-->
-                        </form>
-                        <!--end::Form-->
-                    </div>
-                    <!--end::Wrapper-->
-                </div>
-                <!--end::Form-->
-                <!--begin::Footer-->
-                <div class="w-lg-500px d-flex flex-stack px-10 mx-auto justify-content-end">
-                    <!--begin::Links-->
-                    <div class="d-flex fw-semibold text-primary fs-base gap-5">
-                        <a href="https://keenthemes.com" target="_blank">Terms</a>
-                        <a href="https://keenthemes.com" target="_blank">Plans</a>
-                        <a href="https://keenthemes.com" target="_blank">Contact Us</a>
-                    </div>
-                    <!--end::Links-->
-                </div>
-                <!--end::Footer-->
-            </div>
-            <!--end::Body-->
-            <!--begin::Aside-->
-            <div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2"
-                style="background-image: url({{ asset('media/misc/auth-bg.png') }})">
-                <!--begin::Content-->
-                <div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
-                    <!--begin::Logo-->
-                    <a href="../../demo1/dist/index.html" class="mb-0 mb-lg-12">
-                        <img alt="Logo" src="{{ asset('media/logos/custom-1.svg') }}" class="h-60px h-lg-75px" />
-                    </a>
-                    <!--end::Logo-->
-                    <!--begin::Image-->
-                    <img class="d-none d-lg-block mx-auto w-275px w-md-50 w-xl-500px mb-10 mb-lg-20"
-                        src="{{ asset('media/misc/auth-screens.png') }}" alt="" />
-                    <!--end::Image-->
-                </div>
-                <!--end::Content-->
-            </div>
-            <!--end::Aside-->
+    <link href="{{ asset('plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+    
+    <link rel="stylesheet" href="{{ asset('assets/css/auth-new.css') }}">
+</head>
+<body id="kt_body" class="auth-page-new"> <div class="auth-container">
+        
+        <div class="auth-container-left">
+            <a href="/" class="auth-logo">
+                <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo">
+                <span>PastiFIX</span>
+            </a>
         </div>
-        <!--end::Authentication - Sign-in-->
+
+        <div class="auth-container-right">
+            <div class="auth-card">
+                
+                <div class="auth-tabs">
+                    <a href="{{ route('register') }}">Sign Up</a>
+                    <a href="{{ route('login') }}" class="active">Sign In</a>
+                </div>
+
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                <form class="form w-100" novalidate="novalidate" id="login_form"
+                      action="{{ route('login.auth') }}" method="POST">
+                    @csrf
+
+                    <div class="form-group-minimal">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" autocomplete="off"
+                               class="form-control-minimal" required />
+                    </div>
+
+                    <div class="form-group-minimal">
+                        <label for="password">Password</label>
+                        <input class="form-control-minimal" type="password" id="password"
+                               name="password" autocomplete="off" required />
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <label class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="remember_me" value="1" />
+                            <span class="form-check-label fw-semibold text-gray-700 fs-base ms-1">Remember me</span>
+                        </label>
+                        <a href="#" class="link-forgot">Forgot Password?</a>
+                    </div>
+
+                    <div class="g-recaptcha mb-4" data-sitekey="{{ env('CAPTCHA_SITE_KEY') }}"
+                         data-action="LOGIN"></div>
+
+                    <div class="d-grid mb-4">
+                        <button type="submit" id="login_submit" class="btn btn-brand-auth">
+                            <span class="indicator-label">Sign In</span>
+                        </button>
+                    </div>
+                    
+                    <div class="text-center text-muted fw-semibold fs-6">
+                        Don't have an account?
+                        <a href="{{ route('register') }}" class="link-register">Sign up</a>
+                    </div>
+                    
+                    <div class="social-icons">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-google"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </form>
+                </div>
+        </div>
+        
     </div>
-    <!--end::Root-->
-    <!--end::Main-->
-    <!--begin::Javascript-->
+
     <script src="https://www.google.com/recaptcha/api.js"></script>
     <script src="{{ asset('plugins/global/plugins.bundle.js') }}"></script>
     <script src="{{ asset('js/scripts.bundle.js') }}"></script>
-    <!--end::Javascript-->
+    
     <script>
         $(document).ready(function() {
-
-            $('[data-kt-password-meter-control="visibility"]').on('click', function() {
-                var passwordInput = $(this).siblings('input[name="password"]');
-                var eyeIcon = $(this).find('.ki-eye');
-                var eyeSlashIcon = $(this).find('.ki-eye-slash');
-
-                if (passwordInput.attr('type') === 'password') {
-                    passwordInput.attr('type', 'text');
-                    eyeIcon.removeClass('d-none');
-                    eyeSlashIcon.addClass('d-none');
-                } else {
-                    passwordInput.attr('type', 'password');
-                    eyeIcon.addClass('d-none');
-                    eyeSlashIcon.removeClass('d-none');
-                }
-            });
-
             $('#login_submit').on('click', function(event) {
                 event.preventDefault();
-
-                // Show the SweetAlert loading modal
                 Swal.fire({
                     title: 'Logging in',
                     text: 'Silahkan tunggu...',
@@ -233,32 +105,26 @@ License: For each use you must have a valid license purchased only from above li
                     allowEscapeKey: false,
                 });
                 Swal.showLoading();
-
                 var formData = $('#login_form').serialize();
 
                 $.ajax({
-                    url: '{{ route('login.auth') }}', // URL to your login route
+                    url: '{{ route('login.auth') }}',
                     type: 'POST',
                     data: formData,
                     success: function(response) {
                         Swal.close();
-
                         if (response.status == 'success') {
-                            // If login is successful
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil!',
                                 text: response.pesan,
                             }).then(() => {
-                                document.location = '/dashboard';
+                                // [FIX 3] Arahkan ke URL dinamis dari Controller
+                                document.location = response.redirect_url; 
                             });
                         } else if (response.status == '2fa_required' && response['2fa_required']) {
-                            console.log(response);
-
                             window.location.href = response.redirect_url;
-                        }
-                        else {
-                            // If login fails
+                        } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal Login!',
@@ -267,20 +133,14 @@ License: For each use you must have a valid license purchased only from above li
                         }
                     },
                     error: function(xhr, status, error) {
-                        // Handle any errors that occur during the AJAX request
                         let errors = xhr.responseJSON.errors;
-
-                        // Get the first error message
                         let firstErrorMessage = '';
                         for (let key in errors) {
                             if (errors.hasOwnProperty(key)) {
-                                firstErrorMessage = errors[key][
-                                0]; // Get the first message for the first error
-                                break; // Exit after the first error
+                                firstErrorMessage = errors[key][0]; 
+                                break; 
                             }
                         }
-
-                        // Show the first error message in SweetAlert
                         Swal.fire({
                             icon: 'error',
                             title: 'Gagal login!',
@@ -289,14 +149,8 @@ License: For each use you must have a valid license purchased only from above li
                         });
                     }
                 });
-
             });
-
-
         });
     </script>
-
 </body>
-<!--end::Body-->
-
 </html>
