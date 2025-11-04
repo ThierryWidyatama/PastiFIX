@@ -49,9 +49,13 @@
 
             <ul class="nav flex-column sidebar-nav mt-auto">
                  <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('dashboard-logout-form').submit();">
                         <i class="bi bi-box-arrow-left"></i> Sign Out
                     </a>
+
+                    <form id="dashboard-logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
                 </li>
             </ul>
         </aside>
@@ -70,8 +74,15 @@
                 </div>
 
                 <div class="header-user d-flex align-items-center">
-                    <img src="{{ asset('assets/img/user1.jpeg') }}" alt="User Avatar" class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover; margin-right: 10px;">
-                    <span class="me-5">Hello Thierry</span>
+                    @auth
+                        <img src="{{ Auth::user()->profile_picture_url ? Storage::url(Auth::user()->profile_picture_url) : asset('assets/img/default-avatar.png') }}" 
+                             alt="User Avatar" class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover; margin-right: 10px;">
+                        
+                        <span class="me-5">Hello, {{ \Illuminate\Support\Str::words(Auth::user()->name, 2, '') }}</span>
+                    @else
+                        <img src="{{ asset('assets/img/default-avatar.png') }}" alt="User Avatar" class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover; margin-right: 10px;">
+                        <span class="me-5">Hello, Guest</span>
+                    @endauth
                 </div>
             </header>
 

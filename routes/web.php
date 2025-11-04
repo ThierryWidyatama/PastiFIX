@@ -51,6 +51,10 @@ use App\Http\Controllers\User\DashboardController as UserDashboardController;
 */
 // Rute Landing Page (Ini sudah benar)
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
+// routes/web.php
+Route::get('/profil-dummy', [\App\Http\Controllers\ProfilController::class, 'index'])->name('profil.dummy');
+Route::post('/profil-dummy/upload', [\App\Http\Controllers\ProfilController::class, 'upload'])->name('profil.upload');
+
 
 // Rute Autentikasi (INI BLOK PERBAIKANNYA)
 Route::get('/login', [AuthController::class, 'index'])->name('login');
@@ -148,6 +152,8 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/profil', [UserDashboardController::class, 'showProfile'])->name('profil');
+
+    Route::post('/profil', [UserDashboardController::class, 'updateProfile'])->name('profil.update');
     
     Route::get('/profil/activity', function () {
         return view('user.activity');
@@ -160,5 +166,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profil/activity/detail', function () {
         return view('user.activity-detail');
     })->name('profil.activity.detail'); // <-- [FIX] Kasih nama
+
+    Route::post('/profil/settings/password', [UserDashboardController::class, 'updatePassword'])
+        ->name('profil.settings.password');
+
+    Route::post('/profil/settings/email', [UserDashboardController::class, 'updateEmail'])
+        ->name('profil.settings.email');
 
 });

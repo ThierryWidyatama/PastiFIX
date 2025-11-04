@@ -52,7 +52,21 @@
                                 Halo, {{ \Illuminate\Support\Str::words(Auth::user()->name, 2, '') }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('profil') }}">My Dashboard</a></li>
+                                <li>
+                                    <div class="d-flex align-items-center px-3 py-2">
+                                        
+                                        <img src="{{ Auth::user()->profile_picture_url ? Storage::url(Auth::user()->profile_picture_url) : asset('assets/img/default-avatar.png') }}"
+                                             alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                        
+                                        <div class="text-start">
+                                            <div style="font-weight: 700; color: #333; line-height: 1.2;">{{ Auth::user()->name }}</div>
+                                            <div style="font-size: 0.85rem; color: #777;">{{ Auth::user()->email }}</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><a class="dropdown-item" href="{{ route('profil') }}">My Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('profil.activity') }}">My Activity</a></li>
+                                <li><a class="dropdown-item" href="{{ route('profil.settings') }}">Account Setting</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

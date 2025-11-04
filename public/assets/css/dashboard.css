@@ -297,6 +297,23 @@ body {
 .badge-status-yellow { background-color: #FFF8E1; color: #FF9800; }
 .badge-status-red { background-color: #FFEBEE; color: #F44336; }
 
+/* =================================
+  STYLES UNTUK EDIT PROFIL
+=================================
+*/
+
+/* Bikin input yg disabled jadi kayak teks biasa */
+.form-control-static {
+    background-color: transparent !important;
+    border: none !important;
+    padding-left: 0 !important;
+    box-shadow: none !important;
+    color: #000 !important; /* Warna teks value */
+    font-weight: 500;
+    font-size: 1.1rem;
+    cursor: default;
+}
+
 
 /* =================================
   STYLES UNTUK MOBILE (Responsif)
