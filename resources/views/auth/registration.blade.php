@@ -75,7 +75,7 @@
                             <span class="indicator-label">Sign Up</span>
                         </button>
                     </div>
-                    
+                    <br>
                     <div class="text-center text-muted fw-semibold fs-6">
                         Already have an account?
                         <a href="{{ route('login') }}" class="link-register">Sign In</a>

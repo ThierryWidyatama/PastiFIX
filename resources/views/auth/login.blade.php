@@ -63,21 +63,21 @@
                         </label>
                         <a href="#" class="link-forgot">Forgot Password?</a>
                     </div>
-
+                    <br>
                     <div class="g-recaptcha mb-4" data-sitekey="{{ env('CAPTCHA_SITE_KEY') }}"
                          data-action="LOGIN"></div>
-
+                    <br>
                     <div class="d-grid mb-4">
                         <button type="submit" id="login_submit" class="btn btn-brand-auth">
                             <span class="indicator-label">Sign In</span>
                         </button>
                     </div>
-                    
+                    <br>
                     <div class="text-center text-muted fw-semibold fs-6">
                         Don't have an account?
                         <a href="{{ route('register') }}" class="link-register">Sign up</a>
                     </div>
-                    
+                    <br>
                     <div class="social-icons">
                         <a href="#"><i class="bi bi-facebook"></i></a>
                         <a href="#"><i class="bi bi-google"></i></a>
