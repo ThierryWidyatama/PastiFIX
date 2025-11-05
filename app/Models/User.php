@@ -30,10 +30,12 @@ class User extends Authenticatable
         'password',
         'email',
         'username',
-        'role_id', // <-- [FIX] TAMBAHKAN INI
-        'status',  // <-- [FIX] TAMBAHKAN INI
+        'role_id',
+        'status',
         'profile_picture_url',
         'phone_number',
+        'verification_code',
+        'verification_expires_at',
         'is_twofa_enabled',
         'twofa_code',
         'twofa_expires_at'

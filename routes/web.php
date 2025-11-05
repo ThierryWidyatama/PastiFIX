@@ -61,6 +61,8 @@ Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/auth', [AuthController::class, 'auth'])->name('login.auth');
 Route::get('/registration', [AuthController::class, 'registration'])->name('register');
 Route::post('/post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
+Route::get('/verify-email/{id}', [AuthController::class, 'showVerifyForm'])->name('verification.notice');
+Route::post('/verify-email', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('2fa/verify', [TwoFactorController::class, 'showVerifyForm'])->name('2fa.verify');
 Route::post('2fa/verify', [TwoFactorController::class, 'verify'])->name('2fa.verify.submit');
