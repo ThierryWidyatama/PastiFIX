@@ -23,6 +23,11 @@ use App\Http\Controllers\OpdController;
 use App\Http\Controllers\PencarianController;
 use App\Http\Controllers\SettingLandingPageController;
 use App\Http\Controllers\TipeDokumenController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\MandorController;
 
 
 /*
@@ -55,6 +60,11 @@ Route::get('/', [LandingPageController::class, 'index'])->name('home');
 Route::get('/profil-dummy', [\App\Http\Controllers\ProfilController::class, 'index'])->name('profil.dummy');
 Route::post('/profil-dummy/upload', [\App\Http\Controllers\ProfilController::class, 'upload'])->name('profil.upload');
 
+// Services
+Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+Route::get('/services/{id}', [ServiceController::class, 'detail'])
+    ->name('services.detail')
+    ->whereUuid('id'); // <-- INI MANTRA AJAIBNYA
 
 // Rute Autentikasi (INI BLOK PERBAIKANNYA)
 Route::get('/login', [AuthController::class, 'index'])->name('login');
@@ -146,6 +156,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('master-opd/opdSelect', [OpdController::class, 'opdSelect'])->name('master-opd.opdSelect');
     Route::post('master-bahasa/bahasaSelect', [BahasaController::class, 'bahasaSelect'])->name('master-bahasa.bahasaSelect');
 
+    Route::get('/payment/{id}', [App\Http\Controllers\PaymentController::class, 'show'])->name('payment.show');
 
     /*
     |--------------------------------------------------------------------------
@@ -157,22 +168,108 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/profil', [UserDashboardController::class, 'updateProfile'])->name('profil.update');
     
-    Route::get('/profil/activity', function () {
-        return view('user.activity');
-    })->name('profil.activity'); // <-- [FIX] Kasih nama
+    Route::get('/profil/activity', [UserDashboardController::class, 'showActivity'])->name('profil.activity');
 
     Route::get('/profil/settings', function () {
         return view('user.settings');
     })->name('profil.settings'); // <-- [FIX] Kasih nama
 
-    Route::get('/profil/activity/detail', function () {
-        return view('user.activity-detail');
-    })->name('profil.activity.detail'); // <-- [FIX] Kasih nama
+    Route::get('/profil/activity/{id}', [UserDashboardController::class, 'showActivityDetail'])
+        ->name('profil.activity.detail');
 
     Route::post('/profil/settings/password', [UserDashboardController::class, 'updatePassword'])
         ->name('profil.settings.password');
 
     Route::post('/profil/settings/email', [UserDashboardController::class, 'updateEmail'])
         ->name('profil.settings.email');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rute Services
+    | Services atau kategori layanan
+    |--------------------------------------------------------------------------
+    */
+        
+    Route::get('/services/checkout', [ServiceController::class, 'showCheckout'])->name('services.checkout');
+
+    // [BARU] Route untuk memproses pesanan
+    Route::post('/services/order', [OrderController::class, 'store'])->name('order.store');
+
+    // [BARU] Route untuk menambah alamat via Modal Checkout (biar gak error nanti)
+    Route::post('/services/address/store', [UserDashboardController::class, 'storeAddressFromCheckout'])->name('address.store');
+
+    Route::get('/services/payment', function () {
+        return view('services.payment');
+    })->name('services.payment');
+
+    Route::get('/services/order-success', function () {
+        return view('services.order');
+    })->name('services.order');
+
+    Route::get('/services/my-orders', function () {
+        return view('services.my-orders');
+    })->name('services.my-orders');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rute CRUD Kategori (FIXED)
+    |--------------------------------------------------------------------------
+    */
+    // [FIX] Kita pakai 'prefix' dan 'name' biar rapi
+    Route::prefix('kategori')->name('kategori.')->middleware(['auth'])->group(function () {
+        
+        // [FIX] Halaman daftar sekarang di /kategori/daftarkategori
+        // NAMUN namanya tetap 'kategori.index' (Biar view kita nggak perlu diubah)
+        Route::get('/daftarkategori', [KategoriController::class, 'index'])->name('index');
+
+        // Ini route-mu yang sudah ada
+        Route::get('/tambahkategori', [KategoriController::class, 'create'])->name('create');
+
+        // Route 'store' sekarang otomatis mengarah ke POST /kategori
+        Route::post('/', [KategoriController::class, 'store'])->name('store');
+
+        // Route 'edit' sekarang otomatis mengarah ke GET /kategori/{id}/edit
+        Route::get('/{category}/edit', [KategoriController::class, 'edit'])->name('edit');
+
+        // Route 'update' sekarang otomatis mengarah ke PUT /kategori/{id}
+        Route::put('/{category}', [KategoriController::class, 'update'])->name('update');
+
+        // Route 'destroy'
+        Route::delete('/{category}', [KategoriController::class, 'destroy'])->name('destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rute Manajemen Pesanan (Admin)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('pesanan')->name('admin.orders.')->group(function () {
+        
+        // Route Index, Show, Update yang lama...
+        Route::get('/status-pesanan', [AdminOrderController::class, 'index'])->name('index');
+        Route::get('/{id}', [AdminOrderController::class, 'show'])->name('show');
+        Route::put('/{id}', [AdminOrderController::class, 'update'])->name('update');
+
+        // [BARU] Route untuk Timeline & Cost
+        Route::post('/{id}/timeline', [AdminOrderController::class, 'storeTimeline'])->name('timeline.store');
+        Route::delete('/timeline/{timeline_id}', [AdminOrderController::class, 'destroyTimeline'])->name('timeline.destroy');
+
+        Route::post('/{id}/cost', [AdminOrderController::class, 'storeCost'])->name('cost.store');
+        Route::delete('/cost/{cost_id}', [AdminOrderController::class, 'destroyCost'])->name('cost.destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rute Manajemen Mandor
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('mandor')->name('mandor.')->group(function () {
+        Route::get('/daftar', [MandorController::class, 'index'])->name('index');
+        Route::get('/tambah', [MandorController::class, 'create'])->name('create');
+        Route::post('/simpan', [MandorController::class, 'store'])->name('store');
+        // Route::get('/edit/{id}', ...); // Nanti aja
+        // Route::delete('/hapus/{id}', ...); // Nanti aja
+    });
 
 });

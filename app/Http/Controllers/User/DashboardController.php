@@ -131,4 +131,63 @@ class DashboardController extends Controller
 
         return redirect()->route('profil.settings')->with('success', 'Email berhasil diperbarui!');
     }
+
+    /**
+     * [BARU] Simpan alamat dari modal checkout.
+     */
+    public function storeAddressFromCheckout(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'address_line' => 'required|string',
+            'rt_rw' => 'nullable|string|max:10',
+            'postal_code' => 'nullable|string|max:10',
+            'landmark_details' => 'nullable|string',
+        ]);
+
+        // Simpan alamat
+        $user->addresses()->create([
+            'id' => Str::uuid(),
+            'address_line' => $request->address_line,
+            'rt_rw' => $request->rt_rw,
+            'postal_code' => $request->postal_code,
+            'landmark_details' => $request->landmark_details,
+            'is_primary' => $request->has('is_primary'), // Set primary jika dicentang
+        ]);
+
+        // Redirect kembali ke halaman checkout sebelumnya
+        // (Input 'redirect_to' dikirim dari form modal)
+        return redirect($request->input('redirect_to'))->with('success', 'Alamat baru berhasil ditambahkan!');
+    }
+
+    public function showActivity()
+    {
+        $user = Auth::user();
+
+        // Ambil semua order user ini, urutkan dari yang terbaru
+        // Kita load 'category' juga biar bisa nampilin nama layanannya
+        $orders = $user->orders()
+                       ->with('category')
+                       ->orderBy('created_at', 'desc')
+                       ->get();
+
+        return view('user.activity', compact('orders'));
+    }
+
+    /**
+     * [BARU] Tampilkan detail pesanan spesifik.
+     */
+    public function showActivityDetail($id)
+    {
+        $user = Auth::user();
+
+        // Ambil order berdasarkan ID, pastikan milik user yg login
+        // Load relasi: kategori, mandor, timeline, dan rincian biaya
+        $order = \App\Models\Order::with(['category', 'mandor', 'workTimelines', 'costItems'])
+                    ->where('user_id', $user->id)
+                    ->findOrFail($id);
+
+        return view('user.activity-detail', compact('order'));
+    }
 }

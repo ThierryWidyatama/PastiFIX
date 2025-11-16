@@ -1,0 +1,193 @@
+@extends('layouts.landing')
+
+@section('title', 'PastiFIX - Services')
+
+@push('styles')
+{{-- CSS Khusus untuk halaman ini --}}
+<style>
+    .services-header {
+    background-color: #FEC81A;
+    padding: 80px 0 120px 0; /* bottom lebih besar agar space keluar */
+    position: relative; /* WAJIB biar absolute child bisa keluar */
+}
+
+.search-bar-container {
+    position: absolute;
+    bottom: -40px; /* ini yang bikin dia nongol setengah */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 700px;
+    z-index: 10;
+}
+
+.search-bar-container .input-group .form-control,
+.search-bar-container .input-group .btn {
+    height: 60px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+    .filter-card {
+        border-radius: 0.5rem;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .filter-header {
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .filter-body {
+        padding: 1rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .service-card {
+        border-radius: 0.5rem;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .card-price {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #FEC81A;
+    }
+    .breadcrumb-item a {
+        color: #FEC81A;
+    }
+</style>
+@endpush
+
+@section('content')
+
+    <header class="services-header position-relative" style="background-color: #FEC81A; padding: 40px;">
+    <div class="container text-center" style="padding-top: 80px; padding-bottom: 50px; color: white;">
+        <h1 class="fw-bold">Services</h1>
+    </div>
+
+    <!-- Search bar HARUS ada di dalam header -->
+    <div class="container">
+        <div class="search-bar-container">
+            <div class="input-group">
+                <input type="text" class="form-control form-control-lg"
+                       placeholder="Cari layanan (misal: Atap Bocor, Pengecatan)"
+                       name="search" value="{{ request('search') }}">
+
+                <button class="btn btn-warning btn-lg px-4" type="submit"
+                        style="background-color: #FEC81A; color: #333;">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- FORM baru dibuka di sini -->
+<form action="{{ route('services.index') }}" method="GET">
+        <div class="container mt-4 mt-md-5">
+
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Services</li>
+                </ol>
+            </nav>
+
+            <div class="row">
+
+                <div class="col-lg-3">
+                    <div class="card filter-card">
+                        <div class="card-header bg-white filter-header d-flex justify-content-between align-items-center"
+                             data-bs-toggle="collapse" href="#collapseFilter" role="button">
+                            <span>Kategori</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                        <div class="collapse show" id="collapseFilter">
+                            <div class="filter-body">
+                                
+                                <!-- [FIX] Ganti jadi loop dinamis dari database -->
+                                @forelse ($all_categories as $category)
+                                    <div class="form-check">
+                                        <!-- 'name="filters[]"' penting untuk array -->
+                                        <input class="form-check-input" type="checkbox" name="filters[]"
+                                               value="{{ $category->id }}" id="check_{{ $category->id }}"
+                                               onchange="this.form.submit()"
+                                               {{ ( in_array($category->id, request('filters', [])) ) ? 'checked' : '' }}
+                                        >
+                                        <label class="form-check-label" for="check_{{ $category->id }}">
+                                            {{ $category->name }}
+                                        </label>
+                                    </div>
+                                @empty
+                                    <small class="text-muted">Belum ada kategori.</small>
+                                @endforelse
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-9 mt-4 mt-lg-0">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Showing {{ $services->firstItem() }}-{{ $services->lastItem() }} of {{ $services->total() }} results</span>
+                        <div class="col-md-4 col-lg-3">
+                            <!-- [FIX] 'name' & 'onchange' ditambahkan -->
+                            <select class="form-select" name="sort" onchange="this.form.submit()">
+                                <option value="popular" {{ request('sort') == 'popular' ? 'selected' : '' }}>Sort By: Popular</option>
+                                <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Sort By: Harga Terendah</option>
+                                <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Sort By: Harga Tertinggi</option>
+                                <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Sort By: Terbaru</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+                        <!-- [FIX] Ganti jadi loop dinamis -->
+                        @forelse ($services as $service)
+                            <div class="col">
+                                <a href="{{ route('services.detail', $service->id) }}" class="text-decoration-none text-dark">
+                                    <div class="card service-card h-100">
+                                        <!-- [FIX] Tampilkan gambar asli dari DB, atau placeholder jika kosong -->
+                                        <img src="{{ $service->image_url ? Storage::url($service->image_url) : 'https://placehold.co/600x400/FEC81A/333?text=' . urlencode($service->name) }}" 
+                                            class="card-img-top" alt="{{ $service->name }}" style="height: 200px; object-fit: cover;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ $service->name }}</h5>
+                                            <small class="text-muted">Mulai dari</small>
+                                            <!-- Kita belum punya harga di DB, jadi kita dummy dulu -->
+                                            <!-- [FIX] Tampilkan harga yg sudah diformat dari DB -->
+                                            <p class="card-price">
+                                                {{ $service->price ? 'Rp' . number_format($service->price, 0, ',', '.') : 'Harga via Survei' }}
+                                            </p>
+                                            <span class="badge bg-info-subtle text-info-emphasis rounded-pill">
+                                                <i class="bi bi-search me-1"></i> Perlu Survei
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @empty
+                            <div class="col-12">
+                                <div class="alert alert-secondary text-center">
+                                    Tidak ada layanan yang cocok dengan kriteria pencarian Anda.
+                                </div>
+                            </div>
+                        @endforelse
+
+                    </div>
+                    
+                    <!-- [FIX] Ganti 'Load More' jadi Pagination Laravel -->
+                    <div class="text-center mt-5 mb-5">
+                         {{ $services->links() }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+@endsection

@@ -1,0 +1,349 @@
+/* GENERAL STYLING */
+body {
+    font-family: 'Outfit', sans-serif;
+}
+
+.section-padding {
+    padding: 100px 0;
+}
+
+.section-title {
+    font-size: 64px;
+    font-weight: 700;
+}
+
+.section-subtitle {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.btn-brand {
+    background-color: #EECB2F;
+    color: white;
+    border-color: #EECB2F;
+}
+
+.btn-brand:hover {
+    background-color: #d8b82a;
+    border-color: #d8b82a;
+    color: white;
+}
+
+.btn-outline-brand {
+    border-color: #EECB2F;
+    color: #EECB2F;
+}
+
+.btn-outline-brand:hover {
+    background-color: #EECB2F;
+    color: white;
+}
+
+
+/* NAVBAR */
+.navbar {
+    transition: background-color 0.3s ease, padding 0.3s ease;
+}
+
+.navbar.scrolled {
+    background-color: rgba(18, 18, 18, 0.8);
+    backdrop-filter: blur(10px);
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    color: white;
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link:hover {
+    color: #EECB2F;
+}
+
+
+/* SECTION 1: HERO */
+#home {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/section1.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#home h1 {
+    font-size: 64px;
+    font-weight: 700;
+}
+
+#home p {
+    font-weight: 500;
+}
+
+/* FOOTER */
+.footer-section {
+    background-color: #4B4B4B;
+    padding: 80px 0 30px 0;
+}
+
+.social-icons a {
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #EECB2F !important;
+}
+
+.services-header {
+    background-image: url('../img/section4bar.png');
+    background-repeat: repeat;
+    background-blend-mode: multiply;
+    /* Opsional, agar menyatu */
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.services-header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    /* Warna teks gelap */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar-container {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-top: -1.5rem;
+    /* Menarik ke atas agar menimpa header */
+    position: relative;
+    z-index: 10;
+}
+
+.search-bar-container .form-control {
+    border-right: 0;
+}
+
+.search-bar-container .btn-warning {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Filter Sidebar */
+.filter-card {
+    border-radius: 0.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.filter-header {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.filter-body {
+    padding: 1rem;
+}
+
+.filter-body .form-check {
+    margin-bottom: 0.75rem;
+}
+
+.filter-body .form-check-label {
+    cursor: pointer;
+}
+
+/* Service Card (Product) */
+.service-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.service-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.service-card .card-img-top {
+    background-color: #e9ecef;
+    /* Warna placeholder abu-abu */
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.service-card .card-body {
+    padding: 1rem;
+}
+
+.service-card .card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.service-card .card-price {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #ffc107;
+    /* Warna kuning */
+}
+
+
+/* 2. Halaman Checkout & Pembayaran */
+
+.summary-card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+}
+
+.payment-method .accordion-button {
+    font-weight: 600;
+}
+
+.payment-method .accordion-button:not(.collapsed) {
+    background-color: #fff8e1;
+    /* Kuning muda saat aktif */
+    color: #343a40;
+}
+
+.payment-method img {
+    height: 25px;
+    margin-right: 10px;
+}
+
+/* 4. STYLING CHECKOUT BARU (Tambahan) */
+
+/* Sembunyikan radio button asli */
+.address-radio {
+    display: none;
+}
+
+.address-card-wrapper {
+    position: relative;
+}
+
+.address-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    border: 2px solid #e9ecef;
+    /* Abu-abu default */
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.address-card-body {
+    flex-grow: 1;
+}
+
+.address-card-actions {
+    display: flex;
+    flex-direction: column;
+    /* Icon tumpuk atas-bawah */
+    margin-left: 1rem;
+}
+
+.btn-icon {
+    border: none;
+    background: none;
+    color: #6c757d;
+    padding: 0.25rem 0.5rem;
+}
+
+.btn-icon:hover {
+    color: #EECB2F;
+    /* Brand color */
+}
+
+/* Style ketika radio ter-check */
+.address-radio:checked+.address-card {
+    border-color: #EECB2F;
+    /* Brand color */
+    box-shadow: 0 4px 12px rgba(238, 203, 47, 0.3);
+}
+
+/* Tambahkan pseudo-element "radio" di dalam card */
+.address-card::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ced4da;
+    background-color: #fff;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.address-radio:checked+.address-card::before {
+    border-color: #EECB2F;
+    background-color: #EECB2F;
+    /* Lingkaran dalam */
+    box-shadow: 0 0 0 3px #fff inset;
+    /* Efek "dot" di tengah */
+}
+
+
+/* Link "Add New Address" */
+.add-new-address-link {
+    position: relative;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.divider-line {
+    border-bottom: 2px dashed #e9ecef;
+    width: 100%;
+    position: absolute;
+    top: 18px;
+    /* Setengah tinggi icon */
+    left: 0;
+    z-index: 1;
+}
+
+.btn-icon-add {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #fff;
+    /* Agar menutupi garis putus-putus */
+    border: 2px dashed #e9ecef;
+    color: #EECB2F;
+    font-size: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    position: relative;
+    z-index: 2;
+    transition: all 0.2s ease;
+}
+
+.btn-icon-add:hover {
+    border-style: solid;
+    border-color: #EECB2F;
+    background-color: #fff8e1;
+}
+
+/* Card Ringkasan Checkout */
+.checkout-summary-card {
+    border-radius: 0.75rem;
+    background: #fff;
+}
+
+.checkout-summary-card .fw-medium {
+    font-weight: 500;
+    color: #212529;
+    /* Pastikan teks harga jelas */
+}

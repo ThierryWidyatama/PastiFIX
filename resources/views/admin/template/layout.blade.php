@@ -79,7 +79,10 @@ License: For each use you must have a valid license purchased only from above li
             <span class="path2"></span>
         </i>
     </div>
-    <!--end::Scrolltop-->
+    <script src="{{ asset('plugins/global/plugins.bundle.js') }}"></script>
+    <script src="{{ asset('js/scripts.bundle.js') }}"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
     <script>
         function debounce(func, delay) {
             let timeoutId;
@@ -115,17 +118,13 @@ License: For each use you must have a valid license purchased only from above li
                     },
                     type: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr(
-                            'content')
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     allowClear: true
                 }
             });
         }
     </script>
-    @yield('script')
 
-</body>
-<!--end::Body-->
-
+    @yield('script')  @stack('scripts') </body>
 </html>
