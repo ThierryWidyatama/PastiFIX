@@ -28,6 +28,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\MandorController;
+use App\Http\Controllers\PaymentCallbackController;
 
 
 /*
@@ -59,6 +60,7 @@ Route::get('/', [LandingPageController::class, 'index'])->name('home');
 // routes/web.php
 Route::get('/profil-dummy', [\App\Http\Controllers\ProfilController::class, 'index'])->name('profil.dummy');
 Route::post('/profil-dummy/upload', [\App\Http\Controllers\ProfilController::class, 'upload'])->name('profil.upload');
+Route::post('/payments/midtrans-notification', [PaymentCallbackController::class, 'receive']);
 
 // Services
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
