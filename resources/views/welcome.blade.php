@@ -190,58 +190,51 @@
         
         <div class="swiper testimonial-slider">
             <div class="swiper-wrapper">
+                @forelse($reviews as $review)
                 <div class="swiper-slide">
                     <div class="testimonial-card">
-                        <img src="{{ asset('assets/img/user1.jpeg') }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="User 1">
-                        <h6 class="fw-bold">Andi Pratama</h6>
+                        <img src="{{ $review->user->profile_picture_url ? Storage::url($review->user->profile_picture_url) : asset('assets/img/default-avatar.png') }}" 
+                             class="rounded-circle mb-3" 
+                             style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #EECB2F;" 
+                             alt="{{ $review->user->name }}">
+                        
+                        <h6 class="fw-bold">{{ $review->user->name }}</h6>
+                        
+                        <div class="rating-stars mb-3">
+                            @php
+                                // Hitung rata-rata rating (bulatkan ke atas)
+                                $avgRating = ceil(($review->rating_mandor + $review->rating_service) / 2);
+                            @endphp
+                            
+                            @for($i=1; $i<=5; $i++)
+                                <i class="bi bi-star{{ $i <= $avgRating ? '-fill' : '' }}"></i>
+                            @endfor
+                        </div>
+                        
+                        <p class="text-muted small">
+                            "{{ \Illuminate\Support\Str::limit($review->comment, 100, '...') }}"
+                        </p>
+                    </div>
+                </div>
+            @empty
+                <div class="swiper-slide">
+                    <div class="testimonial-card">
+                        <img src="{{ asset('assets/img/logo.png') }}" class="rounded-circle mb-3" style="width: 80px;" alt="Admin">
+                        <h6 class="fw-bold">Admin PastiFIX</h6>
                         <div class="rating-stars mb-3">
                             <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                         </div>
-                        <p class="text-muted">"Pengerjaannya sangat rapi dan cepat. Komunikasi dengan mandor juga lancar. Sangat direkomendasikan!"</p>
+                        <p class="text-muted">"Belum ada ulasan saat ini. Jadilah yang pertama memesan jasa kami!"</p>
                     </div>
                 </div>
-                <div class="swiper-slide">
-                    <div class="testimonial-card">
-                        <img src="{{ asset('assets/img/user2.jpg') }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="User 2">
-                        <h6 class="fw-bold">Siti Aminah</h6>
-                        <div class="rating-stars mb-3">
-                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
-                        </div>
-                        <p class="text-muted">"Hasilnya melebihi ekspektasi saya. Terima kasih PastiFIX sudah membuat dapur saya jadi lebih modern."</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="testimonial-card">
-                        <img src="{{ asset('assets/img/user3.png') }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="User 3">
-                        <h6 class="fw-bold">Budi Santoso</h6>
-                        <div class="rating-stars mb-3">
-                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                        </div>
-                        <p class="text-muted">"Proses dari awal pemesanan sampai selesai sangat mudah dan transparan. Pelayanan yang luar biasa."</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="testimonial-card">
-                        <img src="{{ asset('assets/img/user3.png') }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="User 3">
-                        <h6 class="fw-bold">Iwak Santoso</h6>
-                        <div class="rating-stars mb-3">
-                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                        </div>
-                        <p class="text-muted">"Proses dari awal pemesanan sampai selesai sangat mudah dan transparan. Pelayanan yang luar biasa."</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="testimonial-card">
-                        <img src="{{ asset('assets/img/user3.png') }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;" alt="User 3">
-                        <h6 class="fw-bold">Kuceng Handoko Santoso</h6>
-                        <div class="rating-stars mb-3">
-                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                        </div>
-                        <p class="text-muted">"Proses dari awal pemesanan sampai selesai sangat mudah dan transparan. Pelayanan yang luar biasa."</p>
-                    </div>
-                </div>
+            @endforelse
             </div>
              <div class="swiper-pagination"></div>
+        </div>
+        <div class="text-center mt-5">
+            <a href="{{ route('reviews.index') }}" class="btn btn-outline-brand rounded-pill px-4 py-2 fw-medium">
+                Lihat Semua Ulasan <i class="bi bi-arrow-right ms-1"></i>
+            </a>
         </div>
 
     </div>

@@ -14,7 +14,6 @@
         <div class="row g-4 g-lg-5">
 
             <div class="col-lg-7">
-                
                 <div class="order-detail-info">
                     <div class="info-item">
                         <div class="info-label">Nomor Pesanan:</div>
@@ -38,7 +37,6 @@
 
                 <div class="mt-5">
                     <div class="info-label fw-bold mb-3">Timeline Pengerjaan</div>
-                    
                     <div class="timeline-wrapper">
                         <ul class="timeline-stepper">
                             @forelse($order->workTimelines as $timeline)
@@ -64,8 +62,7 @@
                 
                 <div class="mandor-card mb-4">
                     @if($order->mandor)
-                        <img src="{{ $order->mandor->profile_picture_url ? Storage::url($order->mandor->profile_picture_url) : asset('assets/img/default-avatar.png') }}" 
-                             alt="Mandor Avatar">
+                        <img src="{{ $order->mandor->profile_picture_url ? Storage::url($order->mandor->profile_picture_url) : asset('assets/img/default-avatar.png') }}" alt="Mandor Avatar">
                         <div class="d-flex flex-column">
                             <span class="mandor-card-name">{{ $order->mandor->name }}</span>
                             <span class="text-muted small">Mandor Bertugas</span>
@@ -92,39 +89,157 @@
 
                     @if($order->costItems->count() > 0)
                         <hr class="my-3">
-                        <div class="price-list-item price-total d-flex justify-content-between fw-bold">
-                            <span class="label">Total:</span>
-                            <span class="value">Rp {{ number_format($order->estimated_cost, 0, ',', '.') }}</span>
+                        <div class="price-list-item price-total d-flex justify-content-between fw-bold fs-5">
+                            <span class="label">Total Final:</span>
+                            <span class="value text-primary">Rp {{ number_format($order->estimated_cost, 0, ',', '.') }}</span>
                         </div>
                     @endif
                 </div>
+
                 @if($order->status == 'COMPLETED_PENDING_PAYMENT')
                     <div class="mt-4">
                         <div class="alert alert-info d-flex align-items-center" role="alert">
                             <i class="bi bi-info-circle-fill me-2 fs-4"></i>
-                            <div class="small">
-                                Pekerjaan telah selesai. Silakan lakukan pembayaran untuk menyelesaikan pesanan ini.
-                            </div>
+                            <div class="small">Pekerjaan selesai. Silakan lakukan pembayaran.</div>
                         </div>
-
                         <form action="{{ route('payment.show', $order->id) }}" method="GET">
                             <button type="submit" class="btn btn-success w-100 py-3 fs-4 fw-bold shadow-sm">
                                 <i class="bi bi-credit-card-2-front me-2"></i> Bayar Sekarang
                             </button>
                         </form>
                     </div>
+
                 @elseif($order->status == 'FINISHED')
-                     <div class="mt-4">
-                        <div class="alert alert-success text-center fw-bold">
-                            <i class="bi bi-check-circle-fill me-2"></i> Lunas & Selesai
+                    
+                    @if($order->review)
+                        <div class="mt-4 card border-warning bg-warning-subtle">
+                            <div class="card-body p-3">
+                                <h5 class="fw-bold text-center mb-3">Ulasan Anda</h5>
+                                
+                                <div class="row text-center mb-3">
+                                    <div class="col-6 border-end border-warning">
+                                        <div class="small text-muted">Mandor</div>
+                                        <div class="text-warning fs-5">
+                                            <i class="bi bi-star-fill"></i> {{ $order->review->rating_mandor }}/5
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="small text-muted">Layanan</div>
+                                        <div class="text-warning fs-5">
+                                            <i class="bi bi-star-fill"></i> {{ $order->review->rating_service }}/5
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="mb-0 small text-center fst-italic">"{{ $order->review->comment }}"</p>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="mt-4">
+                            <div class="alert alert-success d-flex align-items-center mb-3" role="alert">
+                                <i class="bi bi-check-circle-fill me-2 fs-4"></i>
+                                <div class="small fw-bold">Pesanan Selesai & Lunas.</div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-warning w-100 py-3 fs-5 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                                <i class="bi bi-star-fill me-2"></i> Beri Ulasan
+                            </button>
+                        </div>
+                    @endif
+
                 @endif
 
             </div>
-
         </div> 
     </div>
 </div>
 
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Beri Ulasan Pesanan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('review.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="order_id" value="{{ $order->id }}">
+                
+                <div class="modal-body text-center pt-0 pb-4">
+                    
+                    <p class="fw-bold mb-0 mt-3">Kinerja Mandor ({{ $order->mandor->name ?? 'Mandor' }})</p>
+                    <div class="rating-css">
+                        <div class="star-icon">
+                            <input type="radio" name="rating_mandor" value="5" id="m-5" checked> <label for="m-5" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_mandor" value="4" id="m-4"> <label for="m-4" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_mandor" value="3" id="m-3"> <label for="m-3" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_mandor" value="2" id="m-2"> <label for="m-2" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_mandor" value="1" id="m-1"> <label for="m-1" class="bi bi-star-fill"></label>
+                        </div>
+                    </div>
+
+                    <hr class="my-2 opacity-25">
+
+                    <p class="fw-bold mb-0 mt-2">Kualitas Aplikasi & Layanan</p>
+                    <div class="rating-css">
+                        <div class="star-icon">
+                            <input type="radio" name="rating_service" value="5" id="s-5" checked> <label for="s-5" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_service" value="4" id="s-4"> <label for="s-4" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_service" value="3" id="s-3"> <label for="s-3" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_service" value="2" id="s-2"> <label for="s-2" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_service" value="1" id="s-1"> <label for="s-1" class="bi bi-star-fill"></label>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-start">
+                        <label class="form-label fw-bold small">Komentar Tambahan</label>
+                        <textarea name="comment" class="form-control bg-light" rows="3" placeholder="Ceritakan pengalaman Anda... (Opsional)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="submit" class="btn btn-brand w-100 fw-bold">Kirim Ulasan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
+
+@push('styles')
+<style>
+    /* CSS Rating Bintang */
+    .rating-css div {
+        color: #ffe400;
+        font-size: 30px;
+        font-family: sans-serif;
+        font-weight: 800;
+        text-align: center;
+        text-transform: uppercase;
+        padding: 10px 0;
+    }
+    .rating-css input {
+        display: none;
+    }
+    .rating-css input + label {
+        font-size: 40px;
+        text-shadow: 1px 1px 0 #ffe400;
+        cursor: pointer;
+    }
+    /* Logika: Kalau dicentang, warnai bintang */
+    .rating-css input:checked + label ~ label {
+        color: #ddd; /* Warna abu buat bintang yg ga kepilih */
+    }
+    .rating-css label:active {
+        transform: scale(0.8);
+        transition: 0.3s all;
+    }
+    /* Balik urutan render biar CSS selector '~' jalan dari kanan ke kiri */
+    .star-icon {
+        display: flex;
+        flex-direction: row-reverse; 
+        justify-content: center;
+        gap: 10px;
+    }
+</style>
+@endpush

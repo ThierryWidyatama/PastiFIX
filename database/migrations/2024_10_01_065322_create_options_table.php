@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('latitude', 100)->nullable();
             $table->string('longitude', 100)->nullable();
             $table->text('announcement')->nullable();
-            $table->boolean('is_landing_page')->default(0);
+            $table->boolean('is_landing_page')->default(1);
             $table->timestamps();
             $table->softDeletes();
         });

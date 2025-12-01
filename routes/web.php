@@ -82,6 +82,9 @@ Route::get('2fa/verify-link', [TwoFactorController::class, 'verifyLink'])->name(
 
 Route::get('/produk-hukum', [PencarianController::class, 'index'])->name('produk-hukum');
 
+// Rute untuk melihat semua review
+Route::get('/reviews', [App\Http\Controllers\ReviewController::class, 'index'])->name('reviews.index');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -278,5 +281,8 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/update/{id}', [MandorController::class, 'update'])->name('update');
         Route::delete('/hapus/{id}', [MandorController::class, 'destroy'])->name('destroy');
     });
+
+    // Route Simpan Review
+    Route::post('/review', [App\Http\Controllers\ReviewController::class, 'store'])->name('review.store');
 
 });

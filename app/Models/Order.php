@@ -44,4 +44,9 @@ class Order extends Model
     {
         return $this->hasMany(WorkTimeline::class);
     }
+    // Relasi ke Review (One to One: Satu order cuma punya satu review dari user)
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
 }
