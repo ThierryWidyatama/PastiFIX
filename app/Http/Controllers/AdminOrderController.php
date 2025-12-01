@@ -66,6 +66,27 @@ class AdminOrderController extends Controller
     {
         $order = Order::with(['user', 'category', 'projectAddress', 'mandor'])->findOrFail($id);
 
+        // === [LOGIC BARU: AUTO-FIX HARGA DASAR] ===
+        // Cek apakah di tabel rincian biaya sudah ada "Biaya Dasar"
+        $hasBasePrice = $order->costItems()->where('item_name', 'like', 'Biaya Dasar%')->exists();
+
+        // Jika BELUM ADA, dan Kategorinya punya harga, kita suntikkan otomatis
+        if (!$hasBasePrice && $order->category->price > 0) {
+            $order->costItems()->create([
+                'id' => \Illuminate\Support\Str::uuid(),
+                'item_name' => "Biaya Dasar: " . $order->category->name,
+                'price' => $order->category->price
+            ]);
+
+            // Hitung ulang total biar sinkron
+            $totalCost = $order->costItems()->sum('price');
+            $order->update(['estimated_cost' => $totalCost]);
+
+            // Refresh data order biar item barunya muncul di view
+            $order->refresh();
+        }
+        // ===========================================
+
         // Cari Role ID untuk 'Mandor' (MDR)
         $mandorRole = MsRole::where('code', 'MDR')->first();
         

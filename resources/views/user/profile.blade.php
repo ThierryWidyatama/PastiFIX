@@ -70,10 +70,16 @@
         </div>
 
         <div class="col-12 col-lg-6">
-            
             <div class="card p-4 h-100">
                 <div class="card-body">
-                    <h4 class="fw-bold mb-4">Alamat</h4>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold mb-0">Alamat Utama</h4>
+                        <button type="button" class="btn btn-sm btn-outline-warning text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#manageAddressModal">
+                            <i class="bi bi-gear-fill me-1"></i> Kelola Alamat
+                        </button>
+                    </div>
+
                     <div class="mb-3">
                         <label for="address_line" class="form-minimal-label">Alamat Lengkap</label>
                         <input type="text" class="form-control form-minimal-input" id="address_line" name="address_line" value="{{ $address->address_line ?? '' }}" disabled>
@@ -96,7 +102,7 @@
                     <h6 class="fw-bold">Titik Rumah</h6>
                     <p class="text-muted small">Titik lokasi akan diatur saat proses pemesanan.</p> 
                     
-                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -120,6 +126,66 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="manageAddressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Kelola Daftar Alamat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light" style="max-height: 60vh; overflow-y: auto;">
+                
+                @php $allAddresses = Auth::user()->addresses()->orderBy('is_primary', 'desc')->get(); @endphp
+
+                @forelse($allAddresses as $addr)
+                    <div class="card border-0 shadow-sm mb-3 {{ $addr->is_primary ? 'border-start border-warning border-5' : '' }}">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                @if($addr->is_primary)
+                                    <span class="badge bg-warning text-dark mb-2">UTAMA</span>
+                                @endif
+                                <p class="mb-1 fw-bold text-dark fs-5">{{ $addr->address_line }}</p>
+                                <p class="mb-0 text-muted small">
+                                    {{ $addr->rt_rw ? 'RT/RW: '.$addr->rt_rw . ',' : '' }} 
+                                    {{ $addr->postal_code ? 'Kode Pos: '.$addr->postal_code : '' }} <br>
+                                    {{ $addr->landmark_details ? '('.$addr->landmark_details.')' : '' }}
+                                </p>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                @if(!$addr->is_primary)
+                                    <form action="{{ route('address.primary', $addr->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Jadikan Alamat Utama">
+                                            <i class="bi bi-check-circle-fill"></i> Utama
+                                        </button>
+                                    </form>
+                                @endif
+                                
+                                <form action="{{ route('address.destroy', $addr->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus alamat ini?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Alamat">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-5">
+                        <img src="{{ asset('assets/img/no-data.png') }}" alt="Kosong" style="width: 80px; opacity: 0.5;">
+                        <p class="text-muted mt-3">Belum ada alamat tersimpan.</p>
+                    </div>
+                @endforelse
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 @push('scripts')

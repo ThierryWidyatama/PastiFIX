@@ -52,7 +52,15 @@
                     <td><span class="badge badge-light">{{ $mandor->username }}</span></td>
                     <td>{{ $mandor->created_at->format('d M Y') }}</td>
                     <td class="text-end">
-                        <a href="#" class="btn btn-sm btn-light btn-active-light-primary">Detail</a>
+                        <a href="{{ route('mandor.edit', $mandor->id) }}" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form action="{{ route('mandor.destroy', $mandor->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus mandor ini?');">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-icon btn-bg-light btn-active-color-danger btn-sm">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @empty

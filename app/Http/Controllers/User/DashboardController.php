@@ -146,18 +146,25 @@ class DashboardController extends Controller
             'landmark_details' => 'nullable|string',
         ]);
 
-        // Simpan alamat
+        // [FIX BUG] Jika user mencentang 'Jadikan Utama'
+        if ($request->has('is_primary')) {
+            // Reset semua alamat user ini jadi false dulu
+            $user->addresses()->update(['is_primary' => false]);
+        }
+
+        // Jika ini alamat pertama user, paksa jadi primary
+        $isFirst = $user->addresses()->count() == 0;
+
         $user->addresses()->create([
-            'id' => Str::uuid(),
+            'id' => \Illuminate\Support\Str::uuid(),
             'address_line' => $request->address_line,
             'rt_rw' => $request->rt_rw,
             'postal_code' => $request->postal_code,
             'landmark_details' => $request->landmark_details,
-            'is_primary' => $request->has('is_primary'), // Set primary jika dicentang
+            // Jadi primary jika dicentang ATAU jika ini alamat pertama
+            'is_primary' => $request->has('is_primary') || $isFirst,
         ]);
 
-        // Redirect kembali ke halaman checkout sebelumnya
-        // (Input 'redirect_to' dikirim dari form modal)
         return redirect($request->input('redirect_to'))->with('success', 'Alamat baru berhasil ditambahkan!');
     }
 
@@ -189,5 +196,58 @@ class DashboardController extends Controller
                     ->findOrFail($id);
 
         return view('user.activity-detail', compact('order'));
+    }
+
+    /**
+     * [BARU] Update alamat tertentu.
+     */
+    public function updateAddress(Request $request, $id)
+    {
+        $user = Auth::user();
+        $address = $user->addresses()->findOrFail($id);
+        
+        $request->validate([
+            'address_line' => 'required|string',
+            'rt_rw' => 'nullable|string|max:10',
+            'postal_code' => 'nullable|string|max:10',
+            'landmark_details' => 'nullable|string',
+        ]);
+
+        if ($request->has('is_primary')) {
+            // Reset semua jadi false
+            $user->addresses()->update(['is_primary' => false]);
+            $address->is_primary = true;
+        }
+
+        $address->update($request->only(['address_line', 'rt_rw', 'postal_code', 'landmark_details']));
+        $address->save(); // Simpan status is_primary
+
+        return back()->with('success', 'Alamat berhasil diperbarui!');
+    }
+
+    /**
+     * [BARU] Hapus alamat.
+     */
+    public function destroyAddress($id)
+    {
+        $address = \App\Models\UserAddress::where('user_id', Auth::id())->findOrFail($id);
+        $address->delete();
+        return back()->with('success', 'Alamat dihapus!');
+    }
+
+    /**
+     * [BARU] Set alamat jadi UTAMA.
+     */
+    public function setPrimaryAddress($id)
+    {
+        $user = Auth::user();
+        // Set semua alamat user ini jadi false dulu
+        $user->addresses()->update(['is_primary' => false]);
+        
+        // Set yang dipilih jadi true
+        $address = $user->addresses()->findOrFail($id);
+        $address->update(['is_primary' => true]);
+
+        return back()->with('success', 'Alamat utama diubah!');
     }
 }

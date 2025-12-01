@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids; // <-- 1. TAMBAHKAN INI
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserAddress extends Model
 {
     use HasFactory;
     use HasUuids; // <-- 2. TAMBAHKAN INI
+    use SoftDeletes;
 
     // 3. Pastikan $guarded = [] (atau $fillable) sudah ada
     protected $guarded = [];

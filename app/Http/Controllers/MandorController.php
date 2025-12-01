@@ -6,7 +6,9 @@ use App\Models\User;
 use App\Models\MsRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class MandorController extends Controller
 {
@@ -112,5 +114,58 @@ class MandorController extends Controller
         return redirect()->route('mandor.index')->with('success', 'Mandor baru berhasil ditambahkan!');
     }
 
-    // Nanti bisa tambahkan edit/destroy di sini
+    // [BARU] Form Edit
+    public function edit($id)
+    {
+        $mandor = User::findOrFail($id);
+        return view('admin.mandor.edit', compact('mandor'));
+    }
+
+    // [BARU] Proses Update
+    public function update(Request $request, $id)
+    {
+        $mandor = User::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => ['required', 'string', 'max:50', Rule::unique('users')->ignore($mandor->id)],
+            'email' => ['required', 'email', Rule::unique('users')->ignore($mandor->id)],
+            'phone_number' => 'required|string|max:20',
+            'avatar' => 'nullable|image|max:2048',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('avatar')) {
+            if ($mandor->profile_picture_url) {
+                Storage::disk('public')->delete($mandor->profile_picture_url);
+            }
+            $data['profile_picture_url'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $mandor->update($data);
+
+        return redirect()->route('mandor.index')->with('success', 'Data Mandor diperbarui!');
+    }
+
+    // [BARU] Hapus Mandor
+    public function destroy($id)
+    {
+        $mandor = User::findOrFail($id);
+        if ($mandor->profile_picture_url) {
+            Storage::disk('public')->delete($mandor->profile_picture_url);
+        }
+        $mandor->delete();
+
+        return redirect()->route('mandor.index')->with('success', 'Mandor dihapus!');
+    }
 }

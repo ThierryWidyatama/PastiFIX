@@ -113,6 +113,11 @@
                 </div>
             </div>
         </div>
+        <div class="mt-5">
+            <a href="{{ route('services.index') }}" class="btn btn-outline-brand rounded-pill px-4 py-2 fw-medium">
+                Lihat Semua Layanan <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
     </div>
 </section>
 

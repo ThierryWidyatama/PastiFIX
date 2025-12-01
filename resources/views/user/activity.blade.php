@@ -5,22 +5,43 @@
 <div class="card p-4">
     <div class="card-body">
         
-        <h4 class="fw-bold">Pesananku</h4>
-        <hr class="my-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold mb-0">Pesananku</h4>
+            
+            <div class="w-150px">
+                <select id="yearFilter" class="form-select form-select-sm form-select-solid fw-bold">
+                    @php
+                        $currentYear = date('Y');
+                        // Tampilkan 3 tahun ke belakang
+                        $startYear = $currentYear - 2; 
+                    @endphp
+                    @for($y = $currentYear; $y >= $startYear; $y--)
+                        <option value="{{ $y }}" {{ $y == $currentYear ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                    @endfor
+                </select>
+            </div>
+        </div>
+        
+        <hr class="mb-4 mt-0">
 
         <div class="month-slider-wrapper">
             <div class="swiper month-slider">
                 <div class="swiper-wrapper">
                     @php
-                        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                        $currentMonth = \Carbon\Carbon::now()->translatedFormat('F');
+                        $months = [
+                            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 
+                            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 
+                            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                        ];
+                        // Gunakan angka (1-12) untuk bulan saat ini
+                        $currentMonthNum = (int)date('n'); 
                     @endphp
 
-                    @foreach($months as $index => $month)
+                    @foreach($months as $num => $name)
                         <div class="swiper-slide">
-                            <a href="#" class="nav-link {{ $month == $currentMonth ? 'active' : '' }}" 
-                               data-month="{{ $month }}">
-                               {{ $month }}
+                            <a href="#" class="nav-link {{ $num == $currentMonthNum ? 'active' : '' }}" 
+                               data-month="{{ $num }}">
+                               {{ $name }}
                             </a>
                         </div>
                     @endforeach
@@ -30,12 +51,14 @@
             <div class="month-slider-next month-slider-nav"><i class="bi bi-chevron-right"></i></div>
         </div>
         <div class="mt-4">
-            
             <ul class="order-item-list" id="order-list-container">
                 @forelse($orders as $order)
                     <li class="order-item flex-wrap align-items-center justify-content-between mb-3" 
-                        data-month="{{ $order->created_at->translatedFormat('F') }}"
-                        style="display: none;"> <div class="row w-100 m-0 align-items-center">
+                        data-month="{{ $order->created_at->format('n') }}"
+                        data-year="{{ $order->created_at->format('Y') }}"
+                        style="display: none;"> 
+                        
+                        <div class="row w-100 m-0 align-items-center">
                             <div class="col-12 col-md-5 mb-2 mb-md-0 ps-0">
                                 <h6 class="order-item-title mb-1">{{ $order->category->name ?? 'Layanan' }}</h6>
                                 <span class="order-item-date">
@@ -45,7 +68,7 @@
                             
                             <div class="col-6 col-md-3 text-start text-md-center">
                                 @php
-                                    $badgeColor = 'badge-status-yellow'; // Default pending/process
+                                    $badgeColor = 'badge-status-yellow';
                                     $statusText = str_replace('_', ' ', $order->status);
                                     
                                     if(in_array($order->status, ['COMPLETED_PENDING_PAYMENT', 'FINISHED'])) {
@@ -68,13 +91,13 @@
                     </li>
                 @empty
                     <div class="alert alert-info text-center w-100">
-                        Belum ada pesanan sama sekali. Yuk <a href="{{ route('services.index') }}">pesan jasa sekarang!</a>
+                        Belum ada riwayat pesanan.
                     </div>
                 @endforelse
             </ul>
             
             <div class="alert alert-secondary text-center mt-4 d-none" id="order-list-empty" role="alert">
-                <i class="bi bi-info-circle me-2"></i> Belum ada aktivitas di bulan ini.
+                <i class="bi bi-calendar-x me-2"></i> Tidak ada pesanan di periode ini.
             </div>
 
         </div>
@@ -88,95 +111,105 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Pastikan Swiper sudah ada
         if (typeof monthSwiper !== 'undefined') {
             
             const monthLinks = document.querySelectorAll('.month-slider .nav-link');
+            const yearSelect = document.getElementById('yearFilter');
             const orderItems = document.querySelectorAll('.order-item');
             const emptyListAlert = document.getElementById('order-list-empty');
 
-            // Fungsi Inti: Filter List Berdasarkan Bulan
-            function filterOrders(selectedMonthName) {
+            // Fungsi Filter Utama
+            function filterOrders() {
+                // 1. Ambil Tahun yang dipilih
+                const selectedYear = yearSelect.value;
+
+                // 2. Ambil Bulan yang aktif
+                const activeLink = document.querySelector('.month-slider .nav-link.active');
+                // Jika tidak ada yg aktif (jarang terjadi), default ke 0
+                const selectedMonth = activeLink ? activeLink.getAttribute('data-month') : 0;
+
                 let hasData = false;
 
-                // 1. Loop semua item order
+                // 3. Loop dan Filter
                 orderItems.forEach(item => {
-                    // Ambil bulan dari data-attribute item
                     const itemMonth = item.getAttribute('data-month');
+                    const itemYear = item.getAttribute('data-year');
                     
-                    // Bandingkan dengan bulan yang dipilih
-                    if (itemMonth === selectedMonthName) {
-                        item.style.display = 'flex'; // Tampilkan (gunakan flex karena ada d-flex)
+                    // Cek Kecocokan Bulan DAN Tahun
+                    if (itemMonth === selectedMonth && itemYear === selectedYear) {
+                        item.style.display = 'flex';
                         hasData = true;
                     } else {
-                        item.style.display = 'none'; // Sembunyikan
+                        item.style.display = 'none';
                     }
                 });
 
-                // 2. Tampilkan/Sembunyikan Alert Kosong
+                // 4. Handle Alert Kosong
                 if (hasData) {
                     emptyListAlert.classList.add('d-none');
                 } else {
-                    if(orderItems.length > 0) { // Hanya tampilkan jika user sebenarnya punya order (tapi di bulan lain)
+                    // Hanya munculkan alert jika memang ada item pesanan tapi tersembunyi semua
+                    if(orderItems.length > 0) {
                         emptyListAlert.classList.remove('d-none');
                     }
                 }
             }
 
-            // Fungsi untuk update UI Slider (Active Class) & Panggil Filter
-            function updateActiveMonth(selectedLink) {
-                if (!selectedLink) return;
+            // --- EVENT LISTENERS ---
 
-                // UI: Hapus active lama, tambah active baru
-                monthLinks.forEach(link => link.classList.remove('active'));
-                selectedLink.classList.add('active');
+            // 1. Saat Tahun Diganti -> Filter ulang
+            yearSelect.addEventListener('change', function() {
+                filterOrders();
+            });
 
-                // Logic: Filter data
-                const monthName = selectedLink.getAttribute('data-month');
-                filterOrders(monthName);
-            }
-
-            // Event Listener: Klik Bulan Manual
+            // 2. Saat Bulan Diklik Manual
             monthLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
+                    // Update Active Class
+                    monthLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Geser Slider (Opsional, efek visual)
                     const slide = this.closest('.swiper-slide');
                     const realIndex = parseInt(slide.getAttribute('data-swiper-slide-index'));
-                    monthSwiper.slideToLoop(realIndex); // Geser slider
-                    // Note: Kita ga perlu panggil updateActiveMonth di sini
-                    // karena slideToLoop akan memicu event 'realIndexChange' di bawah
+                    monthSwiper.slideToLoop(realIndex);
+
+                    // Filter
+                    filterOrders();
                 });
             });
             
-            // Event Listener: Slider Bergeser (Otomatis/Manual)
+            // 3. Saat Slider Digeser (Swipe/Panah)
             monthSwiper.on('realIndexChange', function () {
                 const activeSlide = monthSwiper.slides[monthSwiper.activeIndex];
                 const activeLink = activeSlide.querySelector('.nav-link');
-                updateActiveMonth(activeLink);
+                
+                if(activeLink) {
+                    // Update Active Class
+                    monthLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Karena slide di-duplicate (loop mode), kita harus cari semua link yg punya bulan sama
+                    const targetMonth = activeLink.getAttribute('data-month');
+                    const sameMonthLinks = document.querySelectorAll(`.month-slider .nav-link[data-month="${targetMonth}"]`);
+                    sameMonthLinks.forEach(l => l.classList.add('active'));
+
+                    // Filter
+                    filterOrders();
+                }
             });
 
-            // Inisialisasi Awal (Saat halaman dimuat)
-            // Kita cari slide yang punya class 'active' dari PHP (bulan sekarang)
-            // Karena swiper loop, slide 'active' mungkin ada di index yg aneh.
-            // Jadi kita cari berdasarkan text bulan sekarang.
+            // --- INISIALISASI AWAL ---
             
-            // @php $currentMonthJS = \Carbon\Carbon::now()->translatedFormat('F'); @endphp
-            // const currentMonthName = "{{ $currentMonthJS }}";
-            
-            // Cara lebih aman: cari elemen .nav-link.active yang dirender PHP
+            // Geser ke bulan sekarang saat load
             const initialActiveLink = document.querySelector('.month-slider .swiper-slide:not(.swiper-slide-duplicate) .nav-link.active');
-            
             if (initialActiveLink) {
-                // Geser slider ke bulan ini
                 const slideIndex = initialActiveLink.closest('.swiper-slide').getAttribute('data-swiper-slide-index');
-                monthSwiper.slideToLoop(parseInt(slideIndex), 0); // 0ms speed biar instan
-                
-                // Filter data
-                filterOrders(initialActiveLink.getAttribute('data-month'));
-            } else {
-                // Fallback (misal Januari)
-                updateActiveMonth(monthLinks[0]);
+                monthSwiper.slideToLoop(parseInt(slideIndex), 0);
             }
+            
+            // Jalankan filter pertama kali
+            filterOrders();
         }
     });
 </script>

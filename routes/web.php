@@ -185,6 +185,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profil/settings/email', [UserDashboardController::class, 'updateEmail'])
         ->name('profil.settings.email');
 
+    Route::put('/profil/address/{id}', [UserDashboardController::class, 'updateAddress'])->name('address.update');
+    Route::delete('/profil/address/{id}', [UserDashboardController::class, 'destroyAddress'])->name('address.destroy');
+    Route::post('/profil/address/{id}/primary', [UserDashboardController::class, 'setPrimaryAddress'])->name('address.primary');
+
     /*
     |--------------------------------------------------------------------------
     | Rute Services
@@ -270,8 +274,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/daftar', [MandorController::class, 'index'])->name('index');
         Route::get('/tambah', [MandorController::class, 'create'])->name('create');
         Route::post('/simpan', [MandorController::class, 'store'])->name('store');
-        // Route::get('/edit/{id}', ...); // Nanti aja
-        // Route::delete('/hapus/{id}', ...); // Nanti aja
+        Route::get('/edit/{id}', [MandorController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [MandorController::class, 'update'])->name('update');
+        Route::delete('/hapus/{id}', [MandorController::class, 'destroy'])->name('destroy');
     });
 
 });
