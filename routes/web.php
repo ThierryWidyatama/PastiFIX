@@ -284,5 +284,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Route Simpan Review
     Route::post('/review', [App\Http\Controllers\ReviewController::class, 'store'])->name('review.store');
+    Route::post('/pesanan/{id}/batal', [App\Http\Controllers\OrderController::class, 'requestCancel'])->name('profil.activity.cancel');
 
+    // Route Admin Approve/Reject Batal
+    Route::post('/orders/{id}/approve-cancel', [App\Http\Controllers\AdminOrderController::class, 'approveCancel'])->name('admin.orders.approve_cancel');
+    Route::post('/orders/{id}/reject-cancel', [App\Http\Controllers\AdminOrderController::class, 'rejectCancel'])->name('admin.orders.reject_cancel');
 });

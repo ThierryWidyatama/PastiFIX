@@ -64,4 +64,29 @@ class OrderController extends Controller
 
         return redirect()->route('services.order');
     }
+    public function requestCancel(Request $request, $id)
+    {
+        // 1. Validasi Input
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        // 2. Cari Order
+        $order = \App\Models\Order::where('user_id', \Illuminate\Support\Facades\Auth::id())->findOrFail($id);
+
+        // 3. [FIX] Validasi Status (Izinkan semua status tahap awal)
+        $allowedStatuses = ['PENDING', 'PENDING_ADMIN_REVIEW', 'PENDING_MANDOR_QUOTE'];
+        
+        if (!in_array($order->status, $allowedStatuses)) {
+            return back()->with('error', 'Pesanan sudah diproses lanjut, tidak dapat mengajukan pembatalan.');
+        }
+
+        // 4. Update Status & Alasan
+        $order->update([
+            'status' => 'CANCEL_REQUESTED',
+            'cancellation_reason' => $request->reason
+        ]);
+
+        return back()->with('success', 'Pengajuan pembatalan berhasil dikirim ke Admin.');
+    }
 }

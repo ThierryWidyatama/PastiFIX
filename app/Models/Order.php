@@ -7,7 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory, HasUuids; // <-- PENTING
-    protected $guarded = [];
+    protected $fillable = [
+        'id', 
+        'user_id', 
+        'category_id', 
+        'mandor_id', 
+        'status', 
+        'estimated_cost', 
+        'project_address_id',
+        'cancellation_reason', // <--- JANGAN LUPA TAMBAHKAN INI!
+    ];
 
     // Relasi ke Pemilik Pesanan (User)
     public function user()

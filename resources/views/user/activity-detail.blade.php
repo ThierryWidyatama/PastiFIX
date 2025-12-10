@@ -61,12 +61,31 @@
             <div class="col-lg-5">
                 
                 <div class="mandor-card mb-4">
-                    @if($order->mandor)
+                    @if($order->status == 'CANCELLED')
+                        <div class="text-center w-100 py-2">
+                            <i class="bi bi-x-circle-fill text-danger fs-1 mb-2"></i>
+                            <div class="d-flex flex-column">
+                                <span class="mandor-card-name text-danger">Pesanan Dibatalkan</span>
+                                <span class="text-muted small">Proses telah dihentikan.</span>
+                            </div>
+                        </div>
+
+                    @elseif($order->status == 'CANCEL_REQUESTED')
+                        <div class="text-center w-100 py-2">
+                            <i class="bi bi-hourglass-split text-warning fs-1 mb-2"></i>
+                            <div class="d-flex flex-column">
+                                <span class="mandor-card-name text-warning">Pengajuan Pembatalan</span>
+                                <span class="text-muted small">Menunggu persetujuan Admin...</span>
+                            </div>
+                        </div>
+
+                    @elseif($order->mandor)
                         <img src="{{ $order->mandor->profile_picture_url ? Storage::url($order->mandor->profile_picture_url) : asset('assets/img/default-avatar.png') }}" alt="Mandor Avatar">
                         <div class="d-flex flex-column">
                             <span class="mandor-card-name">{{ $order->mandor->name }}</span>
                             <span class="text-muted small">Mandor Bertugas</span>
                         </div>
+
                     @else
                         <img src="{{ asset('assets/img/default-avatar.png') }}" alt="Menunggu">
                         <div class="d-flex flex-column">
@@ -96,7 +115,43 @@
                     @endif
                 </div>
 
-                @if($order->status == 'COMPLETED_PENDING_PAYMENT')
+                {{-- A. Jika Masih PENDING (Belum ada mandor/biaya) -> Boleh Batal --}}
+                {{-- Munculkan tombol jika statusnya masih tahap awal (Admin Review atau Cari Mandor) --}}
+@if(in_array($order->status, ['PENDING', 'PENDING_ADMIN_REVIEW', 'PENDING_MANDOR_QUOTE']))
+                    <div class="mt-4">
+                        <button type="button" class="btn btn-outline-danger w-100 py-3 fw-bold border-2" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                            <i class="bi bi-x-circle me-2"></i> Ajukan Pembatalan
+                        </button>
+                        <div class="form-text text-center small mt-2">
+                            Pembatalan memerlukan persetujuan Admin.
+                        </div>
+                    </div>
+
+                {{-- B. Jika Sedang REQUEST BATAL --}}
+                @elseif($order->status == 'CANCEL_REQUESTED')
+                    <div class="mt-4">
+                        <div class="alert alert-warning text-center border-warning" role="alert">
+                            <i class="bi bi-clock-history me-2 fs-4"></i><br>
+                            <strong>Permintaan Pembatalan Dikirim</strong><br>
+                            Mohon tunggu konfirmasi Admin.
+                        </div>
+                    </div>
+                
+                {{-- C. Jika Sudah DIBATALKAN RESMI --}}
+                @elseif($order->status == 'CANCELLED')
+                    <div class="mt-4">
+                        <div class="alert alert-danger text-center fw-bold" role="alert">
+                            <i class="bi bi-x-octagon-fill me-2"></i> Pesanan Dibatalkan
+                        </div>
+                        @if($order->cancellation_reason)
+                            <div class="bg-light-danger p-3 rounded text-danger small text-center fst-italic border border-danger border-dashed">
+                                Alasan: "{{ $order->cancellation_reason }}"
+                            </div>
+                        @endif
+                    </div>
+
+                {{-- D. Jika SUDAH SELESAI & TUNGGU BAYAR --}}
+                @elseif($order->status == 'COMPLETED_PENDING_PAYMENT')
                     <div class="mt-4">
                         <div class="alert alert-info d-flex align-items-center" role="alert">
                             <i class="bi bi-info-circle-fill me-2 fs-4"></i>
@@ -109,28 +164,22 @@
                         </form>
                     </div>
 
+                {{-- E. Jika SUDAH LUNAS (Rating Review) --}}
                 @elseif($order->status == 'FINISHED')
-                    
                     @if($order->review)
                         <div class="mt-4 card border-warning bg-warning-subtle">
                             <div class="card-body p-3">
                                 <h5 class="fw-bold text-center mb-3">Ulasan Anda</h5>
-                                
                                 <div class="row text-center mb-3">
                                     <div class="col-6 border-end border-warning">
                                         <div class="small text-muted">Mandor</div>
-                                        <div class="text-warning fs-5">
-                                            <i class="bi bi-star-fill"></i> {{ $order->review->rating_mandor }}/5
-                                        </div>
+                                        <div class="text-warning fs-5"><i class="bi bi-star-fill"></i> {{ $order->review->rating_mandor }}/5</div>
                                     </div>
                                     <div class="col-6">
                                         <div class="small text-muted">Layanan</div>
-                                        <div class="text-warning fs-5">
-                                            <i class="bi bi-star-fill"></i> {{ $order->review->rating_service }}/5
-                                        </div>
+                                        <div class="text-warning fs-5"><i class="bi bi-star-fill"></i> {{ $order->review->rating_service }}/5</div>
                                     </div>
                                 </div>
-
                                 <p class="mb-0 small text-center fst-italic">"{{ $order->review->comment }}"</p>
                             </div>
                         </div>
@@ -140,13 +189,11 @@
                                 <i class="bi bi-check-circle-fill me-2 fs-4"></i>
                                 <div class="small fw-bold">Pesanan Selesai & Lunas.</div>
                             </div>
-                            
                             <button type="button" class="btn btn-warning w-100 py-3 fs-5 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#reviewModal">
                                 <i class="bi bi-star-fill me-2"></i> Beri Ulasan
                             </button>
                         </div>
                     @endif
-
                 @endif
 
             </div>
@@ -198,6 +245,35 @@
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="submit" class="btn btn-brand w-100 fw-bold">Kirim Ulasan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-danger">Ajukan Pembatalan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('profil.activity.cancel', $order->id) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="alert alert-warning small d-flex align-items-start">
+                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                        <div>
+                            Tindakan ini memerlukan persetujuan Admin. Mohon berikan alasan yang jelas.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Alasan Pembatalan</label>
+                        <textarea name="reason" class="form-control" rows="3" placeholder="Contoh: Salah pilih kategori, sudah dapat tukang lain, dll..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Kembali</button>
+                    <button type="submit" class="btn btn-danger fw-bold w-100">Kirim Pengajuan</button>
                 </div>
             </form>
         </div>

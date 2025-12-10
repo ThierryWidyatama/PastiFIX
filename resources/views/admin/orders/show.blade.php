@@ -10,6 +10,38 @@
 
 <div class="row g-5 g-xl-8">
     <div class="col-xl-8">
+        @if($order->status == 'CANCEL_REQUESTED')
+            <div class="notice d-flex bg-light-danger rounded border-danger border border-dashed mb-9 p-6">
+                <i class="bi bi-exclamation-triangle-fill fs-2tx text-danger me-4"></i>
+                
+                <div class="d-flex flex-stack flex-grow-1">
+                    <div class="fw-semibold">
+                        <h4 class="text-danger fw-bold">⚠️ Pengajuan Pembatalan Oleh User</h4>
+                        
+                        <div class="fs-6 text-gray-700 mt-2">
+                            Alasan User: 
+                            <span class="text-danger fw-bold fst-italic">"{{ $order->cancellation_reason }}"</span>
+                        </div>
+
+                        <div class="d-flex gap-3 mt-4">
+                            <form action="{{ route('admin.orders.approve_cancel', $order->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-danger btn-sm fw-bold" onclick="return confirm('Yakin setujui? Order akan dibatalkan permanen.')">
+                                    <i class="bi bi-check-circle-fill"></i> Setujui Pembatalan
+                                </button>
+                            </form>
+
+                            <form action="{{ route('admin.orders.reject_cancel', $order->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-color-gray-700 btn-light-danger btn-active-light-primary btn-sm fw-bold border border-danger border-dashed" onclick="return confirm('Tolak pembatalan dan lanjutkan pesanan?')">
+                                    <i class="bi bi-x-circle-fill"></i> Tolak & Lanjutkan Pesanan
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
         <div class="card mb-5 mb-xl-8">
             <div class="card-header">
                 <h3 class="card-title align-items-start flex-column">

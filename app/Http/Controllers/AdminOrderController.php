@@ -190,4 +190,22 @@ class AdminOrderController extends Controller
         $timeline->delete();
         return redirect()->back()->with('success', 'Timeline dihapus!');
     }
+
+    // Fungsi 1: Admin SETUJU batal
+    public function approveCancel($id)
+    {
+        $order = \App\Models\Order::findOrFail($id);
+        // Ubah status jadi CANCELLED (Resmi Batal)
+        $order->update(['status' => 'CANCELLED']);
+        return back()->with('success', 'Pembatalan disetujui. Pesanan hangus.');
+    }
+
+    // Fungsi 2: Admin MENOLAK batal (Lanjut)
+    public function rejectCancel($id)
+    {
+        $order = \App\Models\Order::findOrFail($id);
+        // Balikin status jadi PENDING (Lanjut cari mandor)
+        $order->update(['status' => 'PENDING']);
+        return back()->with('success', 'Pembatalan ditolak. Pesanan dilanjutkan.');
+    }
 }
