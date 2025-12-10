@@ -16,7 +16,10 @@ class DashboardController extends Controller
     public function showProfile()
     {
         $user = Auth::user();
-        $address = $user->addresses()->where('is_primary', true)->first();
+        $address = Auth::user()->addresses()
+                        ->where('is_saved', true) // <-- Filter ini juga
+                        ->where('is_primary', true)
+                        ->first();
         $baseOrdersQuery = $user->orders(); 
         $stats = [
             'on_progress' => $baseOrdersQuery->clone()->whereIn('status', ['PENDING_ADMIN_REVIEW', 'PENDING_MANDOR_QUOTE', 'PENDING_USER_APPROVAL', 'APPROVED_IN_PROGRESS'])->count(),
@@ -139,33 +142,47 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        // Validasi
         $request->validate([
             'address_line' => 'required|string',
-            'rt_rw' => 'nullable|string|max:10',
-            'postal_code' => 'nullable|string|max:10',
+            'rt_rw' => 'nullable|string',
+            'postal_code' => 'nullable|string',
             'landmark_details' => 'nullable|string',
         ]);
 
-        // [FIX BUG] Jika user mencentang 'Jadikan Utama'
-        if ($request->has('is_primary')) {
-            // Reset semua alamat user ini jadi false dulu
+        // [LOGIC BARU]
+        $isSaved = $request->has('is_saved'); 
+        
+        // Syarat jadi utama: Harus dicentang 'is_primary' DAN 'is_saved' juga harus true
+        $isPrimary = $request->has('is_primary') && $isSaved;
+
+        // Reset alamat utama lama jika yang baru ini mau jadi utama
+        if ($isPrimary) {
             $user->addresses()->update(['is_primary' => false]);
         }
 
-        // Jika ini alamat pertama user, paksa jadi primary
+        // Logic alamat pertama otomatis jadi utama & tersimpan
         $isFirst = $user->addresses()->count() == 0;
+        if($isFirst) {
+            $isSaved = true;
+            $isPrimary = true;
+        }
 
-        $user->addresses()->create([
+        // [FIX 1] Tampung hasil create ke variabel $newAddress
+        $newAddress = $user->addresses()->create([
             'id' => \Illuminate\Support\Str::uuid(),
             'address_line' => $request->address_line,
             'rt_rw' => $request->rt_rw,
             'postal_code' => $request->postal_code,
             'landmark_details' => $request->landmark_details,
-            // Jadi primary jika dicentang ATAU jika ini alamat pertama
-            'is_primary' => $request->has('is_primary') || $isFirst,
+            'is_primary' => $isPrimary,
+            'is_saved' => $isSaved, 
         ]);
 
-        return redirect($request->input('redirect_to'))->with('success', 'Alamat baru berhasil ditambahkan!');
+        // [FIX 2] Kirim ID alamat baru ke session ('new_address_id')
+        return redirect($request->input('redirect_to'))
+                ->with('success', 'Alamat berhasil digunakan!')
+                ->with('new_address_id', $newAddress->id); 
     }
 
     public function showActivity()

@@ -76,7 +76,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 class="fw-bold mb-0">Alamat Utama</h4>
                         <button type="button" class="btn btn-sm btn-outline-warning text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#manageAddressModal">
-                            <i class="bi bi-gear-fill me-1"></i> Kelola Alamat
+                            <i class="bi bi-gear-fill me-1"></i> Kelola Alamat Tersimpan
                         </button>
                     </div>
 
@@ -137,7 +137,12 @@
             </div>
             <div class="modal-body bg-light" style="max-height: 60vh; overflow-y: auto;">
                 
-                @php $allAddresses = Auth::user()->addresses()->orderBy('is_primary', 'desc')->get(); @endphp
+                @php 
+                    $allAddresses = Auth::user()->addresses()
+                                    ->where('is_saved', true) // <--- FILTER PENTING
+                                    ->orderBy('is_primary', 'desc')
+                                    ->get(); 
+                @endphp
 
                 @forelse($allAddresses as $addr)
                     <div class="card border-0 shadow-sm mb-3 {{ $addr->is_primary ? 'border-start border-warning border-5' : '' }}">

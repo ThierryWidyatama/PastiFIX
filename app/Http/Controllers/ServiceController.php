@@ -72,23 +72,38 @@ class ServiceController extends Controller
 
     public function showCheckout(Request $request)
     {
-        // 1. Ambil ID layanan dari URL (yang kita kirim dari hal. detail)
+        // 1. Ambil ID layanan dari URL
         $serviceId = $request->query('service_id');
         $service = \App\Models\Category::find($serviceId);
 
-        // Jika layanannya nggak ketemu, lempar balik
         if (!$service) {
             return redirect()->route('services.index')->withErrors('Layanan tidak ditemukan.');
         }
 
         // 2. Ambil data user & alamatnya
         $user = Auth::user();
-        $addresses = $user->addresses()->orderBy('is_primary', 'desc')->get(); // Ambil semua alamat
 
-        // 3. Hitung Rincian Biaya (Kita dummy dulu)
+        // [FIX 3] Ambil ID alamat baru dari session (jika ada)
+        $newAddressId = session('new_address_id');
+
+        // [FIX 4] Query dengan logika "VIP Pass"
+        // Ambil alamat jika: (Disimpan = True) ATAU (ID-nya = Alamat Baru tadi)
+        $addresses = Auth::user()->addresses()
+                        ->where(function($query) use ($newAddressId) {
+                            $query->where('is_saved', true);
+                            
+                            if ($newAddressId) {
+                                $query->orWhere('id', $newAddressId);
+                            }
+                        })
+                        ->orderBy('is_primary', 'desc')     // Utama paling atas
+                        ->orderBy('created_at', 'desc')     // Terbaru setelahnya
+                        ->get();
+
+        // 3. Hitung Rincian Biaya
         $servicePrice = $service->price ?? 0;
-        $adminFee = 15000; // Biaya layanan (contoh)
-        $tax = 2500; // Pajak (contoh)
+        $adminFee = 15000;
+        $tax = 2500;
         $total = $servicePrice + $adminFee + $tax;
 
         $prices = [

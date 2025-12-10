@@ -128,8 +128,24 @@
                             <div class="col-6"><label class="form-label">RT/RW</label><input type="text" class="form-control" name="rt_rw"></div>
                             <div class="col-6"><label class="form-label">Kode Pos</label><input type="text" class="form-control" name="postal_code"></div>
                         </div>
-                        <div class="mb-3"><label class="form-label">Detail Patokan</label><input type="text" class="form-control" name="landmark_details"></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" name="is_primary" value="1"><label class="form-check-label">Jadikan Utama</label></div>
+                        <div class="modal-body">
+                            <div class="mb-3"><label class="form-label">Detail Patokan</label><input type="text" class="form-control" name="landmark_details"></div>
+                            
+                            <hr class="my-3">
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="is_saved" value="1" id="new_is_saved" checked>
+                                <label class="form-check-label fw-bold" for="new_is_saved">
+                                    Simpan ke Daftar Alamat
+                                </label>
+                                <div class="form-text small">Jika tidak dicentang, alamat hanya digunakan untuk pesanan ini saja (Sekali Pakai).</div>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_primary" value="1" id="new_is_primary">
+                                <label class="form-check-label" for="new_is_primary">Jadikan Alamat Utama</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
@@ -174,7 +190,7 @@
     </div>
 
     <script>
-        // Fungsi Hapus (Global)
+        // Fungsi Hapus (Global) - Biarkan di luar
         function confirmDelete(id) {
             if (confirm('Apakah Anda yakin ingin menghapus alamat ini?')) {
                 document.getElementById('delete-form-' + id).submit();
@@ -184,6 +200,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log("Javascript Checkout Siap 86!");
 
+            // ==========================================
+            // BAGIAN 1: LOGIC EDIT ALAMAT
+            // ==========================================
             const editButtons = document.querySelectorAll('.btn-edit-address');
             const editForm = document.getElementById('editAddressForm');
             
@@ -202,7 +221,7 @@
                     if(document.getElementById('edit_postal_code')) document.getElementById('edit_postal_code').value = pos;
                     if(document.getElementById('edit_landmark_details')) document.getElementById('edit_landmark_details').value = patokan;
 
-                    // [FIX] Logika Checkbox Utama
+                    // [FIX] Logika Checkbox Utama di Edit
                     const checkPrimary = document.getElementById('edit_is_primary');
                     if (checkPrimary) {
                         if (isPrimary === '1') {
@@ -214,11 +233,39 @@
                         }
                     }
 
-                    // Update URL
+                    // Update URL Action Form
                     const actionUrl = "/profil/address/" + id;
                     editForm.setAttribute('action', actionUrl);
                 });
             });
+
+            // ==========================================
+            // BAGIAN 2: LOGIC TAMBAH ALAMAT (FIXED)
+            // ==========================================
+            // Kita taruh di dalam sini biar elemennya ketemu
+            const saveCheck = document.getElementById('new_is_saved');
+            const primaryCheck = document.getElementById('new_is_primary');
+
+            // Cek dulu apakah elemennya ada (biar gak error di console)
+            if(saveCheck && primaryCheck) {
+                console.log("Logic Checkbox Tambah Aktif");
+                
+                saveCheck.addEventListener('change', function() {
+                    if(this.checked) {
+                        // Kalau disimpan -> Boleh jadi utama
+                        primaryCheck.disabled = false;
+                        // primaryCheck.parentElement.classList.remove('text-muted'); // Optional: styling
+                    } else {
+                        // Kalau sekali pakai -> GABOLEH jadi utama
+                        primaryCheck.checked = false;
+                        primaryCheck.disabled = true;
+                        // primaryCheck.parentElement.classList.add('text-muted'); // Optional: styling
+                    }
+                });
+            } else {
+                console.error("ID new_is_saved atau new_is_primary tidak ditemukan!");
+            }
+
         });
     </script>
 
