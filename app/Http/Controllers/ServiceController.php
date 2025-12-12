@@ -100,6 +100,22 @@ class ServiceController extends Controller
                         ->orderBy('created_at', 'desc')     // Terbaru setelahnya
                         ->get();
 
+        $activeStatuses = [
+            'PENDING', 
+            'PENDING_ADMIN_REVIEW', 
+            'PENDING_MANDOR_QUOTE', 
+            'APPROVED_IN_PROGRESS', 
+            'COMPLETED_PENDING_PAYMENT'
+        ];
+
+        // Cari ID Alamat milik user ini, untuk layanan ini, yang statusnya aktif
+        $busyAddressIds = \App\Models\Order::where('user_id', $user->id)
+                            ->where('category_id', $service->id) // Cek kategori yang sama
+                            ->whereIn('status', $activeStatuses) // Cek status aktif
+                            ->pluck('project_address_id') // Ambil ID alamatnya aja
+                            ->toArray();
+
+
         // 3. Hitung Rincian Biaya
         $servicePrice = $service->price ?? 0;
         $adminFee = 15000;
@@ -117,7 +133,8 @@ class ServiceController extends Controller
         return view('services.checkout', [
             'service' => $service,
             'addresses' => $addresses,
-            'prices' => $prices
+            'prices' => $prices,
+            'busyAddressIds' => $busyAddressIds
         ]);
     }
 }

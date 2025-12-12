@@ -123,7 +123,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-    // Navbar scroll effect
+    // Navbar scroll effect (Tetap Pertahankan)
     const nav = document.querySelector('#main-nav');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
@@ -133,23 +133,47 @@
         }
     });
 
-    // Swiper Initializer (REVISED)
+    // Swiper Initializer (RESPONSIF FIX)
+    // Swiper Initializer (FIXED: UNLIMITED LOOP & CENTER)
     const swiper = new Swiper('.testimonial-slider', {
+        // Efek 3D
         effect: 'coverflow',
         grabCursor: true,
-        centeredSlides: true,
-        slidesPerView: 3, // <-- Kunci utama di sini
+        
+        // [KUNCI 1] Posisi Default Tengah
+        centeredSlides: true, 
+        
+        // [KUNCI 2] Biarkan CSS yang mengatur lebar slide (jangan dipaksa angka grid)
+        slidesPerView: 'auto', 
+        
+        // [KUNCI 3] Loop tanpa henti
         loop: true,
+        
+        // [KUNCI 4] Memastikan slide duplikat cukup banyak biar loop-nya mulus
+        loopedSlides: 6, 
+        
         coverflowEffect: {
             rotate: 0,
-            stretch: 80, // Jarak antar slide
-            depth: 200, // Efek 3D
-            modifier: 1,
-            slideShadows: false, // Bayangan bisa dihilangkan agar lebih bersih
+            stretch: 0,
+            depth: 100,
+            modifier: 2.5,
+            slideShadows: false, // Hilangkan bayangan biar bersih
         },
+        
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        
         pagination: {
             el: '.swiper-pagination',
             clickable: true,
+        },
+        
+        // Navigasi Panah (Opsional, jika HTML-nya ada)
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
         },
     });
 </script>

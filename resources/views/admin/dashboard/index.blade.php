@@ -51,6 +51,7 @@
                     <i class="bi bi-cart-check-fill fs-1 text-white"></i>
                 </div>
             </div>
+            <br><br>
              <div class="card-body d-flex align-items-end pt-0">
                  <a href="{{ route('admin.orders.index') }}" class="btn btn-sm btn-white text-primary fw-bold w-100 mt-3">Lihat Semua</a>
             </div>
@@ -68,6 +69,7 @@
                     <i class="bi bi-person-workspace fs-1 text-white"></i>
                 </div>
             </div>
+            <br><br>
              <div class="card-body d-flex align-items-end pt-0">
                  <a href="{{ route('mandor.index') }}" class="btn btn-sm btn-white text-warning fw-bold w-100 mt-3">Kelola Mandor</a>
             </div>

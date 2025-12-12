@@ -312,28 +312,31 @@ body {
     z-index: 1;
 }
 
+/* Tombol Tambah Alamat (FIXED: Lebih Mencolok) */
 .btn-icon-add {
-    width: 36px;
-    height: 36px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #FEC81A; /* Langsung Kuning */
     border-radius: 50%;
-    background-color: #fff;
-    /* Agar menutupi garis putus-putus */
-    border: 2px dashed #e9ecef;
-    color: #EECB2F;
-    font-size: 1.5rem;
-    display: inline-flex;
+    width: 50px; /* Agak digedein dikit biar gampang dipencet */
+    height: 50px;
+    display: flex;
     align-items: center;
     justify-content: center;
+    color: #000; /* Icon Hitam */
+    border: none;
+    font-size: 1.8rem;
     text-decoration: none;
-    position: relative;
-    z-index: 2;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(254, 200, 26, 0.4); /* Kasih bayangan biar timbul */
 }
 
 .btn-icon-add:hover {
-    border-style: solid;
-    border-color: #EECB2F;
-    background-color: #fff8e1;
+    background-color: #e0b015; /* Kuning gelap pas hover */
+    color: #000;
+    transform: translate(-50%, -50%) scale(1.1); /* Efek membesar */
 }
 
 /* Card Ringkasan Checkout */

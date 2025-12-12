@@ -15,7 +15,8 @@ class Order extends Model
         'status', 
         'estimated_cost', 
         'project_address_id',
-        'cancellation_reason', // <--- JANGAN LUPA TAMBAHKAN INI!
+        'cancellation_reason',
+        'description', // <--- INI DIA TERSANGKANYA! KEMARIN KETINGGALAN
     ];
 
     // Relasi ke Pemilik Pesanan (User)

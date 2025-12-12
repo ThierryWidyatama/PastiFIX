@@ -30,7 +30,38 @@
                     <div class="info-item">
                         <div class="info-label">Status:</div>
                         <div class="info-value">
-                            <span class="badge bg-warning text-dark">{{ str_replace('_', ' ', $order->status) }}</span>
+                            @php
+                                $statusColor = 'bg-secondary';
+                                $statusLabel = str_replace('_', ' ', $order->status);
+
+                                switch($order->status) {
+                                    case 'PENDING':
+                                    case 'PENDING_ADMIN_REVIEW':
+                                    case 'PENDING_MANDOR_QUOTE':
+                                        $statusColor = 'bg-warning text-dark'; // Kuning (Proses Awal)
+                                        break;
+                                    case 'APPROVED_IN_PROGRESS':
+                                        $statusColor = 'bg-primary'; // Biru (Sedang Dikerjakan)
+                                        break;
+                                    case 'COMPLETED_PENDING_PAYMENT':
+                                        $statusColor = 'bg-info text-dark'; // Biru Muda (Tunggu Bayar)
+                                        break;
+                                    case 'FINISHED':
+                                        $statusColor = 'bg-success'; // Hijau (Selesai)
+                                        break;
+                                    case 'CANCELLED':
+                                    case 'REJECTED_BY_ADMIN':
+                                    case 'REJECTED_BY_MANDOR':
+                                        $statusColor = 'bg-danger'; // Merah (Batal/Tolak)
+                                        break;
+                                    case 'CANCEL_REQUESTED':
+                                        $statusColor = 'bg-warning text-danger border border-danger'; // Kuning-Merah (Request Batal)
+                                        break;
+                                }
+                            @endphp
+                            <span class="badge {{ $statusColor }} fs-7 fw-bold px-3 py-2">
+                                {{ $statusLabel }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -117,7 +148,7 @@
 
                 {{-- A. Jika Masih PENDING (Belum ada mandor/biaya) -> Boleh Batal --}}
                 {{-- Munculkan tombol jika statusnya masih tahap awal (Admin Review atau Cari Mandor) --}}
-@if(in_array($order->status, ['PENDING', 'PENDING_ADMIN_REVIEW', 'PENDING_MANDOR_QUOTE']))
+                    @if(in_array($order->status, ['PENDING', 'PENDING_ADMIN_REVIEW', 'PENDING_MANDOR_QUOTE']))
                     <div class="mt-4">
                         <button type="button" class="btn btn-outline-danger w-100 py-3 fw-bold border-2" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                             <i class="bi bi-x-circle me-2"></i> Ajukan Pembatalan
@@ -286,7 +317,7 @@
 <style>
     /* CSS Rating Bintang */
     .rating-css div {
-        color: #ffe400;
+        color: #ffe400 !important;
         font-size: 30px;
         font-family: sans-serif;
         font-weight: 800;
@@ -301,21 +332,18 @@
         font-size: 40px;
         text-shadow: 1px 1px 0 #ffe400;
         cursor: pointer;
+        color: #ccc; /* Warna default (abu) sebelum dicentang */
     }
     /* Logika: Kalau dicentang, warnai bintang */
     .rating-css input:checked + label ~ label {
-        color: #ddd; /* Warna abu buat bintang yg ga kepilih */
+        color: #ccc; 
     }
-    .rating-css label:active {
-        transform: scale(0.8);
-        transition: 0.3s all;
+    .star-icon label {
+        color: #ffe400 !important;
     }
     /* Balik urutan render biar CSS selector '~' jalan dari kanan ke kiri */
-    .star-icon {
-        display: flex;
-        flex-direction: row-reverse; 
-        justify-content: center;
-        gap: 10px;
+    .star-icon input:checked + label ~ label {
+        color: #ccc !important; /* Bintang sisa jadi abu */
     }
 </style>
 @endpush

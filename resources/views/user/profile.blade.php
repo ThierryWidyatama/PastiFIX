@@ -133,6 +133,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold">Kelola Daftar Alamat</h5>
+                    <button class="btn btn-sm btn-brand fw-bold ms-3" data-bs-toggle="modal" data-bs-target="#addProfileAddressModal">
+                        <i class="bi bi-plus-lg"></i> Tambah
+                    </button>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body bg-light" style="max-height: 60vh; overflow-y: auto;">
@@ -189,6 +192,59 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
+        </div>
+    </div>
+</div>
+<!-- [BARU] Modal Tambah Alamat (Khusus Profil) -->
+<div class="modal fade" id="addProfileAddressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Form Action pakai route yg sama dgn checkout -->
+            <form action="{{ route('address.store') }}" method="POST">
+                @csrf
+                <!-- [PENTING] Redirect kembali ke PROFIL setelah simpan -->
+                <input type="hidden" name="redirect_to" value="{{ route('profil') }}">
+                
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Tambah Alamat Baru</h5>
+                    <!-- Tombol X kembali ke modal manage -->
+                    <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#manageAddressModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Alamat Lengkap</label>
+                        <textarea class="form-control" name="address_line" rows="3" required placeholder="Nama jalan, nomor rumah, kelurahan..."></textarea>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label">RT/RW</label>
+                            <input type="text" class="form-control" name="rt_rw" placeholder="00/00">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Kode Pos</label>
+                            <input type="text" class="form-control" name="postal_code">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Detail Patokan</label>
+                        <input type="text" class="form-control" name="landmark_details" placeholder="Cth: Depan masjid hijau">
+                    </div>
+                    
+                    <hr class="my-3">
+                    
+                    <!-- Di Profil, is_saved otomatis TRUE (hidden) -->
+                    <input type="hidden" name="is_saved" value="1">
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_primary" value="1" id="profile_new_is_primary">
+                        <label class="form-check-label" for="profile_new_is_primary">Jadikan Alamat Utama</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#manageAddressModal">Batal</button>
+                    <button type="submit" class="btn btn-brand">Simpan Alamat</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
