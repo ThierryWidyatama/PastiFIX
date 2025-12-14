@@ -231,6 +231,90 @@ body.auth-page-new {
     transform: translateY(-3px);
 }
 
+/* =========================================
+   FIX SWEETALERT (Notifikasi) STYLE
+   ========================================= */
+
+/* 1. Paksa Background jadi Putih (Biar gak transparan) */
+div:where(.swal2-container) .swal2-popup {
+    background-color: #ffffff !important;
+    border-radius: 20px !important;
+    padding: 30px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
+    border: none !important;
+}
+
+/* 2. Judul Alert (Success/Error) */
+div:where(.swal2-container) .swal2-title {
+    color: #181C32 !important; /* Hitam Gelap */
+    font-size: 1.6rem !important;
+    font-weight: 700 !important;
+}
+
+/* 3. Isi Pesan */
+div:where(.swal2-container) .swal2-html-container {
+    color: #5E6278 !important; /* Abu Tua */
+    font-size: 1.1rem !important;
+}
+
+/* 4. Tombol OK */
+div:where(.swal2-container) .swal2-confirm {
+    background-color: #FEC81A !important; /* KUNING BRAND KITA */
+    color: #000 !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    padding: 12px 30px !important;
+    box-shadow: 0 4px 15px rgba(254, 200, 26, 0.3) !important;
+    border: none !important;
+}
+
+div:where(.swal2-container) .swal2-confirm:focus {
+    box-shadow: 0 0 0 3px rgba(254, 200, 26, 0.5) !important;
+}
+
+/* =========================================
+   FIX ICON ANIMATION SWEETALERT
+   ========================================= */
+
+/* 1. FIX ICON SUKSES (CENTANG) */
+
+/* Warna Lingkaran Luar */
+div:where(.swal2-container) .swal2-icon.swal2-success {
+    border-color: #50cd89 !important; /* Hijau */
+}
+
+/* Warna Garis Centang (V) - Ini kuncinya biar kelihatan */
+div:where(.swal2-container) .swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: #50cd89 !important; /* Hijau */
+}
+
+/* Warna Ring/Cincin Animasi (Opsional, biar makin smooth) */
+div:where(.swal2-container) .swal2-icon.swal2-success .swal2-success-ring {
+    border: 4px solid rgba(80, 205, 137, 0.2) !important; /* Hijau transparan */
+}
+
+/* Hapus background penutup (Fix biar gak kepotong kotak putih) */
+div:where(.swal2-container) .swal2-icon.swal2-success .swal2-success-fix {
+    background-color: transparent !important; 
+}
+div:where(.swal2-container) .swal2-icon.swal2-success .swal2-success-circular-line-left,
+div:where(.swal2-container) .swal2-icon.swal2-success .swal2-success-circular-line-right {
+    background-color: transparent !important;
+}
+
+
+/* 2. FIX ICON ERROR (SILANG) */
+
+/* Warna Lingkaran Luar */
+div:where(.swal2-container) .swal2-icon.swal2-error {
+    border-color: #f1416c !important; /* Merah */
+}
+
+/* Warna Garis Silang (X) */
+div:where(.swal2-container) .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: #f1416c !important; /* Merah */
+}
+
 /* Responsif untuk Mobile */
 @media (max-width: 991.98px) {
     body.auth-page-new {

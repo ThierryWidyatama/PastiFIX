@@ -1,71 +1,11 @@
-@extends('layouts.landing')
+@extends('layouts.services')
 
 @section('title', 'PastiFIX - Services')
 
-@push('styles')
-{{-- CSS Khusus untuk halaman ini --}}
-<style>
-    .services-header {
-    background-color: #FEC81A;
-    padding: 80px 0 120px 0; /* bottom lebih besar agar space keluar */
-    position: relative; /* WAJIB biar absolute child bisa keluar */
-}
 
-.search-bar-container {
-    position: absolute;
-    bottom: -40px; /* ini yang bikin dia nongol setengah */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 700px;
-    z-index: 10;
-}
-
-.search-bar-container .input-group .form-control,
-.search-bar-container .input-group .btn {
-    height: 60px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-}
-
-    .filter-card {
-        border-radius: 0.5rem;
-        border: none;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-    .filter-header {
-        font-weight: 700;
-        cursor: pointer;
-    }
-    .filter-body {
-        padding: 1rem;
-        max-height: 300px;
-        overflow-y: auto;
-    }
-    .service-card {
-        border-radius: 0.5rem;
-        border: none;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
-    }
-    .service-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    .card-price {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #FEC81A;
-    }
-    .breadcrumb-item a {
-        color: #FEC81A;
-    }
-</style>
-@endpush
 
 @section('content')
 
-    <header class="services-header position-relative" style="background-color: #FEC81A; padding: 40px;">
     <div class="container text-center" style="padding-top: 80px; padding-bottom: 50px; color: white;">
         <h1 class="fw-bold">Services</h1>
     </div>
