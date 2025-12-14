@@ -5,6 +5,7 @@
 <div class="card p-4">
     <div class="card-body">
         
+        <!-- Judul & Tombol Kembali -->
         <div class="d-flex align-items-center mb-3">
             <a href="{{ route('profil.activity') }}" class="btn btn-sm btn-light me-3"><i class="bi bi-arrow-left"></i></a>
             <h4 class="fw-bold mb-0">Detail Pesanan</h4>
@@ -13,7 +14,9 @@
 
         <div class="row g-4 g-lg-5">
 
+            <!-- KOLOM KIRI -->
             <div class="col-lg-7">
+                <!-- Info Pesanan -->
                 <div class="order-detail-info">
                     <div class="info-item">
                         <div class="info-label">Nomor Pesanan:</div>
@@ -38,24 +41,24 @@
                                     case 'PENDING':
                                     case 'PENDING_ADMIN_REVIEW':
                                     case 'PENDING_MANDOR_QUOTE':
-                                        $statusColor = 'bg-warning text-dark'; // Kuning (Proses Awal)
+                                        $statusColor = 'bg-warning text-dark';
                                         break;
                                     case 'APPROVED_IN_PROGRESS':
-                                        $statusColor = 'bg-primary'; // Biru (Sedang Dikerjakan)
+                                        $statusColor = 'bg-primary';
                                         break;
                                     case 'COMPLETED_PENDING_PAYMENT':
-                                        $statusColor = 'bg-info text-dark'; // Biru Muda (Tunggu Bayar)
+                                        $statusColor = 'bg-info text-dark';
                                         break;
                                     case 'FINISHED':
-                                        $statusColor = 'bg-success'; // Hijau (Selesai)
+                                        $statusColor = 'bg-success';
                                         break;
                                     case 'CANCELLED':
                                     case 'REJECTED_BY_ADMIN':
                                     case 'REJECTED_BY_MANDOR':
-                                        $statusColor = 'bg-danger'; // Merah (Batal/Tolak)
+                                        $statusColor = 'bg-danger';
                                         break;
                                     case 'CANCEL_REQUESTED':
-                                        $statusColor = 'bg-warning text-danger border border-danger'; // Kuning-Merah (Request Batal)
+                                        $statusColor = 'bg-warning text-danger border border-danger';
                                         break;
                                 }
                             @endphp
@@ -66,6 +69,7 @@
                     </div>
                 </div>
 
+                <!-- Waktu Perbaikan (Timeline) -->
                 <div class="mt-5">
                     <div class="info-label fw-bold mb-3">Timeline Pengerjaan</div>
                     <div class="timeline-wrapper">
@@ -89,8 +93,10 @@
                 </div>
             </div>
 
+            <!-- KOLOM KANAN -->
             <div class="col-lg-5">
                 
+                <!-- Card Mandor -->
                 <div class="mandor-card mb-4">
                     @if($order->status == 'CANCELLED')
                         <div class="text-center w-100 py-2">
@@ -126,6 +132,7 @@
                     @endif
                 </div>
 
+                <!-- Rincian Harga -->
                 <h6 class="fw-bold">Ringkasan Biaya</h6>
                 <div class="mt-3 card bg-light border-0 p-3">
                     @forelse($order->costItems as $item)
@@ -146,9 +153,9 @@
                     @endif
                 </div>
 
-                {{-- A. Jika Masih PENDING (Belum ada mandor/biaya) -> Boleh Batal --}}
-                {{-- Munculkan tombol jika statusnya masih tahap awal (Admin Review atau Cari Mandor) --}}
-                    @if(in_array($order->status, ['PENDING', 'PENDING_ADMIN_REVIEW', 'PENDING_MANDOR_QUOTE']))
+                <!-- TOMBOL AKSI -->
+                
+                @if($order->status == 'PENDING' || $order->status == 'PENDING_ADMIN_REVIEW' || $order->status == 'PENDING_MANDOR_QUOTE')
                     <div class="mt-4">
                         <button type="button" class="btn btn-outline-danger w-100 py-3 fw-bold border-2" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                             <i class="bi bi-x-circle me-2"></i> Ajukan Pembatalan
@@ -158,7 +165,6 @@
                         </div>
                     </div>
 
-                {{-- B. Jika Sedang REQUEST BATAL --}}
                 @elseif($order->status == 'CANCEL_REQUESTED')
                     <div class="mt-4">
                         <div class="alert alert-warning text-center border-warning" role="alert">
@@ -168,7 +174,6 @@
                         </div>
                     </div>
                 
-                {{-- C. Jika Sudah DIBATALKAN RESMI --}}
                 @elseif($order->status == 'CANCELLED')
                     <div class="mt-4">
                         <div class="alert alert-danger text-center fw-bold" role="alert">
@@ -181,7 +186,6 @@
                         @endif
                     </div>
 
-                {{-- D. Jika SUDAH SELESAI & TUNGGU BAYAR --}}
                 @elseif($order->status == 'COMPLETED_PENDING_PAYMENT')
                     <div class="mt-4">
                         <div class="alert alert-info d-flex align-items-center" role="alert">
@@ -195,7 +199,6 @@
                         </form>
                     </div>
 
-                {{-- E. Jika SUDAH LUNAS (Rating Review) --}}
                 @elseif($order->status == 'FINISHED')
                     @if($order->review)
                         <div class="mt-4 card border-warning bg-warning-subtle">
@@ -220,6 +223,7 @@
                                 <i class="bi bi-check-circle-fill me-2 fs-4"></i>
                                 <div class="small fw-bold">Pesanan Selesai & Lunas.</div>
                             </div>
+                            
                             <button type="button" class="btn btn-warning w-100 py-3 fs-5 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#reviewModal">
                                 <i class="bi bi-star-fill me-2"></i> Beri Ulasan
                             </button>
@@ -232,55 +236,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold">Beri Ulasan Pesanan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('review.store') }}" method="POST">
-                @csrf
-                <input type="hidden" name="order_id" value="{{ $order->id }}">
-                
-                <div class="modal-body text-center pt-0 pb-4">
-                    
-                    <p class="fw-bold mb-0 mt-3">Kinerja Mandor ({{ $order->mandor->name ?? 'Mandor' }})</p>
-                    <div class="rating-css">
-                        <div class="star-icon">
-                            <input type="radio" name="rating_mandor" value="5" id="m-5" checked> <label for="m-5" class="bi bi-star-fill"></label>
-                            <input type="radio" name="rating_mandor" value="4" id="m-4"> <label for="m-4" class="bi bi-star-fill"></label>
-                            <input type="radio" name="rating_mandor" value="3" id="m-3"> <label for="m-3" class="bi bi-star-fill"></label>
-                            <input type="radio" name="rating_mandor" value="2" id="m-2"> <label for="m-2" class="bi bi-star-fill"></label>
-                            <input type="radio" name="rating_mandor" value="1" id="m-1"> <label for="m-1" class="bi bi-star-fill"></label>
-                        </div>
-                    </div>
-
-                    <hr class="my-2 opacity-25">
-
-                    <p class="fw-bold mb-0 mt-2">Kualitas Aplikasi & Layanan</p>
-                    <div class="rating-css">
-                        <div class="star-icon">
-                            <input type="radio" name="rating_service" value="5" id="s-5" checked> <label for="s-5" class="bi bi-star-fill"></label>
-                            <input type="radio" name="rating_service" value="4" id="s-4"> <label for="s-4" class="bi bi-star-fill"></label>
-                            <input type="radio" name="rating_service" value="3" id="s-3"> <label for="s-3" class="bi bi-star-fill"></label>
-                            <input type="radio" name="rating_service" value="2" id="s-2"> <label for="s-2" class="bi bi-star-fill"></label>
-                            <input type="radio" name="rating_service" value="1" id="s-1"> <label for="s-1" class="bi bi-star-fill"></label>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 text-start">
-                        <label class="form-label fw-bold small">Komentar Tambahan</label>
-                        <textarea name="comment" class="form-control bg-light" rows="3" placeholder="Ceritakan pengalaman Anda... (Opsional)"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button type="submit" class="btn btn-brand w-100 fw-bold">Kirim Ulasan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Modal Cancel Order -->
 <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -311,39 +267,59 @@
     </div>
 </div>
 
-@endsection
+<!-- Modal Review -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Beri Ulasan Pesanan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('review.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="order_id" value="{{ $order->id }}">
+                
+                <div class="modal-body text-center pt-0 pb-4">
+                    
+                    <!-- RATING 1: KINERJA MANDOR -->
+                    <p class="fw-bold mb-0 mt-3 text-start">Kinerja Mandor ({{ $order->mandor->name ?? 'Mandor' }})</p>
+                    <div class="rating-css">
+                        <div class="star-icon">
+                            <!-- [FIX] URUTAN 5-1 UNTUK ROW-REVERSE -->
+                            <input type="radio" name="rating_mandor" value="5" id="m-5" checked> <label for="m-5" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_mandor" value="4" id="m-4"> <label for="m-4" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_mandor" value="3" id="m-3"> <label for="m-3" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_mandor" value="2" id="m-2"> <label for="m-2" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_mandor" value="1" id="m-1"> <label for="m-1" class="bi bi-star-fill"></label>
+                        </div>
+                    </div>
 
-@push('styles')
-<style>
-    /* CSS Rating Bintang */
-    .rating-css div {
-        color: #ffe400 !important;
-        font-size: 30px;
-        font-family: sans-serif;
-        font-weight: 800;
-        text-align: center;
-        text-transform: uppercase;
-        padding: 10px 0;
-    }
-    .rating-css input {
-        display: none;
-    }
-    .rating-css input + label {
-        font-size: 40px;
-        text-shadow: 1px 1px 0 #ffe400;
-        cursor: pointer;
-        color: #ccc; /* Warna default (abu) sebelum dicentang */
-    }
-    /* Logika: Kalau dicentang, warnai bintang */
-    .rating-css input:checked + label ~ label {
-        color: #ccc; 
-    }
-    .star-icon label {
-        color: #ffe400 !important;
-    }
-    /* Balik urutan render biar CSS selector '~' jalan dari kanan ke kiri */
-    .star-icon input:checked + label ~ label {
-        color: #ccc !important; /* Bintang sisa jadi abu */
-    }
-</style>
-@endpush
+                    <hr class="my-2 opacity-25">
+
+                    <!-- RATING 2: KUALITAS LAYANAN -->
+                    <p class="fw-bold mb-0 mt-2 text-start">Kualitas Aplikasi & Layanan</p>
+                    <div class="rating-css">
+                        <div class="star-icon">
+                            <input type="radio" name="rating_service" value="5" id="s-5" checked> <label for="s-5" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_service" value="4" id="s-4"> <label for="s-4" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_service" value="3" id="s-3"> <label for="s-3" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_service" value="2" id="s-2"> <label for="s-2" class="bi bi-star-fill"></label>
+                            <input type="radio" name="rating_service" value="1" id="s-1"> <label for="s-1" class="bi bi-star-fill"></label>
+                        </div>
+                    </div>
+
+                    <!-- KOMENTAR -->
+                    <div class="mt-4 text-start">
+                        <label class="form-label fw-bold small">Komentar Tambahan</label>
+                        <textarea name="comment" class="form-control bg-light" rows="3" placeholder="Ceritakan pengalaman Anda... (Opsional)"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="submit" class="btn btn-brand w-100 fw-bold">Kirim Ulasan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@endsection

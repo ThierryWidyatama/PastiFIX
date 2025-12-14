@@ -15,6 +15,9 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
     <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
 
 </head>
@@ -123,7 +126,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-    // Navbar scroll effect (Tetap Pertahankan)
+    // Navbar scroll effect (Biarkan seperti semula)
     const nav = document.querySelector('#main-nav');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
@@ -133,47 +136,31 @@
         }
     });
 
-    // Swiper Initializer (RESPONSIF FIX)
-    // Swiper Initializer (FIXED: UNLIMITED LOOP & CENTER)
-    const swiper = new Swiper('.testimonial-slider', {
-        // Efek 3D
-        effect: 'coverflow',
-        grabCursor: true,
-        
-        // [KUNCI 1] Posisi Default Tengah
-        centeredSlides: true, 
-        
-        // [KUNCI 2] Biarkan CSS yang mengatur lebar slide (jangan dipaksa angka grid)
-        slidesPerView: 'auto', 
-        
-        // [KUNCI 3] Loop tanpa henti
+    var swiperClassic = new Swiper(".testimonial-slider-classic", {
+        // Default (Mobile): 1 Kartu
+        slidesPerView: 1, 
+        spaceBetween: 20,
         loop: true,
-        
-        // [KUNCI 4] Memastikan slide duplikat cukup banyak biar loop-nya mulus
-        loopedSlides: 6, 
-        
-        coverflowEffect: {
-            rotate: 0,
-            stretch: 0,
-            depth: 100,
-            modifier: 2.5,
-            slideShadows: false, // Hilangkan bayangan biar bersih
-        },
-        
         autoplay: {
-            delay: 3000,
+            delay: 4000, // Geser setiap 4 detik
             disableOnInteraction: false,
         },
-        
         pagination: {
-            el: '.swiper-pagination',
+            el: ".swiper-pagination",
             clickable: true,
         },
-        
-        // Navigasi Panah (Opsional, jika HTML-nya ada)
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
+        // Responsif Breakpoints
+        breakpoints: {
+            // Tablet (>= 768px): 2 Kartu
+            768: {
+                slidesPerView: 2,
+                spaceBetween: 30,
+            },
+            // Desktop (>= 1024px): 3 Kartu (UKURAN PAS)
+            1024: {
+                slidesPerView: 3, 
+                spaceBetween: 30,
+            },
         },
     });
 </script>

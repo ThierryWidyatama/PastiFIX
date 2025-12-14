@@ -156,6 +156,7 @@
         </div>
     </div>
 </section>
+<!-- STATS BAR -->
 <section class="stats-bar text-white">
     <div class="container">
          <div class="row align-items-center">
@@ -164,79 +165,103 @@
              </div>
              <div class="col-lg-8">
                  <div class="row text-center">
+                     
+                     <!-- SATISFACTION -->
                      <div class="col-md-4">
-                         <h2 class="fw-bold">99%</h2>
+                         <!-- [DINAMIS] Pakai variable $satisfactionRate -->
+                         <h2 class="fw-bold">{{ $satisfactionRate }}%</h2>
                          <p class="fw-medium">Satisfaction</p>
                      </div>
-                      <div class="col-md-4">
-                         <h2 class="fw-bold">32K</h2>
+                      
+                     <!-- ACTIVE USERS -->
+                     <div class="col-md-4">
+                         <!-- [DINAMIS] Pakai variable $activeUsers -->
+                         <h2 class="fw-bold">{{ $activeUsers }}</h2>
                          <p class="fw-medium">Active users</p>
                      </div>
-                      <div class="col-md-4">
-                         <h2 class="fw-bold">25+</h2>
+                      
+                     <!-- TEAM MEMBERS -->
+                     <div class="col-md-4">
+                         <!-- [DINAMIS] Pakai variable $teamCount -->
+                         <h2 class="fw-bold">{{ $teamCount }}+</h2>
                          <p class="fw-medium">Team members</p>
                      </div>
+                     
                  </div>
              </div>
          </div>
     </div>
 </section>
 
-<section id="testimoni" class="section-padding">
+<!-- SECTION 5: TESTIMONI KLASIK -->
+<section id="testimoni" class="section-padding bg-light">
+    <div class="container text-center mb-5">
+        <h3 class="section-subtitle text-warning fw-bold">- Ulasan Pengguna -</h3>
+        <h1 class="section-title fw-bold">Apa Kata Mereka?</h1>
+    </div>
+    
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Users Rating</h2>
-        </div>
-        
-        <div class="swiper testimonial-slider">
-            <div class="swiper-wrapper">
+        <!-- Swiper Container -->
+        <div class="swiper testimonial-slider-classic">
+            <div class="swiper-wrapper py-3"> <!-- Padding y biar shadow gak kepotong -->
+                
                 @forelse($reviews as $review)
-                <div class="swiper-slide">
-                    <div class="testimonial-card">
-                        <img src="{{ $review->user->profile_picture_url ? Storage::url($review->user->profile_picture_url) : asset('assets/img/default-avatar.png') }}" 
-                             class="rounded-circle mb-3" 
-                             style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #EECB2F;" 
-                             alt="{{ $review->user->name }}">
-                        
-                        <h6 class="fw-bold">{{ $review->user->name }}</h6>
-                        
-                        <div class="rating-stars mb-3">
-                            @php
-                                // Hitung rata-rata rating (bulatkan ke atas)
-                                $avgRating = ceil(($review->rating_mandor + $review->rating_service) / 2);
-                            @endphp
+                    <div class="swiper-slide">
+                        <div class="testi-card-classic">
+                            <!-- 1. Foto Profil -->
+                            <img src="{{ $review->user->profile_picture_url ? Storage::url($review->user->profile_picture_url) : asset('assets/img/default-avatar.png') }}" 
+                                 class="testi-profile-img" 
+                                 alt="{{ $review->user->name }}">
                             
-                            @for($i=1; $i<=5; $i++)
-                                <i class="bi bi-star{{ $i <= $avgRating ? '-fill' : '' }}"></i>
-                            @endfor
+                            <!-- 2. Nama -->
+                            <h5 class="testi-name">{{ $review->user->name }}</h5>
+                            
+                            <!-- 3. Rating Bintang -->
+                            <div class="testi-stars">
+                                @php
+                                    $avgRating = ceil(($review->rating_mandor + $review->rating_service) / 2);
+                                @endphp
+                                @for($i=1; $i<=5; $i++)
+                                    <i class="bi bi-star{{ $i <= $avgRating ? '-fill' : '' }}"></i>
+                                @endfor
+                            </div>
+
+                            <!-- 4. Komentar -->
+                            <p class="testi-comment">
+                                "{{ \Illuminate\Support\Str::limit($review->comment, 120, '...') }}"
+                            </p>
+
+                            <!-- 5. Tanggal -->
+                            <span class="testi-date">{{ $review->created_at->format('d F Y') }}</span>
                         </div>
-                        
-                        <p class="text-muted small">
-                            "{{ \Illuminate\Support\Str::limit($review->comment, 100, '...') }}"
-                        </p>
                     </div>
-                </div>
-            @empty
-                <div class="swiper-slide">
-                    <div class="testimonial-card">
-                        <img src="{{ asset('assets/img/logo.png') }}" class="rounded-circle mb-3" style="width: 80px;" alt="Admin">
-                        <h6 class="fw-bold">Admin PastiFIX</h6>
-                        <div class="rating-stars mb-3">
-                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                @empty
+                    <!-- Fallback -->
+                    <div class="swiper-slide">
+                        <div class="testi-card-classic">
+                            <img src="{{ asset('assets/img/logo.png') }}" class="testi-profile-img" alt="Admin">
+                            <h5 class="testi-name">Admin PastiFIX</h5>
+                            <div class="testi-stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p class="testi-comment">"Belum ada ulasan. Jadilah yang pertama!"</p>
+                            <span class="testi-date">Today</span>
                         </div>
-                        <p class="text-muted">"Belum ada ulasan saat ini. Jadilah yang pertama memesan jasa kami!"</p>
                     </div>
-                </div>
-            @endforelse
+                @endforelse
+
             </div>
-             <div class="swiper-pagination"></div>
+
+            <!-- Pagination Dots -->
+            <div class="swiper-pagination mt-4 position-relative"></div>
         </div>
+
+        <!-- Tombol Lihat Semua -->
         <div class="text-center mt-5">
             <a href="{{ route('reviews.index') }}" class="btn btn-outline-brand rounded-pill px-4 py-2 fw-medium">
                 Lihat Semua Ulasan <i class="bi bi-arrow-right ms-1"></i>
             </a>
         </div>
-
     </div>
 </section>
 

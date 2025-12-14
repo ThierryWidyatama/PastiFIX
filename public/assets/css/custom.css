@@ -157,36 +157,89 @@ body {
 
 
 /* SECTION 5: TESTIMONI (SWIPERJS) */
-.testimonial-slider {
-    width: 100%;
-    padding-top: 50px;
-    padding-bottom: 50px;
+/* =========================================
+   TESTIMONI KLASIK (CLEAN STYLE)
+   ========================================= */
+
+.testimonial-section {
+    position: relative;
+    padding: 60px 0;
+    overflow: hidden;
 }
 
-.testimonial-slider .swiper-slide {
-    background-position: center;
-    background-size: cover;
-    width: 320px;
-    transition: transform 0.5s;
-    opacity: 0.5;
-    transform: scale(0.8);
-}
-
-.testimonial-slider .swiper-slide-active {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.testimonial-card {
+/* Card Testimoni */
+.testi-card-classic {
     background: #fff;
-    border: 2px solid #EECB2F;
+    border: 1px solid #f0f0f0;
     border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+    height: 100%; /* Biar tinggi sama rata */
+    margin: 10px; /* Jarak aman */
 }
 
-.rating-stars i {
-    color: #EECB2F;
+.testi-card-classic:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(254, 200, 26, 0.15); /* Shadow kuning tipis */
+    border-color: #FEC81A;
+}
+
+/* Foto Profil (Bulat Sempurna & Ukuran Pas) */
+.testi-profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 15px auto;
+    border: 3px solid #FEC81A;
+    padding: 2px; /* Jarak antara border dan foto */
+    background-color: #fff;
+}
+
+/* Nama User */
+.testi-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+/* Bintang */
+.testi-stars {
+    color: #FEC81A;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+/* Komentar */
+.testi-comment {
+    font-style: italic;
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    
+    /* Batasi panjang teks biar kartu gak kepanjangan */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Tanggal */
+.testi-date {
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Swiper Pagination (Titik-titik bawah) */
+.swiper-pagination-bullet-active {
+    background-color: #FEC81A !important;
 }
 
 /* FOOTER */
@@ -201,4 +254,36 @@ body {
 
 .social-icons a:hover {
     color: #EECB2F !important;
+}
+
+/* =========================================
+   FIX NAVBAR MOBILE (Biar Gak Nabrak)
+   ========================================= */
+
+/* Hanya berlaku di layar Mobile & Tablet (di bawah 992px) */
+@media (max-width: 991.98px) {
+    
+    /* Saat menu dibuka, kasih background gelap */
+    .navbar-collapse {
+        background-color: rgba(18, 18, 18, 0.95); /* Hitam transparan dikit */
+        backdrop-filter: blur(10px); /* Efek blur biar estetik */
+        padding: 20px;
+        margin-top: 15px;
+        border-radius: 15px; /* Biar ujungnya melengkung */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Kasih bayangan biar timbul */
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Garis tipis halus */
+    }
+
+    /* Kasih jarak antar menu biar enak dipencet */
+    .navbar-nav .nav-item {
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.05); /* Garis pemisah tipis */
+        padding-bottom: 10px;
+    }
+
+    .navbar-nav .nav-item:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
 }

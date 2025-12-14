@@ -513,3 +513,39 @@ body {
     color: #000;
 }
 
+.star-icon {
+        display: flex;
+        flex-direction: row-reverse; 
+        justify-content: center;
+        gap: 10px;
+    }
+
+    /* Sembunyikan radio button */
+    .star-icon input {
+        display: none !important;
+    }
+
+    /* Default Bintang (Abu-abu) */
+    .star-icon label {
+        font-size: 40px;
+        color: #ccc !important; /* Paksa abu dulu */
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    /* Saat Hover: Bintang yg dihover & sebelumnya jadi Kuning */
+    .star-icon label:hover,
+    .star-icon label:hover ~ label {
+        color: #ffc107 !important; /* Kuning */
+    }
+
+    /* Saat Checked: Bintang terpilih & sebelumnya jadi Kuning */
+    .star-icon input:checked ~ label {
+        color: #ffc107 !important; /* Kuning */
+    }
+
+    /* Bintang yang diklik itu sendiri juga harus Kuning */
+    .star-icon input:checked + label {
+        color: #ffc107 !important;
+    }
+

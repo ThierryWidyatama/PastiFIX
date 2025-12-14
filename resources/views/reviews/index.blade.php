@@ -1,4 +1,4 @@
-@extends('layouts.landing')
+@extends('layouts.services')
 
 @section('title', 'Ulasan Pelanggan - PastiFIX')
 

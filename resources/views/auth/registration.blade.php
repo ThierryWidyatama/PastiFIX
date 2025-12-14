@@ -22,10 +22,23 @@
     <div class="auth-container">
         
         <div class="auth-container-left">
+            <!-- Logo -->
             <a href="/" class="auth-logo">
                 <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo">
                 <span>PastiFIX</span>
             </a>
+
+            <!-- [BARU] Ilustrasi / Foto -->
+            <!-- Saya pakai gambar placeholder renovasi rumah yang estetik -->
+            <img src="https://img.freepik.com/free-vector/house-restyling-concept-illustration_114360-3660.jpg?t=st=1732000000~exp=1732003600~hmac=abc12345" 
+                 alt="Ilustrasi Renovasi" 
+                 class="auth-illustration">
+                 
+            <!-- Teks Pendukung (Opsional, biar gak sepi) -->
+            <div class="text-center pe-5 d-none d-lg-block">
+                <h5 class="fw-bold mb-1">Solusi Renovasi Terpercaya</h5>
+                <p class="text-muted small">Cari tukang, pantau progres, beres!</p>
+            </div>
         </div>
 
         <div class="auth-container-right">
@@ -71,7 +84,7 @@
                     </div>
 
                     <div class="d-grid mb-4">
-                        <button type="submit" id="register_submit" class_name="btn btn-brand-auth">
+                        <button type="submit" id="register_submit" class="btn btn-brand-auth">
                             <span class="indicator-label">Sign Up</span>
                         </button>
                     </div>
