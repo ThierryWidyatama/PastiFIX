@@ -104,10 +104,12 @@ class AuthController extends Controller
                 $redirect_url = '/dashboard'; // Redirect ke admin dashboard
             }
 
+           $pesanSapaan = "Selamat datang di PastiFIX, " . $user->name . "!";
+
             return response()->json([
                 'status' => 'success', 
-                'pesan' => 'Selamat datang, gunakan aplikasi dengan bijak :)',
-                'redirect_url' => $redirect_url // <-- Kirim URL-nya
+                'pesan' => $pesanSapaan,
+                'redirect_url' => $redirect_url
             ]);
         } else {
             // insert_log('Username ' . $request->username . ' mencoba masuk sistem, password salah');

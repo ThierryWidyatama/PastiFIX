@@ -211,10 +211,37 @@
                     <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#manageAddressModal"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- AREA PETA (LEAFLET) -->
                     <div class="mb-3">
-                        <label class="form-label">Alamat Lengkap</label>
-                        <textarea class="form-control" name="address_line" rows="3" required placeholder="Nama jalan, nomor rumah, kelurahan..."></textarea>
+                        <label class="form-label fw-bold">Titik Lokasi</label>
+                        
+                        <!-- Wadah Peta -->
+                        <div id="map-container" class="mb-2"></div>
+                        
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-info-circle me-1"></i> Geser pin biru atau klik pada peta untuk menandai lokasi.
+                        </div>
+                        
+                        <!-- Input Tersembunyi untuk Koordinat -->
+                        <input type="hidden" id="latitude_input" name="latitude">
+                        <input type="hidden" id="longitude_input" name="longitude">
                     </div>
+
+                    <!-- FORM ALAMAT DETIL -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Alamat Lengkap</label>
+                        <!-- Input ini "pintar": Ketik untuk cari lokasi, atau otomatis terisi dari pin -->
+                        <textarea 
+                            class="form-control" 
+                            name="address_line" 
+                            id="address_input" 
+                            rows="3" 
+                            required 
+                            placeholder="Cari lokasi atau geser pin pada peta..."
+                        ></textarea>
+                        <div class="form-text small">Alamat akan terisi otomatis dari titik peta. Anda bisa melengkapinya manual.</div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-6">
                             <label class="form-label">RT/RW</label>
@@ -222,19 +249,21 @@
                         </div>
                         <div class="col-6">
                             <label class="form-label">Kode Pos</label>
-                            <input type="text" class="form-control" name="postal_code">
+                            <!-- [FIX] Tambahkan id="postal_code_input" -->
+                            <input type="text" class="form-control" name="postal_code" id="postal_code_input" placeholder="50xxx">
                         </div>
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Detail Patokan</label>
-                        <input type="text" class="form-control" name="landmark_details" placeholder="Cth: Depan masjid hijau">
+                        <input type="text" class="form-control" name="landmark_details" placeholder="Cth: Depan masjid hijau, pagar hitam">
                     </div>
-                    
+
                     <hr class="my-3">
                     
-                    <!-- Di Profil, is_saved otomatis TRUE (hidden) -->
+                    <!-- Input Hidden & Checkbox (Sesuai kebutuhanmu sebelumnya) -->
                     <input type="hidden" name="is_saved" value="1">
-
+                    
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="is_primary" value="1" id="profile_new_is_primary">
                         <label class="form-check-label" for="profile_new_is_primary">Jadikan Alamat Utama</label>
@@ -329,6 +358,150 @@ document.getElementById("cropButton").addEventListener("click", function () {
     // Aktifkan tombol Save
     saveButton.classList.remove("d-none");
 });
+
+// ==========================================
+    // BAGIAN 2: LOGIKA PETA LEAFLET (ADD ADDRESS)
+    // ==========================================
+    
+    let map = null;
+    let marker = null;
+    let mapInitialized = false;
+
+    // Koordinat Default (Simpang Lima Semarang)
+    const defaultLat = -6.9932; 
+    const defaultLng = 110.4203;
+
+    function initMap() {
+        if (mapInitialized) return; // Cegah double init
+        
+        // Cek elemen
+        if (!document.getElementById('map-container')) return;
+
+        // 1. Buat Peta
+        map = L.map('map-container').setView([defaultLat, defaultLng], 15);
+
+        // 2. Tile Layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 3. Marker
+        marker = L.marker([defaultLat, defaultLng], {
+            draggable: true
+        }).addTo(map);
+
+        // Elemen Input
+        const latInput = document.getElementById('latitude_input');
+        const lngInput = document.getElementById('longitude_input');
+        const addressInput = document.getElementById('address_input');
+
+        // Set nilai awal
+        if(latInput) latInput.value = defaultLat;
+        if(lngInput) lngInput.value = defaultLng;
+
+        // === FUNGSI BANTUAN ===
+
+        // A. Reverse Geocode (Koordinat -> Alamat Teks)
+        // Dipanggil saat marker digeser/diklik
+        // A. Reverse Geocode (Koordinat -> Alamat Teks & Kode Pos)
+        function reverseGeocode(lat, lng) {
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // 1. Isi Alamat Lengkap
+                    if (data && data.display_name && addressInput) {
+                        addressInput.value = data.display_name;
+                    }
+
+                    // 2. [BARU] Isi Kode Pos Otomatis
+                    // Cek apakah data address dan postcode tersedia
+                    if (data && data.address && data.address.postcode) {
+                        const postalInput = document.getElementById('postal_code_input');
+                        if (postalInput) {
+                            postalInput.value = data.address.postcode;
+                            // Efek visual dikit biar user tau itu berubah
+                            postalInput.style.backgroundColor = "#fff9db"; 
+                            setTimeout(() => postalInput.style.backgroundColor = "", 1000);
+                        }
+                    }
+                })
+                .catch(error => console.error('Error reverse geocoding:', error));
+        }
+
+        // B. Forward Geocode (Teks Alamat -> Koordinat)
+        // Dipanggil saat user mengetik di textarea alamat
+        let typingTimer;
+        if (addressInput) {
+            addressInput.addEventListener('input', function () {
+                clearTimeout(typingTimer);
+                const query = this.value;
+
+                // Tunggu user selesai ngetik 1 detik baru cari (biar gak spam API)
+                if (query.length > 5) {
+                    typingTimer = setTimeout(() => {
+                        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+                        
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.length > 0) {
+                                    const result = data[0];
+                                    const lat = parseFloat(result.lat);
+                                    const lon = parseFloat(result.lon);
+
+                                    // Pindahkan map & marker
+                                    map.setView([lat, lon], 16);
+                                    marker.setLatLng([lat, lon]);
+                                    
+                                    // Update input hidden
+                                    if(latInput) latInput.value = lat;
+                                    if(lngInput) lngInput.value = lon;
+                                }
+                            })
+                            .catch(error => console.error('Error searching address:', error));
+                    }, 1000);
+                }
+            });
+        }
+
+        // === EVENT LISTENER PETA ===
+
+        // Saat marker selesai digeser manual
+        marker.on('dragend', function (e) {
+            const position = marker.getLatLng();
+            if(latInput) latInput.value = position.lat;
+            if(lngInput) lngInput.value = position.lng;
+            reverseGeocode(position.lat, position.lng);
+        });
+
+        // Saat peta diklik
+        map.on('click', function(e) {
+            marker.setLatLng(e.latlng);
+            if(latInput) latInput.value = e.latlng.lat;
+            if(lngInput) lngInput.value = e.latlng.lng;
+            reverseGeocode(e.latlng.lat, e.latlng.lng);
+        });
+
+        mapInitialized = true;
+    }
+
+    // [PENTING] Trigger saat Modal Muncul
+    const modalAddAddress = document.getElementById('addProfileAddressModal'); 
+    
+    if (modalAddAddress) {
+        modalAddAddress.addEventListener('shown.bs.modal', function () {
+            // Init map (hanya sekali)
+            initMap(); 
+            
+            // Fix ukuran map (Leaflet suka abu-abu kalau di modal)
+            setTimeout(() => {
+                if(map) map.invalidateSize(); 
+            }, 200);
+        });
+    }
 </script>
 @endpush
 <style>
