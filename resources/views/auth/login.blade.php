@@ -41,6 +41,12 @@
 
         <div class="auth-container-right">
             <div class="auth-card">
+                <div class="text-center mb-4 d-lg-none">
+                    <a href="/" class="d-inline-flex align-items-center text-decoration-none text-dark">
+                        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 40px; margin-right: 10px;">
+                        {{-- <span class="fs-2 fw-bold">PastiFIX</span> --}}
+                    </a>
+                </div>
                 
                 <div class="auth-tabs">
                     <a href="{{ route('register') }}">Sign Up</a>

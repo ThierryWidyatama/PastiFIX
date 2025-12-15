@@ -17,6 +17,11 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/services.css') }}">
 
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
 </head>
 <body data-bs-spy="scroll" data-bs-target="#main-nav">
 
@@ -31,19 +36,23 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="#home">Home</a>
+                        <a class="nav-link" href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
+                        <a class="nav-link" href="{{ route('home') }}#about">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#service">Service</a>
+                        <!-- [OPSI A] Jika mau scroll ke section service di home: -->
+                        {{-- <!-- <a class="nav-link" href="{{ route('home') }}#service">Service</a> --> --}}
+                        
+                        <!-- [OPSI B] Jika mau langsung ke halaman daftar layanan (LEBIH BAIK): -->
+                        <a class="nav-link {{ Request::routeIs('services.index') ? 'active' : '' }}" href="{{ route('services.index') }}">Service</a>
                     </li>
                      <li class="nav-item">
-                        <a class="nav-link" href="#why-us">Why Us</a>
+                        <a class="nav-link" href="{{ route('home') }}#why-us">Why Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#testimoni">Testimoni</a>
+                        <a class="nav-link" href="{{ route('home') }}#testimoni">Testimoni</a>
                     </li>
 
                     @auth

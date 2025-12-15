@@ -2,31 +2,28 @@
 
 @section('title', 'PastiFIX - Services')
 
-
-
 @section('content')
 
-    <div class="container text-center" style="padding-top: 80px; padding-bottom: 50px; color: white;">
-        <h1 class="fw-bold">Services</h1>
-    </div>
+    <header class="services-header">
+        <div class="container" style="padding-top: 80px; padding-bottom: 50px;">
+            <h1>Services</h1>
+        </div>
+    </header>
 
-    <!-- Search bar HARUS ada di dalam header -->
     <div class="container">
         <div class="search-bar-container">
-            <div class="input-group">
-                <input type="text" class="form-control form-control-lg"
-                       placeholder="Cari layanan (misal: Atap Bocor, Pengecatan)"
-                       name="search" value="{{ request('search') }}">
-
-                <button class="btn btn-warning btn-lg px-4" type="submit"
+            <form action="#">
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg" placeholder="Search Services"
+                        aria-label="Search Services">
+                    <button class="btn btn-warning btn-lg px-4" type="submit"
                         style="background-color: #FEC81A; color: #333;">
                     <i class="bi bi-search"></i> Search
                 </button>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
-</header>
-
 <!-- FORM baru dibuka di sini -->
 <form action="{{ route('services.index') }}" method="GET">
         <div class="container mt-4 mt-md-5">

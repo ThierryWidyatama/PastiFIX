@@ -312,31 +312,28 @@ body {
     z-index: 1;
 }
 
-/* Tombol Tambah Alamat (FIXED: Lebih Mencolok) */
 .btn-icon-add {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #FEC81A; /* Langsung Kuning */
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    width: 50px; /* Agak digedein dikit biar gampang dipencet */
-    height: 50px;
-    display: flex;
+    background-color: #fff;
+    /* Agar menutupi garis putus-putus */
+    border: 2px dashed #e9ecef;
+    color: #EECB2F;
+    font-size: 1.5rem;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #000; /* Icon Hitam */
-    border: none;
-    font-size: 1.8rem;
     text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(254, 200, 26, 0.4); /* Kasih bayangan biar timbul */
+    position: relative;
+    z-index: 2;
+    transition: all 0.2s ease;
 }
 
 .btn-icon-add:hover {
-    background-color: #e0b015; /* Kuning gelap pas hover */
-    color: #000;
-    transform: translate(-50%, -50%) scale(1.1); /* Efek membesar */
+    border-style: solid;
+    border-color: #EECB2F;
+    background-color: #fff8e1;
 }
 
 /* Card Ringkasan Checkout */
@@ -349,4 +346,39 @@ body {
     font-weight: 500;
     color: #212529;
     /* Pastikan teks harga jelas */
+}
+
+
+#map-container {
+    width: 100%;
+    height: 300px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+@media (max-width: 991.98px) {
+    
+    /* Saat menu dibuka, kasih background gelap */
+    .navbar-collapse {
+        background-color: rgba(18, 18, 18, 0.95); /* Hitam transparan dikit */
+        backdrop-filter: blur(10px); /* Efek blur biar estetik */
+        padding: 20px;
+        margin-top: 15px;
+        border-radius: 15px; /* Biar ujungnya melengkung */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Kasih bayangan biar timbul */
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Garis tipis halus */
+    }
+
+    /* Kasih jarak antar menu biar enak dipencet */
+    .navbar-nav .nav-item {
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.05); /* Garis pemisah tipis */
+        padding-bottom: 10px;
+    }
+
+    .navbar-nav .nav-item:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
 }

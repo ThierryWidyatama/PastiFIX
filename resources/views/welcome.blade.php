@@ -55,6 +55,57 @@
     </div>
 </section>
 
+<!-- SECTION: CARA PEMESANAN -->
+<section class="section-padding">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h3 class="section-subtitle text-warning fw-bold">- Mudah & Cepat -</h3>
+            <h1 class="section-title fw-bold">Cara Pesan Jasa</h1>
+        </div>
+
+        <div class="row g-4 justify-content-center position-relative">
+            <!-- Garis Penghubung (Hanya di Desktop) -->
+            <div class="d-none d-lg-block position-absolute top-50 start-0 w-100 translate-middle-y border-top border-2 border-warning border-dashed z-n1" style="height: 0;"></div>
+
+            <!-- Step 1 -->
+            <div class="col-md-6 col-lg-3 text-center">
+                <div class="bg-white p-4 rounded shadow-sm h-100 position-relative">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-warning text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #FEC81A;">1</div>
+                    <h5 class="fw-bold">Pilih Layanan</h5>
+                    <p class="text-muted small">Cari masalah rumah Anda di daftar layanan kami.</p>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="col-md-6 col-lg-3 text-center">
+                <div class="bg-white p-4 rounded shadow-sm h-100 position-relative">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-warning text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #FEC81A;">2</div>
+                    <h5 class="fw-bold">Atur Jadwal</h5>
+                    <p class="text-muted small">Tentukan lokasi dan waktu survei yang Anda inginkan.</p>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="col-md-6 col-lg-3 text-center">
+                <div class="bg-white p-4 rounded shadow-sm h-100 position-relative">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-warning text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #FEC81A;">3</div>
+                    <h5 class="fw-bold">Survei & Deal</h5>
+                    <p class="text-muted small">Mandor datang, cek kerusakan, dan sepakati harga final.</p>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="col-md-6 col-lg-3 text-center">
+                <div class="bg-white p-4 rounded shadow-sm h-100 position-relative">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #198754;">4</div>
+                    <h5 class="fw-bold">Selesai & Bayar</h5>
+                    <p class="text-muted small">Pengerjaan selesai, bayar aman lewat aplikasi.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section id="service" class="section-padding bg-light">
     <div class="container text-center">
         <h2 class="section-title">Our Service</h2>

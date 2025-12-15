@@ -317,46 +317,28 @@ div:where(.swal2-container) .swal2-icon.swal2-error [class^='swal2-x-mark-line']
 
 /* Responsif untuk Mobile */
 @media (max-width: 991.98px) {
-    body.auth-page-new {
-        background: #FEC81A;
-        padding: 0;
-        align-items: flex-start; /* Biar bisa scroll kalau tinggi */
-    }
+    /* ... (style body dll tetap) ... */
     
-    .auth-container {
-        flex-direction: column;
-        width: 100%;
-        max-width: 100%;
-        min-height: 100vh;
-        border-radius: 0;
-        box-shadow: none;
-        background: none;
-    }
-    
+    /* [FIX] Sembunyikan total kolom kiri di Mobile */
     .auth-container-left {
-        width: 100%;
-        min-height: 150px;
-        background-color: #fff;
-        padding: 30px;
-        /* Lengkungan Bawah untuk Mobile */
-        border-radius: 0 0 40px 40px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        clip-path: none; /* Reset clip-path desktop */
-        flex: 0 0 auto;
-        align-items: center; /* Tengahin logo */
+        display: none !important;
     }
 
+    /* [FIX] Kolom kanan jadi full width */
     .auth-container-right {
         width: 100%;
         padding: 20px;
         margin-left: 0;
-        flex: 1; /* Isi sisa ruang */
+        height: 100vh; /* Full tinggi layar */
+        align-items: center;
     }
+
     .auth-card {
         width: 100%;
-        padding: 30px 20px;
-        box-shadow: none; /* Hilangkan shadow card di mobile biar clean */
-        background: transparent; /* Atau putih transparan */
+        max-width: 100%;
+        box-shadow: none;
+        background: #fff; /* Pastikan putih */
+        border-radius: 20px;
     }
     
     /* Penyesuaian Form di Mobile */

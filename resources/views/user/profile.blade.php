@@ -21,9 +21,11 @@
                     <div class="position-relative d-inline-block">
                         <img src="{{ $user->profile_picture_url ? Storage::url($user->profile_picture_url) : asset('assets/img/default-avatar.png') }}" 
                              alt="Profile Picture" class="profile-pic mb-3" id="profileImagePreview">
-                        <label for="avatar" class="profile-pic-edit-button d-none">
+                        <label for="avatarFileInput" class="profile-pic-edit-button d-none">
                             <i class="bi bi-pencil-fill"></i>
                         </label>
+
+                        <input type="file" id="avatarFileInput" hidden>
                         <input type="file" name="avatar_file_input" id="avatarFileInput" class="d-none" accept="image/*">
                         <input type="hidden" name="cropped_avatar_data" id="croppedAvatarData">
                     </div>
@@ -73,34 +75,44 @@
             <div class="card p-4 h-100">
                 <div class="card-body">
                     
+                    <!-- Header -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 class="fw-bold mb-0">Alamat Utama</h4>
                         <button type="button" class="btn btn-sm btn-outline-warning text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#manageAddressModal">
-                            <i class="bi bi-gear-fill me-1"></i> Kelola Alamat Tersimpan
+                            <i class="bi bi-gear-fill me-1"></i> Kelola Alamat
                         </button>
                     </div>
 
+                    <!-- Form Input (ID ditambahkan untuk sinkronisasi Map) -->
                     <div class="mb-3">
                         <label for="address_line" class="form-minimal-label">Alamat Lengkap</label>
-                        <input type="text" class="form-control form-minimal-input" id="address_line" name="address_line" value="{{ $address->address_line ?? '' }}" disabled>
+                        <textarea class="form-control form-control-static" id="profile_address" name="address_line" rows="2" disabled>{{ $address->address_line ?? '' }}</textarea>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="rt_rw" class="form-minimal-label">RT/RW</label>
-                            <input type="text" class="form-control form-minimal-input" id="rt_rw" name="rt_rw" value="{{ $address->rt_rw ?? '' }}" disabled>
+                            <input type="text" class="form-control form-control-static" id="rt_rw" name="rt_rw" value="{{ $address->rt_rw ?? '' }}" disabled>
                         </div>
                         <div class="col-md-6">
-                             <label for="postal_code" class="form-minimal-label">Kodepos</label>
-                             <input type="text" class="form-control form-minimal-input" id="postal_code" name="postal_code" value="{{ $address->postal_code ?? '' }}" disabled>
+                            <label for="postal_code" class="form-minimal-label">Kodepos</label>
+                            <!-- [ID PENTING] -->
+                            <input type="text" class="form-control form-control-static" id="profile_postcode" name="postal_code" value="{{ $address->postal_code ?? '' }}" disabled>
                         </div>
                     </div>
-                     <div class="mb-4">
+                    <div class="mb-4">
                         <label for="landmark_details" class="form-minimal-label">Detail Patokan (Opsional)</label>
-                        <input type="text" class="form-control form-minimal-input" id="landmark_details" name="landmark_details" value="{{ $address->landmark_details ?? '' }}" disabled>
+                        <input type="text" class="form-control form-control-static" id="landmark_details" name="landmark_details" value="{{ $address->landmark_details ?? '' }}" disabled>
                     </div>
                     
                     <h6 class="fw-bold">Titik Rumah</h6>
-                    <p class="text-muted small">Titik lokasi akan diatur saat proses pemesanan.</p> 
+                    <p class="text-muted small mb-2" id="map-hint" style="display: none;">Geser pin atau ketik alamat untuk update lokasi.</p> 
+                    
+                    <!-- [PETA] Container -->
+                    <div id="map-profile-main" style="height: 250px; width: 100%; border-radius: 8px; border: 2px solid #e0e0e0; z-index: 0;"></div>
+
+                    <!-- [DATA] Koordinat dari Database -->
+                    <input type="hidden" id="main_lat" name="latitude" value="{{ $address->latitude ?? '' }}">
+                    <input type="hidden" id="main_lng" name="longitude" value="{{ $address->longitude ?? '' }}">
                     
                 </div>
             </div>
@@ -279,57 +291,45 @@
 </div>
 @endsection
 @push('scripts')
-<!-- CropperJS -->
+
+<!-- ================== CROPper ================== -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
 <script>
+/* =================================================
+   BAGIAN 1 — CROP FOTO PROFIL (FIX TOTAL)
+================================================= */
 let cropper;
 const avatarInput = document.getElementById("avatarFileInput");
 const previewImg = document.getElementById("profileImagePreview");
-const cropModal = new bootstrap.Modal(document.getElementById("cropModal"));
 const croppedAvatarData = document.getElementById("croppedAvatarData");
+const cropModalEl = document.getElementById("cropModal");
+const cropModal = new bootstrap.Modal(cropModalEl);
 
-const editButton = document.getElementById("editButton");
-const saveButton = document.getElementById("saveButton");
+// // Klik pensil → buka file picker
+// document.querySelector(".profile-pic-edit-button")
+//     .addEventListener("click", () => avatarInput.click());
 
-// ✅ Mode Edit → enable semua input
-editButton.addEventListener("click", function () {
-    document.querySelectorAll("input[disabled]").forEach(el => el.disabled = false);
-
-    // Tampilkan tombol SAVE
-    saveButton.classList.remove("d-none");
-
-    // Hide tombol EDIT
-    editButton.classList.add("d-none");
-
-    // Munculkan icon edit foto
-    document.querySelector(".profile-pic-edit-button").classList.remove("d-none");
-});
-
-// ✅ Klik icon pensil → buka file dialog
-document.querySelector(".profile-pic-edit-button").addEventListener("click", function () {
-    avatarInput.click();
-});
-
-// ✅ Saat pilih gambar → tampilkan modal crop
+// Pilih file → buka modal crop
 avatarInput.addEventListener("change", function (e) {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = function (event) {
-        document.getElementById("imageToCrop").src = event.target.result;
-
-        // Destroy cropper sebelumnya
-        if (cropper) { cropper.destroy(); }
+        const img = document.getElementById("imageToCrop");
+        img.src = event.target.result;
 
         cropModal.show();
 
+        // destroy cropper lama
+        if (cropper) cropper.destroy();
+
         setTimeout(() => {
-            cropper = new Cropper(document.getElementById("imageToCrop"), {
+            cropper = new Cropper(img, {
                 aspectRatio: 1,
                 viewMode: 2,
-                dragMode: 'move',
                 autoCropArea: 1,
                 responsive: true
             });
@@ -338,172 +338,124 @@ avatarInput.addEventListener("change", function (e) {
     reader.readAsDataURL(file);
 });
 
-// ✅ Tombol "Crop & Simpan"
+// Tombol crop
 document.getElementById("cropButton").addEventListener("click", function () {
+    if (!cropper) return;
+
     const canvas = cropper.getCroppedCanvas({
         width: 500,
-        height: 500,
+        height: 500
     });
 
     const base64 = canvas.toDataURL("image/jpeg");
-
-    // Set hidden input agar dikirim ke server
     croppedAvatarData.value = base64;
-
-    // Update preview
     previewImg.src = base64;
 
     cropModal.hide();
-
-    // Aktifkan tombol Save
-    saveButton.classList.remove("d-none");
 });
 
-// ==========================================
-    // BAGIAN 2: LOGIKA PETA LEAFLET (ADD ADDRESS)
-    // ==========================================
-    
-    let map = null;
-    let marker = null;
-    let mapInitialized = false;
+/* =================================================
+   BAGIAN 2 — MAP PROFIL (VIEW & EDIT MODE)
+================================================= */
+let mainMap = null;
+let mainMarker = null;
 
-    // Koordinat Default (Simpang Lima Semarang)
-    const defaultLat = -6.9932; 
-    const defaultLng = 110.4203;
+const editButton = document.getElementById("editButton");
+const saveButton = document.getElementById("saveButton");
 
-    function initMap() {
-        if (mapInitialized) return; // Cegah double init
-        
-        // Cek elemen
-        if (!document.getElementById('map-container')) return;
+const mapContainer = document.getElementById("map-profile-main");
+const inputLat = document.getElementById("main_lat");
+const inputLng = document.getElementById("main_lng");
+const inputAddress = document.getElementById("profile_address");
+const inputPostcode = document.getElementById("profile_postcode");
 
-        // 1. Buat Peta
-        map = L.map('map-container').setView([defaultLat, defaultLng], 15);
+const DEF_LAT = -6.9932;
+const DEF_LNG = 110.4203;
 
-        // 2. Tile Layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+// ====== INIT MAP (READ ONLY) ======
+if (mapContainer) {
 
-        // 3. Marker
-        marker = L.marker([defaultLat, defaultLng], {
-            draggable: true
-        }).addTo(map);
+    let lat = parseFloat(inputLat.value) || DEF_LAT;
+    let lng = parseFloat(inputLng.value) || DEF_LNG;
 
-        // Elemen Input
-        const latInput = document.getElementById('latitude_input');
-        const lngInput = document.getElementById('longitude_input');
-        const addressInput = document.getElementById('address_input');
+    mainMap = L.map("map-profile-main", {
+        center: [lat, lng],
+        zoom: 15,
+        dragging: false,
+        touchZoom: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        zoomControl: false
+    });
 
-        // Set nilai awal
-        if(latInput) latInput.value = defaultLat;
-        if(lngInput) lngInput.value = defaultLng;
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "© OpenStreetMap"
+    }).addTo(mainMap);
 
-        // === FUNGSI BANTUAN ===
+    mainMarker = L.marker([lat, lng], {
+        draggable: false
+    }).addTo(mainMap);
 
-        // A. Reverse Geocode (Koordinat -> Alamat Teks)
-        // Dipanggil saat marker digeser/diklik
-        // A. Reverse Geocode (Koordinat -> Alamat Teks & Kode Pos)
-        function reverseGeocode(lat, lng) {
-            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
-            
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    // 1. Isi Alamat Lengkap
-                    if (data && data.display_name && addressInput) {
-                        addressInput.value = data.display_name;
-                    }
-
-                    // 2. [BARU] Isi Kode Pos Otomatis
-                    // Cek apakah data address dan postcode tersedia
-                    if (data && data.address && data.address.postcode) {
-                        const postalInput = document.getElementById('postal_code_input');
-                        if (postalInput) {
-                            postalInput.value = data.address.postcode;
-                            // Efek visual dikit biar user tau itu berubah
-                            postalInput.style.backgroundColor = "#fff9db"; 
-                            setTimeout(() => postalInput.style.backgroundColor = "", 1000);
-                        }
-                    }
-                })
-                .catch(error => console.error('Error reverse geocoding:', error));
-        }
-
-        // B. Forward Geocode (Teks Alamat -> Koordinat)
-        // Dipanggil saat user mengetik di textarea alamat
-        let typingTimer;
-        if (addressInput) {
-            addressInput.addEventListener('input', function () {
-                clearTimeout(typingTimer);
-                const query = this.value;
-
-                // Tunggu user selesai ngetik 1 detik baru cari (biar gak spam API)
-                if (query.length > 5) {
-                    typingTimer = setTimeout(() => {
-                        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-                        
-                        fetch(url)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data && data.length > 0) {
-                                    const result = data[0];
-                                    const lat = parseFloat(result.lat);
-                                    const lon = parseFloat(result.lon);
-
-                                    // Pindahkan map & marker
-                                    map.setView([lat, lon], 16);
-                                    marker.setLatLng([lat, lon]);
-                                    
-                                    // Update input hidden
-                                    if(latInput) latInput.value = lat;
-                                    if(lngInput) lngInput.value = lon;
-                                }
-                            })
-                            .catch(error => console.error('Error searching address:', error));
-                    }, 1000);
-                }
+    function reverseGeocode(lat, lng) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+            .then(r => r.json())
+            .then(d => {
+                if (d?.display_name) inputAddress.value = d.display_name;
+                if (d?.address?.postcode) inputPostcode.value = d.address.postcode;
             });
-        }
-
-        // === EVENT LISTENER PETA ===
-
-        // Saat marker selesai digeser manual
-        marker.on('dragend', function (e) {
-            const position = marker.getLatLng();
-            if(latInput) latInput.value = position.lat;
-            if(lngInput) lngInput.value = position.lng;
-            reverseGeocode(position.lat, position.lng);
-        });
-
-        // Saat peta diklik
-        map.on('click', function(e) {
-            marker.setLatLng(e.latlng);
-            if(latInput) latInput.value = e.latlng.lat;
-            if(lngInput) lngInput.value = e.latlng.lng;
-            reverseGeocode(e.latlng.lat, e.latlng.lng);
-        });
-
-        mapInitialized = true;
     }
 
-    // [PENTING] Trigger saat Modal Muncul
-    const modalAddAddress = document.getElementById('addProfileAddressModal'); 
-    
-    if (modalAddAddress) {
-        modalAddAddress.addEventListener('shown.bs.modal', function () {
-            // Init map (hanya sekali)
-            initMap(); 
-            
-            // Fix ukuran map (Leaflet suka abu-abu kalau di modal)
-            setTimeout(() => {
-                if(map) map.invalidateSize(); 
-            }, 200);
-        });
+    mainMarker.on("dragend", () => {
+        const p = mainMarker.getLatLng();
+        inputLat.value = p.lat;
+        inputLng.value = p.lng;
+        reverseGeocode(p.lat, p.lng);
+    });
+
+    mainMap.on("click", e => {
+        if (!editMode) return;
+        mainMarker.setLatLng(e.latlng);
+        inputLat.value = e.latlng.lat;
+        inputLng.value = e.latlng.lng;
+        reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+}
+
+/* =================================================
+   BAGIAN 3 — EDIT MODE (SATU PINTU)
+================================================= */
+let editMode = false;
+
+editButton.addEventListener("click", function () {
+    editMode = true;
+
+    document.querySelectorAll("input[disabled], textarea[disabled]")
+        .forEach(el => el.disabled = false);
+
+    saveButton.classList.remove("d-none");
+    editButton.classList.add("d-none");
+    document.querySelector(".profile-pic-edit-button")
+        .classList.remove("d-none");
+
+    if (!mainMap || !mainMarker) return;
+
+    mainMap.dragging.enable();
+    mainMap.touchZoom.enable();
+    mainMap.scrollWheelZoom.enable();
+    mainMap.doubleClickZoom.enable();
+
+    mainMarker.dragging.enable();
+
+    if (!mainMap._zoomControl) {
+        L.control.zoom({ position: "topleft" }).addTo(mainMap);
     }
+
+    setTimeout(() => mainMap.invalidateSize(), 200);
+});
 </script>
 @endpush
+
 <style>
 .profile-pic {
     width: 150px;

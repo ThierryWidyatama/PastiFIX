@@ -68,13 +68,18 @@ class DashboardController extends Controller
 
         $user->update($userData);
 
+        // 4. Update data di tabel 'user_addresses'
         $user->addresses()->updateOrCreate(
-            ['is_primary' => true],
+            ['is_primary' => true], 
             [
                 'address_line' => $request->address_line,
                 'rt_rw' => $request->rt_rw,
                 'postal_code' => $request->postal_code,
                 'landmark_details' => $request->landmark_details,
+                
+                // [PASTIKAN INI ADA]
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
             ]
         );
 
@@ -228,16 +233,30 @@ class DashboardController extends Controller
             'rt_rw' => 'nullable|string|max:10',
             'postal_code' => 'nullable|string|max:10',
             'landmark_details' => 'nullable|string',
+            'latitude' => 'nullable',
+            'longitude' => 'nullable',
         ]);
 
+        // Logic Edit Utama (Sama seperti sebelumnya)
         if ($request->has('is_primary')) {
-            // Reset semua jadi false
             $user->addresses()->update(['is_primary' => false]);
             $address->is_primary = true;
-        }
+        } 
 
-        $address->update($request->only(['address_line', 'rt_rw', 'postal_code', 'landmark_details']));
-        $address->save(); // Simpan status is_primary
+        $address->update($request->only([
+            'address_line', 'rt_rw', 'postal_code', 'landmark_details', 'latitude', 'longitude'
+        ]));
+        
+        $address->save(); 
+
+        // [FIX BUG HILANG]
+        // Jika alamat ini adalah "Sekali Pakai" (is_saved = 0),
+        // Kita harus kirim lagi ID-nya ke session biar ServiceController mau nampilin lagi.
+        if ($address->is_saved == 0) {
+            return back()
+                ->with('success', 'Alamat sementara berhasil diperbarui!')
+                ->with('new_address_id', $address->id); // <--- INI KUNCINYA
+        }
 
         return back()->with('success', 'Alamat berhasil diperbarui!');
     }
