@@ -153,27 +153,29 @@ class DashboardController extends Controller
             'rt_rw' => 'nullable|string',
             'postal_code' => 'nullable|string',
             'landmark_details' => 'nullable|string',
+            // [PENTING] Pastikan lat/long boleh diterima
+            'latitude' => 'nullable', 
+            'longitude' => 'nullable',
         ]);
 
-        // [LOGIC BARU]
+        // Logic Checkbox Simpan & Utama
         $isSaved = $request->has('is_saved'); 
-        
-        // Syarat jadi utama: Harus dicentang 'is_primary' DAN 'is_saved' juga harus true
         $isPrimary = $request->has('is_primary') && $isSaved;
 
-        // Reset alamat utama lama jika yang baru ini mau jadi utama
+        // Reset alamat utama lain jika yang baru ini dipilih jadi utama
         if ($isPrimary) {
             $user->addresses()->update(['is_primary' => false]);
         }
 
-        // Logic alamat pertama otomatis jadi utama & tersimpan
+        // Jika ini alamat pertama, otomatis jadi utama & disimpan
         $isFirst = $user->addresses()->count() == 0;
         if($isFirst) {
             $isSaved = true;
             $isPrimary = true;
         }
 
-        // [FIX 1] Tampung hasil create ke variabel $newAddress
+        // dd($request->all());
+        // Simpan ke Database
         $newAddress = $user->addresses()->create([
             'id' => \Illuminate\Support\Str::uuid(),
             'address_line' => $request->address_line,
@@ -181,12 +183,16 @@ class DashboardController extends Controller
             'postal_code' => $request->postal_code,
             'landmark_details' => $request->landmark_details,
             'is_primary' => $isPrimary,
-            'is_saved' => $isSaved, 
+            'is_saved' => $isSaved,
+            
+            // [FIX UTAMA] Jangan lupa simpan koordinatnya!
+            'latitude' => $request->latitude, 
+            'longitude' => $request->longitude,
         ]);
 
-        // [FIX 2] Kirim ID alamat baru ke session ('new_address_id')
+        // Redirect kembali ke halaman asal
         return redirect($request->input('redirect_to'))
-                ->with('success', 'Alamat berhasil digunakan!')
+                ->with('success', 'Alamat berhasil ditambahkan!')
                 ->with('new_address_id', $newAddress->id); 
     }
 
