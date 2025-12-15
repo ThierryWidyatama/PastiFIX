@@ -118,25 +118,42 @@
             const orderItems = document.querySelectorAll('.order-item');
             const emptyListAlert = document.getElementById('order-list-empty');
 
-            // Fungsi Filter Utama
-            function filterOrders() {
-                // 1. Ambil Tahun yang dipilih
-                const selectedYear = yearSelect.value;
+            // --- 1. FUNGSI FILTER UTAMA (UPDATED) ---
+            // Terima parameter opsional untuk "Paksa" bulan/tahun tertentu
+            function filterOrders(forceMonth = null, forceYear = null) {
+                
+                // A. Tentukan Tahun
+                let selectedYear = forceYear;
+                if (!selectedYear) {
+                    selectedYear = yearSelect ? yearSelect.value : "{{ date('Y') }}";
+                }
 
-                // 2. Ambil Bulan yang aktif
-                const activeLink = document.querySelector('.month-slider .nav-link.active');
-                // Jika tidak ada yg aktif (jarang terjadi), default ke 0
-                const selectedMonth = activeLink ? activeLink.getAttribute('data-month') : 0;
+                // B. Tentukan Bulan
+                let selectedMonth = forceMonth;
+                if (!selectedMonth) {
+                    // Cari link yang punya class 'active'
+                    // Kita cari di slide yang sedang aktif view-nya
+                    let activeLink = document.querySelector('.month-slider .swiper-slide-active .nav-link');
+                    
+                    // Fallback kalau swiper belum ready, cari global active
+                    if (!activeLink) {
+                        activeLink = document.querySelector('.month-slider .nav-link.active');
+                    }
+                    
+                    selectedMonth = activeLink ? activeLink.getAttribute('data-month') : "{{ (int)date('n') }}";
+                }
+
+                // Debugging (Cek di Console F12 kalau masih error)
+                // console.log("Filtering: Bulan " + selectedMonth + ", Tahun " + selectedYear);
 
                 let hasData = false;
 
-                // 3. Loop dan Filter
+                // C. Loop & Filter
                 orderItems.forEach(item => {
                     const itemMonth = item.getAttribute('data-month');
                     const itemYear = item.getAttribute('data-year');
                     
-                    // Cek Kecocokan Bulan DAN Tahun
-                    if (itemMonth === selectedMonth && itemYear === selectedYear) {
+                    if (itemMonth == selectedMonth && itemYear == selectedYear) {
                         item.style.display = 'flex';
                         hasData = true;
                     } else {
@@ -144,72 +161,92 @@
                     }
                 });
 
-                // 4. Handle Alert Kosong
+                // D. Handle Alert Kosong
                 if (hasData) {
                     emptyListAlert.classList.add('d-none');
                 } else {
-                    // Hanya munculkan alert jika memang ada item pesanan tapi tersembunyi semua
+                    // Tampilkan alert hanya jika user punya data pesanan (tapi di bulan lain)
+                    // Kalau orderItems.length 0 (user baru), biarkan view blade yg nanganin
                     if(orderItems.length > 0) {
                         emptyListAlert.classList.remove('d-none');
                     }
                 }
             }
 
-            // --- EVENT LISTENERS ---
+            // --- 2. EVENT LISTENERS ---
 
-            // 1. Saat Tahun Diganti -> Filter ulang
-            yearSelect.addEventListener('change', function() {
-                filterOrders();
-            });
+            if(yearSelect) {
+                yearSelect.addEventListener('change', function() {
+                    filterOrders();
+                });
+            }
 
-            // 2. Saat Bulan Diklik Manual
             monthLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    // Update Active Class
+                    
+                    // Reset UI Active
                     monthLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
+                    
+                    // Set Klik Active (Cari semua link dgn bulan yg sama karena slide diduplikasi loop)
+                    const targetMonth = this.getAttribute('data-month');
+                    const sameMonthLinks = document.querySelectorAll(`.month-slider .nav-link[data-month="${targetMonth}"]`);
+                    sameMonthLinks.forEach(l => l.classList.add('active'));
 
-                    // Geser Slider (Opsional, efek visual)
+                    // Geser Slider
                     const slide = this.closest('.swiper-slide');
                     const realIndex = parseInt(slide.getAttribute('data-swiper-slide-index'));
                     monthSwiper.slideToLoop(realIndex);
 
-                    // Filter
-                    filterOrders();
+                    // Panggil filter tanpa paksaan (baca dari active class)
+                    filterOrders(targetMonth, null); 
                 });
             });
             
-            // 3. Saat Slider Digeser (Swipe/Panah)
+            // Listener Saat Slider Digeser (Swipe)
             monthSwiper.on('realIndexChange', function () {
-                const activeSlide = monthSwiper.slides[monthSwiper.activeIndex];
-                const activeLink = activeSlide.querySelector('.nav-link');
+                const activeIndex = monthSwiper.realIndex;
+                const activeSlide = document.querySelector(`.month-slider .swiper-slide[data-swiper-slide-index="${activeIndex}"]:not(.swiper-slide-duplicate)`);
                 
-                if(activeLink) {
-                    // Update Active Class
-                    monthLinks.forEach(l => l.classList.remove('active'));
-                    
-                    // Karena slide di-duplicate (loop mode), kita harus cari semua link yg punya bulan sama
-                    const targetMonth = activeLink.getAttribute('data-month');
-                    const sameMonthLinks = document.querySelectorAll(`.month-slider .nav-link[data-month="${targetMonth}"]`);
-                    sameMonthLinks.forEach(l => l.classList.add('active'));
-
-                    // Filter
-                    filterOrders();
+                if(activeSlide) {
+                    const link = activeSlide.querySelector('.nav-link');
+                    if(link) {
+                        const targetMonth = link.getAttribute('data-month');
+                        
+                        // Update UI Active
+                        monthLinks.forEach(l => l.classList.remove('active'));
+                        document.querySelectorAll(`.month-slider .nav-link[data-month="${targetMonth}"]`)
+                                .forEach(l => l.classList.add('active'));
+                        
+                        // Filter
+                        filterOrders(targetMonth, null);
+                    }
                 }
             });
 
-            // --- INISIALISASI AWAL ---
+            // --- 3. INISIALISASI AWAL (THE FIX) ---
             
-            // Geser ke bulan sekarang saat load
-            const initialActiveLink = document.querySelector('.month-slider .swiper-slide:not(.swiper-slide-duplicate) .nav-link.active');
-            if (initialActiveLink) {
-                const slideIndex = initialActiveLink.closest('.swiper-slide').getAttribute('data-swiper-slide-index');
-                monthSwiper.slideToLoop(parseInt(slideIndex), 0);
-            }
-            
-            // Jalankan filter pertama kali
-            filterOrders();
+            // Data PHP (Server Time)
+            const serverMonthIndex = {{ (int)date('n') - 1 }}; // 0-11
+            const serverMonthData = "{{ (int)date('n') }}";   // 1-12
+            const serverYear = "{{ date('Y') }}";
+
+            // A. Set Dropdown Tahun
+            if(yearSelect) yearSelect.value = serverYear;
+
+            // B. Set UI Active (Visual)
+            monthLinks.forEach(l => l.classList.remove('active'));
+            document.querySelectorAll(`.month-slider .nav-link[data-month="${serverMonthData}"]`)
+                    .forEach(l => l.classList.add('active'));
+
+            // C. Geser Slider
+            setTimeout(() => {
+                monthSwiper.slideToLoop(serverMonthIndex, 0); 
+            }, 10);
+
+            // D. [KUNCINYA] JALANKAN FILTER PAKSA DENGAN DATA SERVER
+            // Kita tidak peduli slider lagi nunjuk mana, pokoknya filter pakai Data Server.
+            filterOrders(serverMonthData, serverYear);
         }
     });
 </script>

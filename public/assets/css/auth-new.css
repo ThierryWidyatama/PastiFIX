@@ -369,3 +369,31 @@ div:where(.swal2-container) .swal2-icon.swal2-error [class^='swal2-x-mark-line']
         color: rgba(0,0,0,0.6);
     }
 }
+
+@media (max-width: 500px) {
+    .g-recaptcha {
+        /* Kecilkan ukuran jadi 77% dari aslinya */
+        transform: scale(0.77); 
+        
+        /* Pastikan titik pengecilan dari kiri atas */
+        transform-origin: 0 0;  
+        
+        /* Kasih margin bawah manual karena scale tidak mengubah layout asli */
+        margin-bottom: -10px !important; 
+        
+        /* Pastikan elemen ini ada di atas layer lain */
+        position: relative;
+        z-index: 100; 
+    }
+    
+    /* Pastikan container form tidak memotong (clip) reCAPTCHA */
+    .auth-card {
+        overflow-x: visible !important; 
+    }
+    
+    /* Atau, jika kontainer form-nya terlalu sempit */
+    .form-group-minimal {
+        width: 100%;
+        overflow: visible;
+    }
+}

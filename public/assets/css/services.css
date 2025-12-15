@@ -356,6 +356,10 @@ body {
     border: 1px solid #ddd;
 }
 
+.logo-navbar {
+    height: 70px;
+}
+
 @media (max-width: 991.98px) {
     
     /* Saat menu dibuka, kasih background gelap */
@@ -380,5 +384,8 @@ body {
         margin-bottom: 0;
         border-bottom: none;
         padding-bottom: 0;
+    }
+    .logo-navbar {
+        height: 40px;
     }
 }

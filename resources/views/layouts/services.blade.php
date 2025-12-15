@@ -26,53 +26,86 @@
 <body data-bs-spy="scroll" data-bs-target="#main-nav">
 
     <nav id="main-nav" class="navbar navbar-expand-lg fixed-top navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" style="height: 70px;">
+        <div class="container position-relative"> <!-- [PENTING] position-relative untuk acuan tengah -->
+            
+            <!-- 1. KIRI: LOGO -->
+            <a class="navbar-brand" href="{{ route('home') }}">
+                <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" class="logo-navbar">
             </a>
+
+            <!-- 2. TENGAH: USER PROFILE (KHUSUS MOBILE) -->
+            @auth
+                <div class="d-lg-none position-absolute start-50 top-50 translate-middle">
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <!-- Foto Kecil -->
+                            <img src="{{ Auth::user()->profile_picture_url ? Storage::url(Auth::user()->profile_picture_url) : asset('assets/img/default-avatar.png') }}"
+                                 alt="User" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover; border: 1px solid #fff;">
+                            <!-- Nama Depan Saja (Biar muat di HP) -->
+                            <span class="fw-bold" style="font-size: 0.9rem;">{{ strtok(Auth::user()->name, " ") }}</span>
+                        </a>
+                        
+                        <!-- Dropdown Menu Mobile (Centered) -->
+                        <ul class="dropdown-menu dropdown-menu-center mt-2 shadow-sm border-0" style="left: 50%; transform: translateX(-50%);">
+                            <li>
+                                <div class="d-flex align-items-center px-3 py-2">
+                                    <div class="text-start">
+                                        <div style="font-weight: 700; color: #333; font-size: 0.9rem;">{{ Auth::user()->name }}</div>
+                                        <div style="font-size: 0.75rem; color: #777;">{{ Auth::user()->email }}</div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ route('profil') }}"><i class="bi bi-person me-2"></i> My Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profil.activity') }}"><i class="bi bi-list-check me-2"></i> My Activity</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profil.settings') }}"><i class="bi bi-gear me-2"></i> Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Sign Out
+                                </a>
+                                <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            @endauth
+
+            <!-- 3. KANAN: HAMBURGER MENU -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+            <!-- 4. MENU COLLAPSE (ISI BAWAH/KANAN) -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}#about">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <!-- [OPSI A] Jika mau scroll ke section service di home: -->
-                        {{-- <!-- <a class="nav-link" href="{{ route('home') }}#service">Service</a> --> --}}
-                        
-                        <!-- [OPSI B] Jika mau langsung ke halaman daftar layanan (LEBIH BAIK): -->
-                        <a class="nav-link {{ Request::routeIs('services.index') ? 'active' : '' }}" href="{{ route('services.index') }}">Service</a>
-                    </li>
-                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}#why-us">Why Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}#testimoni">Testimoni</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#service">Service</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#why-us">Why Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#testimoni">Testimoni</a></li>
 
                     @auth
-                        <li class="nav-item ms-lg-3 dropdown">
+                        <!-- USER MENU DESKTOP (KHUSUS LAYAR BESAR) -->
+                        <!-- Class d-none d-lg-block artinya: Hilang di HP, Muncul di Desktop -->
+                        <li class="nav-item ms-lg-3 dropdown d-none d-lg-block">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Halo, {{ \Illuminate\Support\Str::words(Auth::user()->name, 2, '') }}
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <div class="d-flex align-items-center px-3 py-2">
-                                        
                                         <img src="{{ Auth::user()->profile_picture_url ? Storage::url(Auth::user()->profile_picture_url) : asset('assets/img/default-avatar.png') }}"
                                              alt="User Avatar" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
-                                        
                                         <div class="text-start">
                                             <div style="font-weight: 700; color: #333; line-height: 1.2;">{{ Auth::user()->name }}</div>
                                             <div style="font-size: 0.85rem; color: #777;">{{ Auth::user()->email }}</div>
                                         </div>
                                     </div>
                                 </li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ route('profil') }}">My Profile</a></li>
                                 <li><a class="dropdown-item" href="{{ route('profil.activity') }}">My Activity</a></li>
                                 <li><a class="dropdown-item" href="{{ route('profil.settings') }}">Account Setting</a></li>
@@ -92,7 +125,7 @@
                             <a href="{{ route('login') }}" class="btn btn-brand fw-medium">Pesan</a>
                         </li>
                     @endguest
-                    </ul>
+                </ul>
             </div>
         </div>
     </nav>

@@ -110,10 +110,10 @@
                         <!-- Peta View Only -->
                         <!-- [FIX] ID disamakan dengan JS -->
                         <div id="map-profile-main" style="height: 250px; width: 100%; border-radius: 8px; border: 2px solid #e0e0e0; z-index: 0;"></div>
-                        
-                        <!-- [FIX] Value diambil dari $address -->
-                        <input type="hidden" id="main_lat" value="{{ $address->latitude }}">
-                        <input type="hidden" id="main_lng" value="{{ $address->longitude }}">
+
+                        <!-- [FIX] GANTI NAME JADI 'profile_...' AGAR TIDAK BENTROK DENGAN MODAL -->
+                        <input type="hidden" id="main_lat" name="profile_latitude" value="{{ $address->latitude ?? '' }}">
+                        <input type="hidden" id="main_lng" name="profile_longitude" value="{{ $address->longitude ?? '' }}">
                         
                         <div class="form-text small text-success mt-1">
                             <i class="bi bi-geo-alt-fill"></i> Lokasi terpilih: {{ $address->latitude }}, {{ $address->longitude }}
@@ -312,11 +312,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
 <script>
-/* =====================================================
-   GLOBAL CONSTANT & HELPER
-===================================================== */
-const DEF_LAT = -6.9932;
-const DEF_LNG = 110.4203;
+        // =====================================================
+        // KONFIGURASI GLOBAL (Satu kali deklarasi aja biar ga error)
+        // =====================================================
+        const DEFAULT_LAT = -6.9932; // Koordinat Default (Semarang/Pati)
+        const DEFAULT_LNG = 110.4203;
 
 
 /* =====================================================
@@ -374,205 +374,243 @@ document.getElementById("cropButton").addEventListener("click", function () {
 });
 
 
-/* =====================================================
-   BAGIAN 2 — MAP PROFIL (VIEW MODE) - FIXED
-===================================================== */
-let mainMap = null;
-let mainMarker = null;
+        // =====================================================
+        // BAGIAN 2 — MAP PROFIL UTAMA (VIEW & EDIT)
+        // =====================================================
+        
+        let mainMap = null;
+        let mainMarker = null;
 
-// [FIX] ID harus sama persis dengan HTML di atas
-const mapContainer = document.getElementById("map-profile-main");
-const inputLat     = document.getElementById("main_lat");
-const inputLng     = document.getElementById("main_lng");
+        // Elemen-elemen
+        const mapContainerMain = document.getElementById("map-profile-main");
+        const inputLatMain = document.getElementById("main_lat");
+        const inputLngMain = document.getElementById("main_lng");
+        const inputAddressMain = document.getElementById("profile_address"); 
+        const inputPostcodeMain = document.getElementById("profile_postcode");
 
-if (mapContainer && inputLat && inputLng) {
-    
-    // Ambil value dan konversi ke Float
-    let lat = parseFloat(inputLat.value);
-    let lng = parseFloat(inputLng.value);
+        if (mapContainerMain && inputLatMain && inputLngMain) {
+            
+            // Ambil koordinat awal
+            let lat = parseFloat(inputLatMain.value);
+            let lng = parseFloat(inputLngMain.value);
 
-    console.log("Koordinat Profil:", lat, lng); // Cek Console browser (F12)
+            if (isNaN(lat) || isNaN(lng) || (lat === 0 && lng === 0)) {
+                lat = DEFAULT_LAT;
+                lng = DEFAULT_LNG;
+            }
 
-    // Validasi: Kalau koordinat 0 atau NaN, pakai Default (Semarang)
-    const DEF_LAT = -6.9932;
-    const DEF_LNG = 110.4203;
+            // Init Map (Mode Static)
+            mainMap = L.map("map-profile-main", {
+                center: [lat, lng],
+                zoom: 16,
+                dragging: false,      
+                touchZoom: false,     
+                scrollWheelZoom: false,
+                doubleClickZoom: false,
+                zoomControl: false    
+            });
 
-    if (isNaN(lat) || isNaN(lng) || (lat === 0 && lng === 0)) {
-        console.warn("Koordinat tidak valid, menggunakan default.");
-        lat = DEF_LAT;
-        lng = DEF_LNG;
-    }
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 19,
+                attribution: "© OSM"
+            }).addTo(mainMap);
 
-    // Init Map (Mode Baca Saja / Static)
-    mainMap = L.map("map-profile-main", {
-        center: [lat, lng],
-        zoom: 16,            // Zoom agak dekat biar kelihatan detail
-        dragging: false,     // Matikan geser
-        touchZoom: false,    // Matikan zoom sentuh
-        scrollWheelZoom: false, // Matikan scroll mouse
-        doubleClickZoom: false,
-        zoomControl: false,  // Hilangkan tombol +/-
-        attributionControl: false // Bersih
-    });
+            mainMarker = L.marker([lat, lng], {
+                draggable: false      
+            }).addTo(mainMap);
 
-    // Tile Layer
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-    }).addTo(mainMap);
-
-    // Marker (Tanpa draggable)
-    mainMarker = L.marker([lat, lng], {
-        draggable: false
-    }).addTo(mainMap);
-
-    // [FIX] Invalidate size biar peta gak abu-abu
-    setTimeout(() => {
-        mainMap.invalidateSize();
-    }, 500);
-}
+            // Fix ukuran map saat load
+            setTimeout(() => { mainMap.invalidateSize(); }, 500);
 
 
-/* =====================================================
-   BAGIAN 3 — EDIT MODE PROFIL
-===================================================== */
-editButton.addEventListener("click", function () {
-    editMode = true;
+            // --- FUNGSI UPDATE DATA ---
 
-    document.querySelectorAll("input[disabled], textarea[disabled]")
-        .forEach(el => el.disabled = false);
+            function updateAddressFromPin(lat, lng) {
+                inputLatMain.value = lat;
+                inputLngMain.value = lng;
 
-    saveButton.classList.remove("d-none");
-    editButton.classList.add("d-none");
-    document.querySelector(".profile-pic-edit-button")
-        .classList.remove("d-none");
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.display_name) {
+                            inputAddressMain.value = data.display_name;
+                        }
+                        if (data && data.address && data.address.postcode) {
+                            inputPostcodeMain.value = data.address.postcode;
+                        }
+                    });
+            }
 
-    if (!mainMap || !mainMarker) return;
+            // --- EVENT LISTENER MAP ---
 
-    mainMap.dragging.enable();
-    mainMap.touchZoom.enable();
-    mainMap.scrollWheelZoom.enable();
-    mainMap.doubleClickZoom.enable();
-    mainMarker.dragging.enable();
+            mainMarker.on('dragend', function (e) {
+                const pos = mainMarker.getLatLng();
+                updateAddressFromPin(pos.lat, pos.lng);
+            });
 
-    if (!mainMap._zoomControl) {
-        L.control.zoom({ position: "topleft" }).addTo(mainMap);
-    }
+            mainMap.on('click', function(e) {
+                if (mainMarker.dragging.enabled()) { // Cuma jalan kalau mode edit aktif
+                    mainMarker.setLatLng(e.latlng);
+                    updateAddressFromPin(e.latlng.lat, e.latlng.lng);
+                }
+            });
 
-    setTimeout(() => mainMap.invalidateSize(), 200);
-});
+            // [FITUR BARU] KETIK ALAMAT -> PINDAH PIN
+            let typingTimerMain;
+            if(inputAddressMain) {
+                inputAddressMain.addEventListener('input', function () {
+                    // Cek apakah sedang mode edit (disabled == false)
+                    if (this.disabled) return;
 
+                    clearTimeout(typingTimerMain);
+                    const query = this.value;
 
-/* =====================================================
-   BAGIAN 4 — MAP ADD ADDRESS (MODAL)
-===================================================== */
-let map            = null;
-let marker         = null;
-let mapInitialized = false;
+                    if (query.length > 5) {
+                        typingTimerMain = setTimeout(() => {
+                            console.log("Mencari di Peta Utama:", query);
+                            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data && data.length > 0) {
+                                        const lat = parseFloat(data[0].lat);
+                                        const lon = parseFloat(data[0].lon);
 
-const defaultLat = DEF_LAT;
-const defaultLng = DEF_LNG;
+                                        // Pindahkan Peta & Marker
+                                        mainMap.setView([lat, lon], 16);
+                                        mainMarker.setLatLng([lat, lon]);
 
-function initMap() {
-        if (mapInitialized) return;
-        if (!document.getElementById('map-container')) return;
-
-        console.log("Inisialisasi Peta Modal...");
-
-        // Init Peta
-        map = L.map('map-container').setView([defaultLat, defaultLng], 15);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        marker = L.marker([defaultLat, defaultLng], {
-            draggable: true
-        }).addTo(map);
-
-        // ==========================================
-        // [FIX UTAMA] AMBIL ELEMEN BERDASARKAN ID MODAL
-        // ==========================================
-        const latInput = document.getElementById('modal_lat');       // ID Baru
-        const lngInput = document.getElementById('modal_lng');       // ID Baru
-        const addressInput = document.getElementById('modal_address_input'); // ID Baru
-        const zipInput = document.getElementById('modal_postal_code'); // ID Baru
-
-        // Set Default Value
-        if (latInput) latInput.value = defaultLat;
-        if (lngInput) lngInput.value = defaultLng;
-
-        // Fungsi Reverse Geocode
-        function reverseGeocode(lat, lng) {
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    // Update Textarea Modal
-                    if (data && data.display_name && addressInput) {
-                        addressInput.value = data.display_name;
-                    }
-                    // Update Kode Pos Modal
-                    if (data && data.address && data.address.postcode && zipInput) {
-                        zipInput.value = data.address.postcode;
+                                        // Update hidden input TAPI JANGAN update teks alamatnya lagi (biar ga looping)
+                                        inputLatMain.value = lat;
+                                        inputLngMain.value = lon;
+                                    }
+                                });
+                        }, 1000); // Delay 1 detik
                     }
                 });
+            }
         }
 
-        // Fungsi Forward Geocode (Ketik di modal -> Pindah Pin)
-        let typingTimer;
-        if (addressInput) {
-            addressInput.addEventListener('input', function () {
-                clearTimeout(typingTimer);
-                const query = this.value;
-                if (query.length > 5) {
-                    typingTimer = setTimeout(() => {
-                        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data && data.length > 0) {
-                                    const lat = parseFloat(data[0].lat);
-                                    const lon = parseFloat(data[0].lon);
-                                    
-                                    map.setView([lat, lon], 16);
-                                    marker.setLatLng([lat, lon]);
-                                    
-                                    // Update Hidden Input Modal
-                                    if(latInput) latInput.value = lat;
-                                    if(lngInput) lngInput.value = lon;
-                                }
-                            });
-                    }, 1000);
+
+        // =====================================================
+        // BAGIAN 3 — MODE EDIT (TOMBOL EDIT DITEKAN)
+        // =====================================================
+        if(editButton) {
+            editButton.addEventListener("click", function () {
+                // 1. Hidupkan Form
+                document.querySelectorAll("input[disabled], textarea[disabled]")
+                    .forEach(el => el.disabled = false);
+
+                // 2. Tukar Tombol
+                saveButton.classList.remove("d-none");
+                editButton.classList.add("d-none");
+                
+                // 3. Munculkan tombol edit foto
+                const editIcon = document.querySelector(".profile-pic-edit-button");
+                if(editIcon) editIcon.classList.remove("d-none");
+                if(previewImg) previewImg.style.cursor = 'pointer';
+
+                // 4. HIDUPKAN PETA UTAMA
+                if (mainMap && mainMarker) {
+                    mainMap.dragging.enable();
+                    mainMap.touchZoom.enable();
+                    mainMap.scrollWheelZoom.enable();
+                    mainMap.doubleClickZoom.enable();
+                    
+                    // Tambah kontrol zoom
+                    if (!document.querySelector('.leaflet-control-zoom')) {
+                        L.control.zoom({ position: 'topleft' }).addTo(mainMap);
+                    }
+
+                    // Hidupkan Marker
+                    mainMarker.dragging.enable();
+                    
+                    // Efek visual border
+                    document.getElementById("map-profile-main").style.border = "2px solid #FEC81A";
+                    
+                    setTimeout(() => mainMap.invalidateSize(), 200);
                 }
             });
         }
 
-        // Event Listener Marker
-        marker.on('dragend', function (e) {
-            const pos = marker.getLatLng();
-            if(latInput) latInput.value = pos.lat;
-            if(lngInput) lngInput.value = pos.lng;
-            console.log("Koordinat Modal:", pos.lat, pos.lng); // Cek Console
-            reverseGeocode(pos.lat, pos.lng);
-        });
 
-        map.on('click', function(e) {
-            marker.setLatLng(e.latlng);
-            if(latInput) latInput.value = e.latlng.lat;
-            if(lngInput) lngInput.value = e.latlng.lng;
-            reverseGeocode(e.latlng.lat, e.latlng.lng);
-        });
+        // =====================================================
+        // BAGIAN 4 — MAP MODAL TAMBAH ALAMAT (INDEPENDEN)
+        // =====================================================
+        let mapModal = null;
+        let markerModal = null;
 
-        mapInitialized = true;
-    }
+        function initMapModal() {
+            if (!document.getElementById('map-container')) return;
+            if (mapModal !== null) return;
 
-// Trigger modal
-const modalAddAddress = document.getElementById('addProfileAddressModal');
-if (modalAddAddress) {
-    modalAddAddress.addEventListener('shown.bs.modal', function () {
-        initMap();
-        setTimeout(() => map && map.invalidateSize(), 200);
-    });
-}
+            mapModal = L.map('map-container').setView([DEFAULT_LAT, DEFAULT_LNG], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' }).addTo(mapModal);
+            markerModal = L.marker([DEFAULT_LAT, DEFAULT_LNG], { draggable: true }).addTo(mapModal);
+
+            const latInput = document.getElementById('modal_lat');
+            const lngInput = document.getElementById('modal_lng');
+            const addrInput = document.getElementById('modal_address_input');
+            const zipInput = document.getElementById('modal_postal_code');
+
+            if(latInput) latInput.value = DEFAULT_LAT;
+            if(lngInput) lngInput.value = DEFAULT_LNG;
+
+            function reverseGeocodeModal(lat, lng) {
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.display_name && addrInput) addrInput.value = data.display_name;
+                        if (data && data.address && data.address.postcode && zipInput) zipInput.value = data.address.postcode;
+                    });
+            }
+
+            markerModal.on('dragend', function (e) {
+                const pos = markerModal.getLatLng();
+                if(latInput) latInput.value = pos.lat;
+                if(lngInput) lngInput.value = pos.lng;
+                reverseGeocodeModal(pos.lat, pos.lng);
+            });
+
+            mapModal.on('click', function(e) {
+                markerModal.setLatLng(e.latlng);
+                if(latInput) latInput.value = e.latlng.lat;
+                if(lngInput) lngInput.value = e.latlng.lng;
+                reverseGeocodeModal(e.latlng.lat, e.latlng.lng);
+            });
+            
+             // Forward Geocode Modal (Ketik -> Pindah)
+            let typingTimerModal;
+            if (addrInput) {
+                addrInput.addEventListener('input', function () {
+                    clearTimeout(typingTimerModal);
+                    const query = this.value;
+                    if (query.length > 5) {
+                        typingTimerModal = setTimeout(() => {
+                            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data?.length > 0) {
+                                        const lat = parseFloat(data[0].lat);
+                                        const lon = parseFloat(data[0].lon);
+                                        mapModal.setView([lat, lon], 16);
+                                        markerModal.setLatLng([lat, lon]);
+                                        if(latInput) latInput.value = lat;
+                                        if(lngInput) lngInput.value = lon;
+                                    }
+                                });
+                        }, 1000);
+                    }
+                });
+            }
+        }
+
+        const modalAdd = document.getElementById('addProfileAddressModal');
+        if (modalAdd) {
+            modalAdd.addEventListener('shown.bs.modal', function () {
+                initMapModal();
+                setTimeout(() => { if(mapModal) mapModal.invalidateSize(); }, 200);
+            });
+        }
 </script>
 @endpush
 
@@ -596,5 +634,7 @@ if (modalAddAddress) {
     border-radius: 50%;
     cursor: pointer;
 }
+
+
 </style>
 

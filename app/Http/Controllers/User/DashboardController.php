@@ -37,20 +37,31 @@ class DashboardController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone_number' => 'nullable|string|max:20', 
-            'cropped_avatar_data' => 'nullable|string', // Validasi untuk data base64
+            'phone_number' => 'nullable|string|max:20',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
             'address_line' => 'nullable|string',
             'rt_rw' => 'nullable|string|max:10',
             'postal_code' => 'nullable|string|max:10',
             'landmark_details' => 'nullable|string',
+            // [PENTING] Validasi koordinat
+            'profile_latitude' => 'nullable', 
+            'profile_longitude' => 'nullable',
         ]);
 
+        // 1. Update Data User (Nama, HP, Foto)
         $userData = [
             'name' => $request->name,
             'phone_number' => $request->phone_number,
         ];
 
-        if ($request->filled('cropped_avatar_data')) {
+        if ($request->hasFile('avatar')) {
+            if ($user->profile_picture_url) {
+                Storage::disk('public')->delete($user->profile_picture_url);
+            }
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $userData['profile_picture_url'] = $path;
+        } else if ($request->filled('cropped_avatar_data')) {
+            // Logic Croppie Base64
             if ($user->profile_picture_url) {
                 Storage::disk('public')->delete($user->profile_picture_url);
             }
@@ -59,31 +70,28 @@ class DashboardController extends Controller
             $imageData = str_replace(' ', '+', $imageData);
             $decodedImage = base64_decode($imageData);
             $filename = 'avatars/' . Str::uuid() . '.jpeg';
-            
-            // [FIX 403] TAMBAHKAN 'public' DI SINI
-            Storage::disk('public')->put($filename, $decodedImage, 'public');
-            
+            Storage::disk('public')->put($filename, $decodedImage);
             $userData['profile_picture_url'] = $filename;
         }
 
         $user->update($userData);
 
-        // 4. Update data di tabel 'user_addresses'
+        // 2. [FIX UTAMA] Update Alamat Utama + KOORDINAT
         $user->addresses()->updateOrCreate(
-            ['is_primary' => true], 
+            ['is_primary' => true],
             [
                 'address_line' => $request->address_line,
                 'rt_rw' => $request->rt_rw,
                 'postal_code' => $request->postal_code,
                 'landmark_details' => $request->landmark_details,
                 
-                // [PASTIKAN INI ADA]
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
+                // MAPPING DATA BARU
+                'latitude' => $request->profile_latitude, 
+                'longitude' => $request->profile_longitude,
             ]
         );
 
-        return redirect()->route('profil')->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->route('profil')->with('success', 'Profil dan Lokasi berhasil diperbarui!');
     }
 
     /**
