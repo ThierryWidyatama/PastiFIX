@@ -81,7 +81,7 @@
 
                     <div class="add-new-address-link text-center my-4">
                         <div class="divider-line"></div>
-                        <br><br><br><br>
+                        {{-- <br><br><br><br> --}}
                         <a href="#" class="btn btn-icon-add" data-bs-toggle="modal" data-bs-target="#newAddressModal"><i class="bi bi-plus"></i></a>
                         <div class="mt-2 text-muted fw-medium">Tambah Alamat Baru</div>
                     </div>
@@ -144,22 +144,30 @@
                     <div class="modal-body">
                         <!-- [BARU] AREA PETA -->
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Titik Lokasi</label>
-                            <!-- Wadah Peta -->
-                            <div id="map-checkout" class="mb-2" style="height: 250px; width: 100%; border-radius: 8px; border: 2px solid #e0e0e0; z-index: 1;"></div>
-                            
-                            <div class="form-text small text-muted">
-                                <i class="bi bi-geo-alt-fill text-danger"></i> Geser pin untuk isi alamat & kode pos otomatis.
+                        <label class="form-label fw-bold">Titik Lokasi</label>
+                        
+                        <!-- Wrapper Baru -->
+                        <div class="map-wrapper">
+                            <!-- Overlay Loading -->
+                            <div id="loading-map-new" class="map-loading">
+                                <div class="spinner-border mb-2" role="status"></div>
+                                <span>Mencari titik...</span>
                             </div>
                             
-                            <!-- Input Koordinat -->
-                            <input type="hidden" id="lat_new" name="latitude">
-                            <input type="hidden" id="lng_new" name="longitude">
+                            <!-- Peta Asli -->
+                            <div id="map-checkout" class="map-canvas"></div>
                         </div>
+                        
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-geo-alt-fill text-danger"></i> Geser pin untuk isi alamat otomatis.
+                        </div>
+                        <input type="hidden" id="lat_new" name="latitude">
+                        <input type="hidden" id="lng_new" name="longitude">
+                    </div>
 
                         <!-- Form Alamat -->
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Alamat Lengkap</label>
+                            <label class="form-label fw-bold">Alamat Lengkap <span id="status-text-new" class="text-warning small fst-italic ms-2" style="display:none;">(Memuat alamat...)</span></label>
                             <textarea class="form-control" name="address_line" id="address_input_new" rows="3" required placeholder="Cari di peta atau ketik manual..."></textarea>
                         </div>
                         
@@ -218,17 +226,25 @@
                     <!-- [BARU] AREA PETA EDIT -->
                     <div class="mb-3">
                         <label class="form-label fw-bold">Perbarui Titik Lokasi</label>
-                        <div id="map-edit" class="mb-2" style="height: 250px; width: 100%; border-radius: 8px; border: 2px solid #e0e0e0; z-index: 1;"></div>
                         
-                        <!-- Input Koordinat Edit -->
+                        <div class="map-wrapper">
+                            <!-- Overlay Loading -->
+                            <div id="loading-map-edit" class="map-loading">
+                                <div class="spinner-border mb-2" role="status"></div>
+                                <span>Mencari titik...</span>
+                            </div>
+                            
+                            <div id="map-edit" class="map-canvas"></div>
+                        </div>
+
                         <input type="hidden" id="lat_edit" name="latitude">
                         <input type="hidden" id="lng_edit" name="longitude">
                     </div>
 
                     <!-- Form Alamat (Tambahkan ID untuk Geocoding) -->
                     <div class="mb-3">
-                        <label class="form-label">Alamat Lengkap</label>
-                        <textarea class="form-control" id="edit_address_line" name="address_line" rows="3" required placeholder="Cari di peta atau ketik..."></textarea>
+                        <label class="form-label">Alamat Lengkap <span id="status-text-edit" class="text-warning small fst-italic ms-2" style="display:none;">(Memuat alamat...)</span></label>
+                        <textarea class="form-control" id="edit_address_line" name="address_line" rows="3" required></textarea>
                     </div>
                     
                     <div class="row mb-3">
@@ -301,70 +317,121 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log("Javascript Checkout + Smart Maps Ready!");
 
-        const defaultLat = -6.9932; // Semarang
-        const defaultLng = 110.4203;
+        const DEFAULT_LAT = -6.9932; // Semarang
+        const DEFAULT_LNG = 110.4203;
+
+        // Fungsi Debounce (Rem Otomatis untuk API)
+        function debounce(func, timeout = 1000){
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => { func.apply(this, args); }, timeout);
+            };
+        }
 
         // ==========================================
-        // FUNGSI UMUM: SETUP MAP EVENTS (DRAG, CLICK, TYPE)
+        // FUNGSI UMUM: SETUP MAP EVENTS + LOADING
         // ==========================================
-        function setupMapEvents(map, marker, latInputId, lngInputId, addrInputId, zipInputId) {
+        function setupMapEvents(map, marker, latInputId, lngInputId, addrInputId, zipInputId, loadingMapId, statusTextId) {
             const latInput = document.getElementById(latInputId);
             const lngInput = document.getElementById(lngInputId);
             const addrInput = document.getElementById(addrInputId);
             const zipInput = document.getElementById(zipInputId);
+            const loadingMap = document.getElementById(loadingMapId); // Overlay Loading Peta
+            const statusText = document.getElementById(statusTextId); // Teks Loading Alamat
+
+            // Helper: Nyalakan/Matikan Loading Input
+            function toggleInputLoading(isLoading) {
+                if (isLoading) {
+                    addrInput.classList.add('input-loading');
+                    addrInput.setAttribute('readonly', true); // Cegah ketik saat loading
+                    if(statusText) statusText.style.display = 'inline';
+                } else {
+                    addrInput.classList.remove('input-loading');
+                    addrInput.removeAttribute('readonly');
+                    if(statusText) statusText.style.display = 'none';
+                }
+            }
+
+            // Helper: Nyalakan/Matikan Loading Peta
+            function toggleMapLoading(isLoading) {
+                if(loadingMap) loadingMap.style.display = isLoading ? 'flex' : 'none';
+            }
 
             function updateInputs(lat, lng) {
                 if(latInput) latInput.value = lat;
                 if(lngInput) lngInput.value = lng;
             }
 
-            function reverseGeocode(lat, lng) {
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+            // A. Reverse Geocode (Pin -> Teks)
+            const doReverseGeocode = debounce((lat, lng) => {
+                // Fetch jalan -> Matikan loading input setelah selesai
+                fetch(`/geocode/reverse?lat=${lat}&lon=${lng}`)
                     .then(res => res.json())
                     .then(data => {
-                        if (data && data.address) {
-                            if(addrInput) addrInput.value = data.display_name;
-                            if(zipInput && data.address.postcode) {
-                                zipInput.value = data.address.postcode;
-                                zipInput.style.backgroundColor = "#fff9db"; 
-                                setTimeout(() => zipInput.style.backgroundColor = "", 1500);
-                            }
+                        if (data && data.display_name && addrInput) {
+                            addrInput.value = data.display_name;
                         }
+                        if (data && data.address && data.address.postcode && zipInput) {
+                            zipInput.value = data.address.postcode;
+                            zipInput.style.backgroundColor = "#fff9db"; 
+                            setTimeout(() => zipInput.style.backgroundColor = "", 1500);
+                        }
+                    })
+                    .catch(err => console.warn("Reverse Geo Error:", err))
+                    .finally(() => {
+                        toggleInputLoading(false); // [STOP LOADING]
                     });
-            }
+            }, 1000);
 
+            // B. Forward Geocode (Teks -> Pin)
+            const doForwardGeocode = debounce((query) => {
+                // Fetch jalan -> Matikan loading peta setelah selesai
+                fetch(`/geocode/search?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const lat = parseFloat(data[0].lat);
+                            const lon = parseFloat(data[0].lon);
+                            map.setView([lat, lon], 16);
+                            marker.setLatLng([lat, lon]);
+                            updateInputs(lat, lon);
+                        }
+                    })
+                    .catch(err => console.warn("Forward Geo Error:", err))
+                    .finally(() => {
+                        toggleMapLoading(false); // [STOP LOADING]
+                    });
+            }, 1500);
+
+            // --- EVENT LISTENERS ---
+
+            // 1. Marker Digeser
+            marker.on('dragstart', function() {
+                toggleInputLoading(true); // [START LOADING] Saat mulai geser
+            });
+            
             marker.on('dragend', function (e) {
                 const pos = marker.getLatLng();
                 updateInputs(pos.lat, pos.lng);
-                reverseGeocode(pos.lat, pos.lng);
+                doReverseGeocode(pos.lat, pos.lng); // Debounce akan jalan, loading mati di finally
             });
 
+            // 2. Peta Diklik
             map.on('click', function(e) {
+                toggleInputLoading(true); // [START LOADING]
                 marker.setLatLng(e.latlng);
                 updateInputs(e.latlng.lat, e.latlng.lng);
-                reverseGeocode(e.latlng.lat, e.latlng.lng);
+                doReverseGeocode(e.latlng.lat, e.latlng.lng);
             });
 
-            let typingTimer;
+            // 3. Ketik Alamat
             if (addrInput) {
                 addrInput.addEventListener('input', function () {
-                    clearTimeout(typingTimer);
                     const query = this.value;
                     if (query.length > 5) {
-                        typingTimer = setTimeout(() => {
-                            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data && data.length > 0) {
-                                        const result = data[0];
-                                        const lat = parseFloat(result.lat);
-                                        const lon = parseFloat(result.lon);
-                                        map.setView([lat, lon], 16);
-                                        marker.setLatLng([lat, lon]);
-                                        updateInputs(lat, lon);
-                                    }
-                                });
-                        }, 1000);
+                        toggleMapLoading(true); // [START LOADING] Saat ngetik
+                        doForwardGeocode(query);
                     }
                 });
             }
@@ -380,15 +447,16 @@
             if (!document.getElementById('map-checkout')) return;
             if (mapNew !== null) return; 
 
-            mapNew = L.map('map-checkout').setView([defaultLat, defaultLng], 15);
+            mapNew = L.map('map-checkout').setView([DEFAULT_LAT, DEFAULT_LNG], 15);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' }).addTo(mapNew);
-            markerNew = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(mapNew);
+            markerNew = L.marker([DEFAULT_LAT, DEFAULT_LNG], { draggable: true }).addTo(mapNew);
 
-            setupMapEvents(mapNew, markerNew, 'lat_new', 'lng_new', 'address_input_new', 'postal_code_new');
+            // Sambungkan event dengan ID elemen Modal Tambah
+            setupMapEvents(mapNew, markerNew, 'lat_new', 'lng_new', 'address_input_new', 'postal_code_new', 'loading-map-new', 'status-text-new');
             
             // Set default hidden input
-            document.getElementById('lat_new').value = defaultLat;
-            document.getElementById('lng_new').value = defaultLng;
+            document.getElementById('lat_new').value = DEFAULT_LAT;
+            document.getElementById('lng_new').value = DEFAULT_LNG;
         }
         
         const modalNew = document.getElementById('newAddressModal');
@@ -400,7 +468,7 @@
         }
 
         // ==========================================
-        // BAGIAN 2: PETA MODAL EDIT (SMART INIT)
+        // BAGIAN 2: PETA MODAL EDIT (EDIT)
         // ==========================================
         let mapEdit = null;
         let markerEdit = null;
@@ -408,66 +476,56 @@
         function initMapEdit(lat, lng, addressText) {
             if (!document.getElementById('map-edit')) return;
             
-            // Cek apakah koordinat valid (bukan NaN dan bukan 0)
             const isValidCoord = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
-            
-            let startLat = defaultLat;
-            let startLng = defaultLng;
+            let startLat = isValidCoord ? lat : DEFAULT_LAT;
+            let startLng = isValidCoord ? lng : DEFAULT_LNG;
 
-            // LOGIKA PENENTUAN POSISI AWAL
-            if (isValidCoord) {
-                // Skenario A: Punya Koordinat -> Pakai itu
-                startLat = lat;
-                startLng = lng;
-                renderMapEdit(startLat, startLng);
-            } else {
-                // Skenario B: Gak punya koordinat -> Render Default dulu
-                renderMapEdit(startLat, startLng);
-                
-                // Lalu coba cari berdasarkan teks alamat (Auto-fix)
-                if (addressText && addressText.length > 5) {
-                    console.log("Mencari koordinat untuk:", addressText);
-                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressText)}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data && data.length > 0) {
-                                const newLat = parseFloat(data[0].lat);
-                                const newLng = parseFloat(data[0].lon);
-                                
-                                // Pindahkan peta ke lokasi hasil pencarian
-                                if(mapEdit && markerEdit) {
-                                    mapEdit.setView([newLat, newLng], 16);
-                                    markerEdit.setLatLng([newLat, newLng]);
-                                    // Update input hidden agar tersimpan saat submit
-                                    document.getElementById('lat_edit').value = newLat;
-                                    document.getElementById('lng_edit').value = newLng;
-                                }
-                            }
-                        });
-                }
-            }
-        }
-
-        function renderMapEdit(lat, lng) {
+            // Render Peta Edit
             if (mapEdit === null) {
-                mapEdit = L.map('map-edit').setView([lat, lng], 15);
+                mapEdit = L.map('map-edit').setView([startLat, startLng], 15);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' }).addTo(mapEdit);
-                markerEdit = L.marker([lat, lng], { draggable: true }).addTo(mapEdit);
+                markerEdit = L.marker([startLat, startLng], { draggable: true }).addTo(mapEdit);
                 
-                setupMapEvents(mapEdit, markerEdit, 'lat_edit', 'lng_edit', 'edit_address_line', 'edit_postal_code');
+                // Sambungkan event dengan ID elemen Modal Edit
+                setupMapEvents(mapEdit, markerEdit, 'lat_edit', 'lng_edit', 'edit_address_line', 'edit_postal_code', 'loading-map-edit', 'status-text-edit');
             } else {
-                mapEdit.setView([lat, lng], 15);
-                markerEdit.setLatLng([lat, lng]);
+                mapEdit.setView([startLat, startLng], 15);
+                markerEdit.setLatLng([startLat, startLng]);
             }
+            
+            // Refresh ukuran map (PENTING BUAT MOBILE)
             setTimeout(() => { mapEdit.invalidateSize(); }, 200);
             
             // Set input hidden
-            document.getElementById('lat_edit').value = lat;
-            document.getElementById('lng_edit').value = lng;
+            const elLatEdit = document.getElementById('lat_edit');
+            const elLngEdit = document.getElementById('lng_edit');
+            if(elLatEdit) elLatEdit.value = startLat;
+            if(elLngEdit) elLngEdit.value = startLng;
+
+            // [SMART FIX] Jika koordinat kosong tapi ada alamat teks, cari otomatis
+            if (!isValidCoord && addressText && addressText.length > 5) {
+                console.log("Auto-fixing coordinates for:", addressText);
+                fetch(`/geocode/search?q=${encodeURIComponent(addressText)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const newLat = parseFloat(data[0].lat);
+                            const newLng = parseFloat(data[0].lon);
+                            
+                            if(mapEdit && markerEdit) {
+                                mapEdit.setView([newLat, newLng], 16);
+                                markerEdit.setLatLng([newLat, newLng]);
+                                if(elLatEdit) elLatEdit.value = newLat;
+                                if(elLngEdit) elLngEdit.value = newLng;
+                            }
+                        }
+                    });
+            }
         }
 
+
         // ==========================================
-        // LOGIC TOMBOL EDIT
+        // LOGIC TOMBOL EDIT (UPDATE DATA KE MODAL)
         // ==========================================
         const editButtons = document.querySelectorAll('.btn-edit-address');
         const editForm = document.getElementById('editAddressForm');
@@ -482,18 +540,23 @@
                 if(document.getElementById('edit_postal_code')) document.getElementById('edit_postal_code').value = pos;
                 if(document.getElementById('edit_landmark_details')) document.getElementById('edit_landmark_details').value = patokan;
                 
-                // Init Peta Edit (Kirim koordinat DAN teks alamat)
+                // Isi Hidden Input Koordinat (Fallback ke default jika null)
+                if(document.getElementById('lat_edit')) document.getElementById('lat_edit').value = lat || DEFAULT_LAT;
+                if(document.getElementById('lng_edit')) document.getElementById('lng_edit').value = lng || DEFAULT_LNG;
+
+                // Init Peta Edit dengan Koordinat Lama
                 // Timeout dikit biar modal render dulu
                 setTimeout(() => {
                     initMapEdit(parseFloat(lat), parseFloat(lng), line);
                 }, 300);
 
-                // Logic Checkbox & Action Form (Tetap sama)
+                // Logic Checkbox Utama
                 const checkPrimary = document.getElementById('edit_is_primary');
                 const containerPrimary = checkPrimary ? checkPrimary.closest('.form-check') : null;
                 if (checkPrimary) {
                     const isSavedAddress = saved === '1';
                     const isPrimaryAddress = primary === '1';
+
                     if (!isSavedAddress) {
                         checkPrimary.checked = false;
                         checkPrimary.disabled = true;
@@ -504,25 +567,36 @@
                         checkPrimary.disabled = isPrimaryAddress; 
                     }
                 }
+
                 if (editForm) editForm.action = `/profil/address/${id}`;
             });
         });
 
+
         // ==========================================
-        // SISANYA: LOGIC TAMBAH & DOUBLE ORDER (TETAP SAMA)
+        // LOGIC CHECKBOX TAMBAH
         // ==========================================
         const saveCheck = document.getElementById('new_is_saved');
         const primaryCheck = document.getElementById('new_is_primary');
         if(saveCheck && primaryCheck) {
             saveCheck.addEventListener('change', function() {
-                if(this.checked) { primaryCheck.disabled = false; } else { primaryCheck.checked = false; primaryCheck.disabled = true; }
+                if(this.checked) {
+                    primaryCheck.disabled = false;
+                } else {
+                    primaryCheck.checked = false;
+                    primaryCheck.disabled = true;
+                }
             });
         }
 
+        // ==========================================
+        // LOGIC DOUBLE ORDER
+        // ==========================================
         const busyAddressIds = @json($busyAddressIds ?? []);
         const checkoutForm = document.getElementById('checkoutForm');
         const btnSubmit = document.getElementById('btnSubmitCheckout');
         const btnConfirm = document.getElementById('btnConfirmDoubleOrder');
+        
         const doubleOrderModalEl = document.getElementById('doubleOrderModal');
         let doubleOrderModal = null;
         if(doubleOrderModalEl) doubleOrderModal = new bootstrap.Modal(doubleOrderModalEl);

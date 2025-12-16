@@ -290,4 +290,8 @@ Route::middleware(['auth'])->group(function () {
     // Route Admin Approve/Reject Batal
     Route::post('/orders/{id}/approve-cancel', [App\Http\Controllers\AdminOrderController::class, 'approveCancel'])->name('admin.orders.approve_cancel');
     Route::post('/orders/{id}/reject-cancel', [App\Http\Controllers\AdminOrderController::class, 'rejectCancel'])->name('admin.orders.reject_cancel');
+
+    // Route Proxy Peta (Biar gak kena CORS Error)
+    Route::get('/geocode/reverse', [UserDashboardController::class, 'proxyReverseGeocode'])->name('geocode.reverse');
+    Route::get('/geocode/search', [UserDashboardController::class, 'proxySearchGeocode'])->name('geocode.search');
 });

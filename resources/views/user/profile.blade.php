@@ -85,35 +85,48 @@
 
                     <!-- Form Input (ID ditambahkan untuk sinkronisasi Map) -->
                     <div class="mb-3">
-                        <label for="address_line" class="form-minimal-label">Alamat Lengkap</label>
-                        <textarea class="form-control form-control-static" id="profile_address" name="address_line" rows="2" disabled>{{ $address->address_line ?? '' }}</textarea>
+                        <label for="address_line" class="form-minimal-label">
+                            Alamat Lengkap
+                            <span id="status-text-main" class="text-warning small fst-italic ms-2" style="display:none;">
+                                <div class="spinner-border spinner-border-sm me-1" role="status"></div>Memuat...
+                            </span>
+                        </label>
+                        <input type="text" class="form-control form-minimal-input" id="profile_address" name="address_line" value="{{ $address->address_line ?? '' }}" disabled>
                     </div>
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="rt_rw" class="form-minimal-label">RT/RW</label>
-                            <input type="text" class="form-control form-control-static" id="rt_rw" name="rt_rw" value="{{ $address->rt_rw ?? '' }}" disabled>
+                            <!-- [FIX] Ganti class jadi form-minimal-input -->
+                            <input type="text" class="form-control form-minimal-input" id="rt_rw" name="rt_rw" value="{{ $address->rt_rw ?? '' }}" disabled>
                         </div>
                         <div class="col-md-6">
-                            <label for="postal_code" class="form-minimal-label">Kodepos</label>
-                            <!-- [ID PENTING] -->
-                            <input type="text" class="form-control form-control-static" id="profile_postcode" name="postal_code" value="{{ $address->postal_code ?? '' }}" disabled>
+                             <label for="postal_code" class="form-minimal-label">Kodepos</label>
+                             <!-- [FIX] Ganti class jadi form-minimal-input -->
+                             <input type="text" class="form-control form-minimal-input" id="profile_postcode" name="postal_code" value="{{ $address->postal_code ?? '' }}" disabled>
                         </div>
                     </div>
+                    
                     <div class="mb-4">
                         <label for="landmark_details" class="form-minimal-label">Detail Patokan (Opsional)</label>
-                        <input type="text" class="form-control form-control-static" id="landmark_details" name="landmark_details" value="{{ $address->landmark_details ?? '' }}" disabled>
+                        <!-- [FIX] Ganti class jadi form-minimal-input -->
+                        <input type="text" class="form-control form-minimal-input" id="landmark_details" name="landmark_details" value="{{ $address->landmark_details ?? '' }}" disabled>
                     </div>
                     
                     <h6 class="fw-bold">Titik Rumah</h6>
-
                     @if($address && $address->latitude && $address->longitude)
-                        <!-- Peta View Only -->
-                        <!-- [FIX] ID disamakan dengan JS -->
-                        <div id="map-profile-main" style="height: 250px; width: 100%; border-radius: 8px; border: 2px solid #e0e0e0; z-index: 0;"></div>
+                        
+                        <!-- [BARU] Wrapper & Loading -->
+                        <div class="map-wrapper mb-2">
+                            <div id="loading-map-main" class="map-loading">
+                                <div class="spinner-border mb-2" role="status"></div>
+                                <span>Mencari titik...</span>
+                            </div>
+                            <div id="map-profile-main" class="map-canvas"></div>
+                        </div>
 
-                        <!-- [FIX] GANTI NAME JADI 'profile_...' AGAR TIDAK BENTROK DENGAN MODAL -->
-                        <input type="hidden" id="main_lat" name="profile_latitude" value="{{ $address->latitude ?? '' }}">
-                        <input type="hidden" id="main_lng" name="profile_longitude" value="{{ $address->longitude ?? '' }}">
+                        <input type="hidden" id="main_lat" name="profile_latitude" value="{{ $address->latitude }}">
+                        <input type="hidden" id="main_lng" name="profile_longitude" value="{{ $address->longitude }}">
                         
                         <div class="form-text small text-success mt-1">
                             <i class="bi bi-geo-alt-fill"></i> Lokasi terpilih: {{ $address->latitude }}, {{ $address->longitude }}
@@ -240,30 +253,33 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Titik Lokasi (Geser Pin)</label>
                         
-                        <div id="map-container" style="height: 300px; width: 100%; border-radius: 8px; border: 2px solid #e0e0e0; z-index: 1;"></div>
+                        <!-- [BARU] Wrapper & Loading -->
+                        <div class="map-wrapper">
+                            <div id="loading-map-modal" class="map-loading">
+                                <div class="spinner-border mb-2" role="status"></div>
+                                <span>Mencari titik...</span>
+                            </div>
+                            <div id="map-container" class="map-canvas"></div>
+                        </div>
                         
                         <div class="form-text small mt-1">
                             <i class="bi bi-geo-alt-fill text-danger"></i> Geser pin biru ke lokasi rumah Anda.
                         </div>
                         
-                        <!-- [FIX] ID KITA UBAH JADI 'modal_...' BIAR UNIK -->
                         <input type="hidden" id="modal_lat" name="latitude"> 
                         <input type="hidden" id="modal_lng" name="longitude">
                     </div>
 
                     <!-- FORM ALAMAT -->
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Alamat Lengkap</label>
+                        <label class="form-label fw-bold">
+                            Alamat Lengkap 
+                            <!-- Teks Loading Kecil -->
+                            <span id="status-text-modal" class="text-warning small fst-italic ms-2" style="display:none;">(Memuat alamat...)</span>
+                        </label>
                         
                         <!-- [FIX] ID KITA UBAH JADI 'modal_address_input' -->
-                        <textarea 
-                            class="form-control" 
-                            name="address_line" 
-                            id="modal_address_input" 
-                            rows="3" 
-                            required 
-                            placeholder="Cari lokasi atau geser pin pada peta..."
-                        ></textarea>
+                        <textarea class="form-control" name="address_line" id="modal_address_input" rows="3" required placeholder="Cari lokasi atau geser pin pada peta..."></textarea>
                         
                         <div class="form-text small">Alamat akan terisi otomatis dari titik peta.</div>
                     </div>
@@ -317,6 +333,16 @@
         // =====================================================
         const DEFAULT_LAT = -6.9932; // Koordinat Default (Semarang/Pati)
         const DEFAULT_LNG = 110.4203;
+
+        // --- HELPER: DEBOUNCE (REM OTOMATIS) ---
+        // Fungsi Debounce (Jeda waktu biar ga spam server)
+        function debounce(func, timeout = 1000){
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => { func.apply(this, args); }, timeout);
+            };
+        }
 
 
 /* =====================================================
@@ -373,118 +399,100 @@ document.getElementById("cropButton").addEventListener("click", function () {
     cropModal.hide();
 });
 
-
         // =====================================================
-        // BAGIAN 2 — MAP PROFIL UTAMA (VIEW & EDIT)
+        // FUNGSI UMUM: SETUP MAP EVENTS + LOADING
         // =====================================================
-        
-        let mainMap = null;
-        let mainMarker = null;
+        function setupMapEvents(map, marker, latInputId, lngInputId, addrInputId, zipInputId, loadingMapId, statusTextId) {
+            const latInput = document.getElementById(latInputId);
+            const lngInput = document.getElementById(lngInputId);
+            const addrInput = document.getElementById(addrInputId);
+            const zipInput = document.getElementById(zipInputId);
+            const loadingMap = document.getElementById(loadingMapId); 
+            const statusText = document.getElementById(statusTextId); 
 
-        // Elemen-elemen
-        const mapContainerMain = document.getElementById("map-profile-main");
-        const inputLatMain = document.getElementById("main_lat");
-        const inputLngMain = document.getElementById("main_lng");
-        const inputAddressMain = document.getElementById("profile_address"); 
-        const inputPostcodeMain = document.getElementById("profile_postcode");
-
-        if (mapContainerMain && inputLatMain && inputLngMain) {
-            
-            // Ambil koordinat awal
-            let lat = parseFloat(inputLatMain.value);
-            let lng = parseFloat(inputLngMain.value);
-
-            if (isNaN(lat) || isNaN(lng) || (lat === 0 && lng === 0)) {
-                lat = DEFAULT_LAT;
-                lng = DEFAULT_LNG;
+            // Helper: Toggle Loading Input
+            function toggleInputLoading(isLoading) {
+                if (!addrInput) return;
+                if (isLoading) {
+                    addrInput.classList.add('input-loading');
+                    addrInput.setAttribute('readonly', true); 
+                    if(statusText) statusText.style.display = 'inline';
+                } else {
+                    addrInput.classList.remove('input-loading');
+                    addrInput.removeAttribute('readonly');
+                    if(statusText) statusText.style.display = 'none';
+                }
             }
 
-            // Init Map (Mode Static)
-            mainMap = L.map("map-profile-main", {
-                center: [lat, lng],
-                zoom: 16,
-                dragging: false,      
-                touchZoom: false,     
-                scrollWheelZoom: false,
-                doubleClickZoom: false,
-                zoomControl: false    
-            });
+            // Helper: Toggle Loading Peta
+            function toggleMapLoading(isLoading) {
+                if(loadingMap) loadingMap.style.display = isLoading ? 'flex' : 'none';
+            }
 
-            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-                maxZoom: 19,
-                attribution: "© OSM"
-            }).addTo(mainMap);
+            function updateInputs(lat, lng) {
+                if(latInput) latInput.value = lat;
+                if(lngInput) lngInput.value = lng;
+            }
 
-            mainMarker = L.marker([lat, lng], {
-                draggable: false      
-            }).addTo(mainMap);
-
-            // Fix ukuran map saat load
-            setTimeout(() => { mainMap.invalidateSize(); }, 500);
-
-
-            // --- FUNGSI UPDATE DATA ---
-
-            function updateAddressFromPin(lat, lng) {
-                inputLatMain.value = lat;
-                inputLngMain.value = lng;
-
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+            // A. Reverse (Pin -> Teks)
+            const doReverseGeocode = debounce((lat, lng) => {
+                fetch(`/geocode/reverse?lat=${lat}&lon=${lng}`)
                     .then(res => res.json())
                     .then(data => {
-                        if (data && data.display_name) {
-                            inputAddressMain.value = data.display_name;
+                        if (data && data.display_name && addrInput) addrInput.value = data.display_name;
+                        if (data && data.address && data.address.postcode && zipInput) {
+                            zipInput.value = data.address.postcode;
+                            zipInput.style.backgroundColor = "#fff9db"; 
+                            setTimeout(() => zipInput.style.backgroundColor = "", 1500);
                         }
-                        if (data && data.address && data.address.postcode) {
-                            inputPostcodeMain.value = data.address.postcode;
+                    })
+                    .catch(err => console.warn("Geo Error:", err))
+                    .finally(() => toggleInputLoading(false)); // STOP LOADING
+            }, 1000);
+
+            // B. Forward (Teks -> Pin)
+            const doForwardGeocode = debounce((query) => {
+                fetch(`/geocode/search?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const lat = parseFloat(data[0].lat);
+                            const lon = parseFloat(data[0].lon);
+                            map.setView([lat, lon], 16);
+                            marker.setLatLng([lat, lon]);
+                            updateInputs(lat, lon);
                         }
-                    });
-            }
+                    })
+                    .catch(err => console.warn("Geo Error:", err))
+                    .finally(() => toggleMapLoading(false)); // STOP LOADING
+            }, 1500);
 
-            // --- EVENT LISTENER MAP ---
-
-            mainMarker.on('dragend', function (e) {
-                const pos = mainMarker.getLatLng();
-                updateAddressFromPin(pos.lat, pos.lng);
+            // Listeners
+            marker.on('dragstart', function() { toggleInputLoading(true); });
+            marker.on('dragend', function (e) {
+                const pos = marker.getLatLng();
+                updateInputs(pos.lat, pos.lng);
+                doReverseGeocode(pos.lat, pos.lng);
             });
 
-            mainMap.on('click', function(e) {
-                if (mainMarker.dragging.enabled()) { // Cuma jalan kalau mode edit aktif
-                    mainMarker.setLatLng(e.latlng);
-                    updateAddressFromPin(e.latlng.lat, e.latlng.lng);
+            map.on('click', function(e) {
+                if (marker.dragging.enabled()) { // Cek if draggable (mode edit)
+                    toggleInputLoading(true);
+                    marker.setLatLng(e.latlng);
+                    updateInputs(e.latlng.lat, e.latlng.lng);
+                    doReverseGeocode(e.latlng.lat, e.latlng.lng);
                 }
             });
 
-            // [FITUR BARU] KETIK ALAMAT -> PINDAH PIN
-            let typingTimerMain;
-            if(inputAddressMain) {
-                inputAddressMain.addEventListener('input', function () {
-                    // Cek apakah sedang mode edit (disabled == false)
-                    if (this.disabled) return;
-
-                    clearTimeout(typingTimerMain);
+            if (addrInput) {
+                addrInput.addEventListener('input', function () {
+                    // Cek disabled (untuk main map)
+                    if(this.disabled) return;
+                    
                     const query = this.value;
-
                     if (query.length > 5) {
-                        typingTimerMain = setTimeout(() => {
-                            console.log("Mencari di Peta Utama:", query);
-                            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data && data.length > 0) {
-                                        const lat = parseFloat(data[0].lat);
-                                        const lon = parseFloat(data[0].lon);
-
-                                        // Pindahkan Peta & Marker
-                                        mainMap.setView([lat, lon], 16);
-                                        mainMarker.setLatLng([lat, lon]);
-
-                                        // Update hidden input TAPI JANGAN update teks alamatnya lagi (biar ga looping)
-                                        inputLatMain.value = lat;
-                                        inputLngMain.value = lon;
-                                    }
-                                });
-                        }, 1000); // Delay 1 detik
+                        toggleMapLoading(true);
+                        doForwardGeocode(query);
                     }
                 });
             }
@@ -492,41 +500,66 @@ document.getElementById("cropButton").addEventListener("click", function () {
 
 
         // =====================================================
-        // BAGIAN 3 — MODE EDIT (TOMBOL EDIT DITEKAN)
+        // BAGIAN 2 — MAP PROFIL UTAMA (MAIN)
+        // =====================================================
+        
+        let mainMap = null;
+        let mainMarker = null;
+        const elMainLat = document.getElementById("main_lat");
+        const elMainLng = document.getElementById("main_lng");
+
+        function initMainMap() {
+            const elContainer = document.getElementById("map-profile-main");
+            if (!elContainer || !elMainLat || !elMainLng) return;
+
+            let lat = parseFloat(elMainLat.value);
+            let lng = parseFloat(elMainLng.value);
+
+            if (isNaN(lat) || isNaN(lng) || (lat === 0 && lng === 0)) {
+                lat = DEFAULT_LAT; lng = DEFAULT_LNG;
+            }
+
+            mainMap = L.map("map-profile-main", {
+                center: [lat, lng],
+                zoom: 16,
+                dragging: false, touchZoom: false, scrollWheelZoom: false, doubleClickZoom: false, zoomControl: false
+            });
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 19, attribution: "© OSM"
+            }).addTo(mainMap);
+
+            mainMarker = L.marker([lat, lng], { draggable: false }).addTo(mainMap);
+            setTimeout(() => { mainMap.invalidateSize(); }, 500);
+
+            // [FIX] Panggil Setup dengan ID Loading
+            setupMapEvents(mainMap, mainMarker, 'main_lat', 'main_lng', 'profile_address', 'profile_postcode', 'loading-map-main', 'status-text-main');
+        }
+
+        initMainMap();
+
+
+        // =====================================================
+        // BAGIAN 3 — MODE EDIT TRIGGER
         // =====================================================
         if(editButton) {
             editButton.addEventListener("click", function () {
-                // 1. Hidupkan Form
-                document.querySelectorAll("input[disabled], textarea[disabled]")
-                    .forEach(el => el.disabled = false);
-
-                // 2. Tukar Tombol
+                document.querySelectorAll("input[disabled], textarea[disabled]").forEach(el => el.disabled = false);
                 saveButton.classList.remove("d-none");
                 editButton.classList.add("d-none");
-                
-                // 3. Munculkan tombol edit foto
                 const editIcon = document.querySelector(".profile-pic-edit-button");
                 if(editIcon) editIcon.classList.remove("d-none");
-                if(previewImg) previewImg.style.cursor = 'pointer';
 
-                // 4. HIDUPKAN PETA UTAMA
                 if (mainMap && mainMarker) {
                     mainMap.dragging.enable();
                     mainMap.touchZoom.enable();
                     mainMap.scrollWheelZoom.enable();
                     mainMap.doubleClickZoom.enable();
-                    
-                    // Tambah kontrol zoom
                     if (!document.querySelector('.leaflet-control-zoom')) {
                         L.control.zoom({ position: 'topleft' }).addTo(mainMap);
                     }
-
-                    // Hidupkan Marker
                     mainMarker.dragging.enable();
-                    
-                    // Efek visual border
                     document.getElementById("map-profile-main").style.border = "2px solid #FEC81A";
-                    
                     setTimeout(() => mainMap.invalidateSize(), 200);
                 }
             });
@@ -534,7 +567,7 @@ document.getElementById("cropButton").addEventListener("click", function () {
 
 
         // =====================================================
-        // BAGIAN 4 — MAP MODAL TAMBAH ALAMAT (INDEPENDEN)
+        // BAGIAN 4 — MAP MODAL TAMBAH (MODAL)
         // =====================================================
         let mapModal = null;
         let markerModal = null;
@@ -547,61 +580,14 @@ document.getElementById("cropButton").addEventListener("click", function () {
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' }).addTo(mapModal);
             markerModal = L.marker([DEFAULT_LAT, DEFAULT_LNG], { draggable: true }).addTo(mapModal);
 
+            // Set default hidden
             const latInput = document.getElementById('modal_lat');
             const lngInput = document.getElementById('modal_lng');
-            const addrInput = document.getElementById('modal_address_input');
-            const zipInput = document.getElementById('modal_postal_code');
-
             if(latInput) latInput.value = DEFAULT_LAT;
             if(lngInput) lngInput.value = DEFAULT_LNG;
 
-            function reverseGeocodeModal(lat, lng) {
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data && data.display_name && addrInput) addrInput.value = data.display_name;
-                        if (data && data.address && data.address.postcode && zipInput) zipInput.value = data.address.postcode;
-                    });
-            }
-
-            markerModal.on('dragend', function (e) {
-                const pos = markerModal.getLatLng();
-                if(latInput) latInput.value = pos.lat;
-                if(lngInput) lngInput.value = pos.lng;
-                reverseGeocodeModal(pos.lat, pos.lng);
-            });
-
-            mapModal.on('click', function(e) {
-                markerModal.setLatLng(e.latlng);
-                if(latInput) latInput.value = e.latlng.lat;
-                if(lngInput) lngInput.value = e.latlng.lng;
-                reverseGeocodeModal(e.latlng.lat, e.latlng.lng);
-            });
-            
-             // Forward Geocode Modal (Ketik -> Pindah)
-            let typingTimerModal;
-            if (addrInput) {
-                addrInput.addEventListener('input', function () {
-                    clearTimeout(typingTimerModal);
-                    const query = this.value;
-                    if (query.length > 5) {
-                        typingTimerModal = setTimeout(() => {
-                            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data?.length > 0) {
-                                        const lat = parseFloat(data[0].lat);
-                                        const lon = parseFloat(data[0].lon);
-                                        mapModal.setView([lat, lon], 16);
-                                        markerModal.setLatLng([lat, lon]);
-                                        if(latInput) latInput.value = lat;
-                                        if(lngInput) lngInput.value = lon;
-                                    }
-                                });
-                        }, 1000);
-                    }
-                });
-            }
+            // [FIX] Panggil Setup dengan ID Loading Modal & Status Text Modal
+            setupMapEvents(mapModal, markerModal, 'modal_lat', 'modal_lng', 'modal_address_input', 'modal_postal_code', 'loading-map-modal', 'status-text-modal');
         }
 
         const modalAdd = document.getElementById('addProfileAddressModal');
@@ -611,6 +597,88 @@ document.getElementById("cropButton").addEventListener("click", function () {
                 setTimeout(() => { if(mapModal) mapModal.invalidateSize(); }, 200);
             });
         }
+
+        function reverseGeocode(lat, lng) {
+                // Gunakan API Photon (Komoot) - Gratis & Cepat
+                const url = `https://photon.komoot.io/reverse?lon=${lng}&lat=${lat}`;
+                
+                fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.features && data.features.length > 0) {
+                            const props = data.features[0].properties;
+                            
+                            // Susun Alamat dari data Photon
+                            // Format: Nama, Jalan, Kota, Provinsi, Negara, Kode Pos
+                            let addressParts = [
+                                props.name, 
+                                props.street, 
+                                props.housenumber, 
+                                props.city, 
+                                props.state, 
+                                props.postcode, 
+                                props.country
+                            ];
+                            
+                            // Hapus yang kosong/undefined dan gabungkan
+                            const formattedAddress = addressParts.filter(Boolean).join(', ');
+
+                            // Isi Textarea
+                            if (inputAddressMain) {
+                                inputAddressMain.value = formattedAddress;
+                            }
+                            
+                            // Isi Kode Pos
+                            if (props.postcode && inputPostcodeMain) {
+                                inputPostcodeMain.value = props.postcode;
+                            }
+                        }
+                    })
+                    .catch(err => console.error("Gagal ambil alamat:", err));
+            }
+
+            // --- FUNGSI BARU: Pencarian Alamat pakai PHOTON ---
+            let typingTimerMain;
+            if(inputAddressMain) {
+                inputAddressMain.addEventListener('input', function () {
+                    if (this.disabled) return;
+
+                    clearTimeout(typingTimerMain);
+                    const query = this.value;
+
+                    // Tunggu user selesai ngetik 1 detik
+                    if (query.length > 4) {
+                        typingTimerMain = setTimeout(() => {
+                            console.log("Mencari di Photon:", query);
+                            
+                            // Cari lokasi via Photon
+                            fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=1`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data && data.features && data.features.length > 0) {
+                                        const coords = data.features[0].geometry.coordinates;
+                                        const lat = coords[1]; // Photon urutannya [lon, lat]
+                                        const lon = coords[0];
+
+                                        // Pindahkan Peta & Marker
+                                        mainMap.setView([lat, lon], 16);
+                                        mainMarker.setLatLng([lat, lon]);
+
+                                        // Update hidden input
+                                        inputLatMain.value = lat;
+                                        inputLngMain.value = lon;
+                                        
+                                        // Update kode pos jika ada
+                                        if(data.features[0].properties.postcode && inputPostcodeMain) {
+                                            inputPostcodeMain.value = data.features[0].properties.postcode;
+                                        }
+                                    }
+                                })
+                                .catch(err => console.error("Gagal cari lokasi:", err));
+                        }, 1000);
+                    }
+                });
+            }
 </script>
 @endpush
 

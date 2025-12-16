@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Http; // <-- PENTING
 
 class DashboardController extends Controller
 {
@@ -299,5 +300,36 @@ class DashboardController extends Controller
         $address->update(['is_primary' => true]);
 
         return back()->with('success', 'Alamat utama diubah!');
+    }
+
+    public function proxyReverseGeocode(Request $request)
+    {
+        // Laravel yang nembak ke Nominatim, bukan browser
+        $response = Http::withHeaders([
+            'User-Agent' => 'PastiFIX-App/1.0 (contact@pastifix.com)' // Ini "KTP" kita biar gak diblokir
+        ])->get('https://nominatim.openstreetmap.org/reverse', [
+            'format' => 'json',
+            'lat' => $request->lat,
+            'lon' => $request->lon,
+            'accept-language' => 'id'
+        ]);
+
+        return $response->json();
+    }
+
+    /**
+     * Proxy untuk Forward Geocoding (Alamat -> Koordinat)
+     */
+    public function proxySearchGeocode(Request $request)
+    {
+        $response = Http::withHeaders([
+            'User-Agent' => 'PastiFIX-App/1.0 (contact@pastifix.com)'
+        ])->get('https://nominatim.openstreetmap.org/search', [
+            'format' => 'json',
+            'q' => $request->q,
+            'accept-language' => 'id'
+        ]);
+
+        return $response->json();
     }
 }
