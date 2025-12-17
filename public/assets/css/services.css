@@ -18,24 +18,25 @@ body {
 }
 
 .btn-brand {
-    background-color: #EECB2F;
+    background-color: #bf3131;
     color: white;
-    border-color: #EECB2F;
+    border-color: #bf3131;
 }
 
 .btn-brand:hover {
-    background-color: #d8b82a;
-    border-color: #d8b82a;
+    background-color: #f50000;
+    border-color: #f50000;
     color: white;
+    box-shadow: 0 4px 12px rgba(254, 26, 26, 0.3);
 }
 
 .btn-outline-brand {
-    border-color: #EECB2F;
-    color: #EECB2F;
+    border-color: #bf3131;
+    color: #bf3131;
 }
 
 .btn-outline-brand:hover {
-    background-color: #EECB2F;
+    background-color: #bf3131;
     color: white;
 }
 
@@ -59,7 +60,7 @@ body {
 
 .navbar-nav .nav-link.active,
 .navbar-nav .nav-link:hover {
-    color: #EECB2F;
+    color: #bf3131;
 }
 
 
@@ -88,7 +89,7 @@ body {
 /* FOOTER */
 .footer-section {
     background-color: #4B4B4B;
-    padding: 80px 0 30px 0;
+    padding: 30px 0 30px 0;
 }
 
 .social-icons a {
@@ -96,7 +97,7 @@ body {
 }
 
 .social-icons a:hover {
-    color: #EECB2F !important;
+    color: #bf3131 !important;
 }
 
 .services-header {
@@ -166,7 +167,7 @@ body {
 }
 
 .service-card:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(254, 26, 26, 0.3);
     transform: translateY(-5px);
 }
 
@@ -191,7 +192,7 @@ body {
 .service-card .card-price {
     font-weight: 700;
     font-size: 1.2rem;
-    color: #ffc107;
+    color: #ff0707;
     /* Warna kuning */
 }
 
@@ -262,13 +263,13 @@ body {
 }
 
 .btn-icon:hover {
-    color: #EECB2F;
+    color: #bf3131;
     /* Brand color */
 }
 
 /* Style ketika radio ter-check */
 .address-radio:checked+.address-card {
-    border-color: #EECB2F;
+    border-color: #bf3131;
     /* Brand color */
     box-shadow: 0 4px 12px rgba(238, 203, 47, 0.3);
 }
@@ -287,8 +288,8 @@ body {
 }
 
 .address-radio:checked+.address-card::before {
-    border-color: #EECB2F;
-    background-color: #EECB2F;
+    border-color: #bf3131;
+    background-color: #bf3131;
     /* Lingkaran dalam */
     box-shadow: 0 0 0 3px #fff inset;
     /* Efek "dot" di tengah */
@@ -319,7 +320,7 @@ body {
     background-color: #fff;
     /* Agar menutupi garis putus-putus */
     border: 2px dashed #e9ecef;
-    color: #EECB2F;
+    color: #bf3131;
     font-size: 1.5rem;
     display: inline-flex;
     align-items: center;
@@ -332,8 +333,8 @@ body {
 
 .btn-icon-add:hover {
     border-style: solid;
-    border-color: #EECB2F;
-    background-color: #fff8e1;
+    border-color: #bf3131;
+    background-color: #ffe1e1;
 }
 
 /* Card Ringkasan Checkout */
@@ -385,7 +386,7 @@ body {
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        color: #FEC81A;
+        color: #fe1a1a;
         font-weight: bold;
     }
 
@@ -402,7 +403,7 @@ body {
 }
 
 @media (max-width: 991.98px) {
-    
+
     /* Saat menu dibuka, kasih background gelap */
     .navbar-collapse {
         background-color: rgba(18, 18, 18, 0.95); /* Hitam transparan dikit */

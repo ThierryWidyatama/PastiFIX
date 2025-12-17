@@ -6,19 +6,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" href="{{ asset('assets/img/logo.png') }}" />
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <link href="{{ asset('plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
-    
+
     <link rel="stylesheet" href="{{ asset('assets/css/auth-new.css') }}">
 </head>
 <body id="kt_body" class="auth-page-new"> <div class="auth-container">
-        
+
         <div class="auth-container-left">
             <!-- Logo -->
             <a href="/" class="auth-logo">
@@ -28,10 +28,10 @@
 
             <!-- [BARU] Ilustrasi / Foto -->
             <!-- Saya pakai gambar placeholder renovasi rumah yang estetik -->
-            <img src="https://img.freepik.com/free-vector/house-restyling-concept-illustration_114360-3660.jpg?t=st=1732000000~exp=1732003600~hmac=abc12345" 
-                 alt="Ilustrasi Renovasi" 
+            <img src="https://i.ibb.co.com/1fYPFHzr/Adobe-Express-file.png"
+                 alt="Ilustrasi Renovasi"
                  class="auth-illustration">
-                 
+
             <!-- Teks Pendukung (Opsional, biar gak sepi) -->
             <div class="text-center pe-5 d-none d-lg-block">
                 <h5 class="fw-bold mb-1">Solusi Renovasi Terpercaya</h5>
@@ -41,13 +41,7 @@
 
         <div class="auth-container-right">
             <div class="auth-card">
-                <div class="text-center mb-4 d-lg-none">
-                    <a href="/" class="d-inline-flex align-items-center text-decoration-none text-dark">
-                        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 40px; margin-right: 10px;">
-                        {{-- <span class="fs-2 fw-bold">PastiFIX</span> --}}
-                    </a>
-                </div>
-                
+
                 <div class="auth-tabs">
                     <a href="{{ route('register') }}">Sign Up</a>
                     <a href="{{ route('login') }}" class="active">Sign In</a>
@@ -74,7 +68,7 @@
                         <input class="form-control-minimal" type="password" id="password"
                                name="password" autocomplete="off" required />
                     </div>
-                    
+
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <label class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" name="remember_me" value="1" />
@@ -106,13 +100,13 @@
                 </form>
                 </div>
         </div>
-        
+
     </div>
 
     <script src="https://www.google.com/recaptcha/api.js"></script>
     <script src="{{ asset('plugins/global/plugins.bundle.js') }}"></script>
     <script src="{{ asset('js/scripts.bundle.js') }}"></script>
-    
+
     <script>
         $(document).ready(function() {
             $('#login_submit').on('click', function(event) {
@@ -139,7 +133,7 @@
                                 text: response.pesan,
                             }).then(() => {
                                 // [FIX 3] Arahkan ke URL dinamis dari Controller
-                                document.location = response.redirect_url; 
+                                document.location = response.redirect_url;
                             });
                         } else if (response.status == '2fa_required' && response['2fa_required']) {
                             window.location.href = response.redirect_url;
@@ -156,8 +150,8 @@
                         let firstErrorMessage = '';
                         for (let key in errors) {
                             if (errors.hasOwnProperty(key)) {
-                                firstErrorMessage = errors[key][0]; 
-                                break; 
+                                firstErrorMessage = errors[key][0];
+                                break;
                             }
                         }
                         Swal.fire({

@@ -9,17 +9,17 @@
 @endif
 
 <form id="profileForm" action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data">
-    @csrf 
-    
+    @csrf
+
     <div class="row g-4">
-        
+
         <div class="col-12 col-lg-6">
-            
+
             <div class="card p-4">
                 <div class="card-body text-center">
-                    
+
                     <div class="position-relative d-inline-block">
-                        <img src="{{ $user->profile_picture_url ? Storage::url($user->profile_picture_url) : asset('assets/img/default-avatar.png') }}" 
+                        <img src="{{ $user->profile_picture_url ? Storage::url($user->profile_picture_url) : asset('assets/img/default-avatar.png') }}"
                              alt="Profile Picture" class="profile-pic mb-3" id="profileImagePreview">
                         <label for="avatarFileInput" class="profile-pic-edit-button d-none">
                             <i class="bi bi-pencil-fill"></i>
@@ -30,7 +30,7 @@
                         <input type="hidden" name="cropped_avatar_data" id="croppedAvatarData">
                     </div>
 
-                    <h4 class="fw-bold">My Profile</h4>
+                    <h4 class="fw-bold">Profil Saya</h4>
                     <hr class="my-4">
                     <div class="text-start">
                         <div class="row mb-3 align-items-center">
@@ -46,8 +46,8 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" id="editButton" class="btn btn-brand mt-4">Edit</button>
-                    <button type="submit" id="saveButton" class="btn btn-success mt-4 d-none">Save Changes</button>
+                    <button type="button" id="editButton" class="btn btn-brand mt-4">Ganti</button>
+                    <button type="submit" id="saveButton" class="btn btn-success mt-4 d-none">Simpan Perubahan</button>
                 </div>
             </div>
 
@@ -55,7 +55,7 @@
                 <div class="card-body">
                     <h4 class="fw-bold mb-4">Pesanan</h4>
                     <div class="status-item mb-3">
-                        <div class="status-dot-wrapper"> <span class="status-dot dot-green"></span> On Progress </div>
+                        <div class="status-dot-wrapper"> <span class="status-dot dot-green"></span> Sedang Berlangsung </div>
                         <span>{{ $stats['on_progress'] }}</span>
                     </div>
                     <div class="status-item mb-3">
@@ -63,22 +63,22 @@
                         <span>{{ $stats['selesai'] }}</span>
                     </div>
                     <div class="status-item">
-                        <div class="status-dot-wrapper"> <span class="status-dot dot-red"></span> Cancelled </div>
+                        <div class="status-dot-wrapper"> <span class="status-dot dot-red"></span> Dibatalkan </div>
                         <span>{{ $stats['cancelled'] }}</span>
                     </div>
                 </div>
             </div>
-            
+
         </div>
 
         <div class="col-12 col-lg-6">
             <div class="card p-4 h-100">
                 <div class="card-body">
-                    
+
                     <!-- Header -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 class="fw-bold mb-0">Alamat Utama</h4>
-                        <button type="button" class="btn btn-sm btn-outline-warning text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#manageAddressModal">
+                        <button type="button" class="btn btn-sm btn-brand fw-bold" data-bs-toggle="modal" data-bs-target="#manageAddressModal">
                             <i class="bi bi-gear-fill me-1"></i> Kelola Alamat
                         </button>
                     </div>
@@ -87,7 +87,7 @@
                     <div class="mb-3">
                         <label for="address_line" class="form-minimal-label">
                             Alamat Lengkap
-                            <span id="status-text-main" class="text-warning small fst-italic ms-2" style="display:none;">
+                            <span id="status-text-main" class="text-danger small fst-italic ms-2" style="display:none;">
                                 <div class="spinner-border spinner-border-sm me-1" role="status"></div>Memuat...
                             </span>
                         </label>
@@ -106,16 +106,16 @@
                              <input type="text" class="form-control form-minimal-input" id="profile_postcode" name="postal_code" value="{{ $address->postal_code ?? '' }}" disabled>
                         </div>
                     </div>
-                    
+
                     <div class="mb-4">
                         <label for="landmark_details" class="form-minimal-label">Detail Patokan (Opsional)</label>
                         <!-- [FIX] Ganti class jadi form-minimal-input -->
                         <input type="text" class="form-control form-minimal-input" id="landmark_details" name="landmark_details" value="{{ $address->landmark_details ?? '' }}" disabled>
                     </div>
-                    
+
                     <h6 class="fw-bold">Titik Rumah</h6>
                     @if($address && $address->latitude && $address->longitude)
-                        
+
                         <!-- [BARU] Wrapper & Loading -->
                         <div class="map-wrapper mb-2">
                             <div id="loading-map-main" class="map-loading">
@@ -127,7 +127,7 @@
 
                         <input type="hidden" id="main_lat" name="profile_latitude" value="{{ $address->latitude }}">
                         <input type="hidden" id="main_lng" name="profile_longitude" value="{{ $address->longitude }}">
-                        
+
                         <div class="form-text small text-success mt-1">
                             <i class="bi bi-geo-alt-fill"></i> Lokasi terpilih: {{ $address->latitude }}, {{ $address->longitude }}
                         </div>
@@ -139,7 +139,7 @@
                             Silakan klik <strong>"Kelola Alamat"</strong> lalu Edit/Tambah alamat dengan pin peta.
                         </div>
                     @endif
-                    
+
                 </div>
             </div>
         </div>
@@ -150,7 +150,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="cropModalLabel">Crop Gambar Profil</h5>
+        <h5 class="modal-title" id="cropModalLabel">Potong Gambar Profil</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body modal-body-cropper">
@@ -160,7 +160,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-primary" id="cropButton">Crop & Simpan</button>
+        <button type="button" class="btn btn-primary" id="cropButton">Potong & Simpan</button>
       </div>
     </div>
   </div>
@@ -177,24 +177,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body bg-light" style="max-height: 60vh; overflow-y: auto;">
-                
-                @php 
+
+                @php
                     $allAddresses = Auth::user()->addresses()
                                     ->where('is_saved', true) // <--- FILTER PENTING
                                     ->orderBy('is_primary', 'desc')
-                                    ->get(); 
+                                    ->get();
                 @endphp
 
                 @forelse($allAddresses as $addr)
-                    <div class="card border-0 shadow-sm mb-3 {{ $addr->is_primary ? 'border-start border-warning border-5' : '' }}">
+                    <div class="card border-0 shadow-sm mb-3 {{ $addr->is_primary ? 'border-start border-danger border-5' : '' }}">
                         <div class="card-body p-4 d-flex justify-content-between align-items-center">
                             <div>
                                 @if($addr->is_primary)
-                                    <span class="badge bg-warning text-dark mb-2">UTAMA</span>
+                                    <span class="badge bg-danger text-white mb-2">UTAMA</span>
                                 @endif
                                 <p class="mb-1 fw-bold text-dark fs-5">{{ $addr->address_line }}</p>
                                 <p class="mb-0 text-muted small">
-                                    {{ $addr->rt_rw ? 'RT/RW: '.$addr->rt_rw . ',' : '' }} 
+                                    {{ $addr->rt_rw ? 'RT/RW: '.$addr->rt_rw . ',' : '' }}
                                     {{ $addr->postal_code ? 'Kode Pos: '.$addr->postal_code : '' }} <br>
                                     {{ $addr->landmark_details ? '('.$addr->landmark_details.')' : '' }}
                                 </p>
@@ -209,7 +209,7 @@
                                         </button>
                                     </form>
                                 @endif
-                                
+
                                 <form action="{{ route('address.destroy', $addr->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus alamat ini?');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Alamat">
@@ -242,7 +242,7 @@
                 @csrf
                 <!-- [PENTING] Redirect kembali ke PROFIL setelah simpan -->
                 <input type="hidden" name="redirect_to" value="{{ route('profil') }}">
-                
+
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold">Tambah Alamat Baru</h5>
                     <!-- Tombol X kembali ke modal manage -->
@@ -252,7 +252,7 @@
                     <!-- AREA PETA (LEAFLET) -->
                     <div class="mb-3">
                         <label class="form-label fw-bold">Titik Lokasi (Geser Pin)</label>
-                        
+
                         <!-- [BARU] Wrapper & Loading -->
                         <div class="map-wrapper">
                             <div id="loading-map-modal" class="map-loading">
@@ -261,26 +261,26 @@
                             </div>
                             <div id="map-container" class="map-canvas"></div>
                         </div>
-                        
+
                         <div class="form-text small mt-1">
                             <i class="bi bi-geo-alt-fill text-danger"></i> Geser pin biru ke lokasi rumah Anda.
                         </div>
-                        
-                        <input type="hidden" id="modal_lat" name="latitude"> 
+
+                        <input type="hidden" id="modal_lat" name="latitude">
                         <input type="hidden" id="modal_lng" name="longitude">
                     </div>
 
                     <!-- FORM ALAMAT -->
                     <div class="mb-3">
                         <label class="form-label fw-bold">
-                            Alamat Lengkap 
+                            Alamat Lengkap
                             <!-- Teks Loading Kecil -->
                             <span id="status-text-modal" class="text-warning small fst-italic ms-2" style="display:none;">(Memuat alamat...)</span>
                         </label>
-                        
+
                         <!-- [FIX] ID KITA UBAH JADI 'modal_address_input' -->
                         <textarea class="form-control" name="address_line" id="modal_address_input" rows="3" required placeholder="Cari lokasi atau geser pin pada peta..."></textarea>
-                        
+
                         <div class="form-text small">Alamat akan terisi otomatis dari titik peta.</div>
                     </div>
 
@@ -291,22 +291,22 @@
                         </div>
                         <div class="col-6">
                             <label class="form-label">Kode Pos</label>
-                            
+
                             <!-- [FIX] ID KITA UBAH JADI 'modal_postal_code' -->
                             <input type="text" class="form-control" name="postal_code" id="modal_postal_code" placeholder="50xxx">
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label">Detail Patokan</label>
                         <input type="text" class="form-control" name="landmark_details" placeholder="Cth: Depan masjid hijau, pagar hitam">
                     </div>
 
                     <hr class="my-3">
-                    
+
                     <!-- Input Hidden & Checkbox (Sesuai kebutuhanmu sebelumnya) -->
                     <input type="hidden" name="is_saved" value="1">
-                    
+
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="is_primary" value="1" id="profile_new_is_primary">
                         <label class="form-check-label" for="profile_new_is_primary">Jadikan Alamat Utama</label>
@@ -407,15 +407,15 @@ document.getElementById("cropButton").addEventListener("click", function () {
             const lngInput = document.getElementById(lngInputId);
             const addrInput = document.getElementById(addrInputId);
             const zipInput = document.getElementById(zipInputId);
-            const loadingMap = document.getElementById(loadingMapId); 
-            const statusText = document.getElementById(statusTextId); 
+            const loadingMap = document.getElementById(loadingMapId);
+            const statusText = document.getElementById(statusTextId);
 
             // Helper: Toggle Loading Input
             function toggleInputLoading(isLoading) {
                 if (!addrInput) return;
                 if (isLoading) {
                     addrInput.classList.add('input-loading');
-                    addrInput.setAttribute('readonly', true); 
+                    addrInput.setAttribute('readonly', true);
                     if(statusText) statusText.style.display = 'inline';
                 } else {
                     addrInput.classList.remove('input-loading');
@@ -442,7 +442,7 @@ document.getElementById("cropButton").addEventListener("click", function () {
                         if (data && data.display_name && addrInput) addrInput.value = data.display_name;
                         if (data && data.address && data.address.postcode && zipInput) {
                             zipInput.value = data.address.postcode;
-                            zipInput.style.backgroundColor = "#fff9db"; 
+                            zipInput.style.backgroundColor = "#fff9db";
                             setTimeout(() => zipInput.style.backgroundColor = "", 1500);
                         }
                     })
@@ -488,7 +488,7 @@ document.getElementById("cropButton").addEventListener("click", function () {
                 addrInput.addEventListener('input', function () {
                     // Cek disabled (untuk main map)
                     if(this.disabled) return;
-                    
+
                     const query = this.value;
                     if (query.length > 5) {
                         toggleMapLoading(true);
@@ -502,7 +502,7 @@ document.getElementById("cropButton").addEventListener("click", function () {
         // =====================================================
         // BAGIAN 2 — MAP PROFIL UTAMA (MAIN)
         // =====================================================
-        
+
         let mainMap = null;
         let mainMarker = null;
         const elMainLat = document.getElementById("main_lat");
@@ -601,25 +601,25 @@ document.getElementById("cropButton").addEventListener("click", function () {
         function reverseGeocode(lat, lng) {
                 // Gunakan API Photon (Komoot) - Gratis & Cepat
                 const url = `https://photon.komoot.io/reverse?lon=${lng}&lat=${lat}`;
-                
+
                 fetch(url)
                     .then(res => res.json())
                     .then(data => {
                         if (data && data.features && data.features.length > 0) {
                             const props = data.features[0].properties;
-                            
+
                             // Susun Alamat dari data Photon
                             // Format: Nama, Jalan, Kota, Provinsi, Negara, Kode Pos
                             let addressParts = [
-                                props.name, 
-                                props.street, 
-                                props.housenumber, 
-                                props.city, 
-                                props.state, 
-                                props.postcode, 
+                                props.name,
+                                props.street,
+                                props.housenumber,
+                                props.city,
+                                props.state,
+                                props.postcode,
                                 props.country
                             ];
-                            
+
                             // Hapus yang kosong/undefined dan gabungkan
                             const formattedAddress = addressParts.filter(Boolean).join(', ');
 
@@ -627,7 +627,7 @@ document.getElementById("cropButton").addEventListener("click", function () {
                             if (inputAddressMain) {
                                 inputAddressMain.value = formattedAddress;
                             }
-                            
+
                             // Isi Kode Pos
                             if (props.postcode && inputPostcodeMain) {
                                 inputPostcodeMain.value = props.postcode;
@@ -650,7 +650,7 @@ document.getElementById("cropButton").addEventListener("click", function () {
                     if (query.length > 4) {
                         typingTimerMain = setTimeout(() => {
                             console.log("Mencari di Photon:", query);
-                            
+
                             // Cari lokasi via Photon
                             fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=1`)
                                 .then(res => res.json())
@@ -667,7 +667,7 @@ document.getElementById("cropButton").addEventListener("click", function () {
                                         // Update hidden input
                                         inputLatMain.value = lat;
                                         inputLngMain.value = lon;
-                                        
+
                                         // Update kode pos jika ada
                                         if(data.features[0].properties.postcode && inputPostcodeMain) {
                                             inputPostcodeMain.value = data.features[0].properties.postcode;

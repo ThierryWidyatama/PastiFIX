@@ -6,7 +6,7 @@
     <div class="container text-white">
         <h1>Selamat Datang di website PastiFIX!</h1>
         <p class="lead my-4">Kami ada untuk menyelesaikan masalah bangunan dirumah anda!</p>
-        <a href="#service" class="btn btn-brand btn-lg fw-medium">Get Started</a>
+        <a href="#service" class="btn btn-brand btn-lg fw-medium">Mulai Sekarang</a>
     </div>
 </section>
 
@@ -19,13 +19,14 @@
             <div class="col-lg-6 ps-lg-5 mt-5 mt-lg-0">
                 <div class="about-content">
                     <h2 class="section-title">Apa itu PastiFIX?</h2>
-                    <p class="section-subtitle text-secondary">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.</p>
+                    <p class="section-subtitle text-secondary">PastiFIX adalah platform layanan renovasi dan perbaikan rumah yang menghubungkan Anda dengan tenaga profesional terpercaya.
+                        Kami membantu mulai dari perbaikan kecil hingga renovasi besar dengan proses yang transparan dan mudah.</p>
                 </div>
                 <div class="row mt-5">
                     <div class="col-md-4">
                         <div class="text-center">
                             <div class="icon-circle bg-light d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; border-radius: 50%;">
-                                <i class="bi bi-tools fs-2" style="color: #EECB2F;"></i>
+                                <i class="bi bi-tools fs-2" style="color: #bf3131;"></i>
                             </div>
                             <h6 class="fw-bold">Profesional</h6>
                             <p class="small text-muted">Tim ahli dan berpengalaman.</p>
@@ -34,7 +35,7 @@
                     <div class="col-md-4">
                         <div class="text-center">
                             <div class="icon-circle bg-light d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; border-radius: 50%;">
-                                <i class="bi bi-shield-check fs-2" style="color: #EECB2F;"></i>
+                                <i class="bi bi-shield-check fs-2" style="color: #bf3131;"></i>
                             </div>
                             <h6 class="fw-bold">Terpercaya</h6>
                             <p class="small text-muted">Garansi kualitas pengerjaan.</p>
@@ -43,7 +44,7 @@
                     <div class="col-md-4">
                         <div class="text-center">
                            <div class="icon-circle bg-light d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; border-radius: 50%;">
-                                <i class="bi bi-stopwatch fs-2" style="color: #EECB2F;"></i>
+                                <i class="bi bi-stopwatch fs-2" style="color: #bf3131;"></i>
                             </div>
                             <h6 class="fw-bold">Tepat Waktu</h6>
                             <p class="small text-muted">Pengerjaan sesuai jadwal.</p>
@@ -59,18 +60,18 @@
 <section class="section-padding">
     <div class="container">
         <div class="text-center mb-5">
-            <h3 class="section-subtitle text-warning fw-bold">- Mudah & Cepat -</h3>
+            <h3 class="section-subtitle text-danger fw-bold">- Mudah & Cepat -</h3>
             <h1 class="section-title fw-bold">Cara Pesan Jasa</h1>
         </div>
 
         <div class="row g-4 justify-content-center position-relative">
             <!-- Garis Penghubung (Hanya di Desktop) -->
-            <div class="d-none d-lg-block position-absolute top-50 start-0 w-100 translate-middle-y border-top border-2 border-warning border-dashed z-n1" style="height: 0;"></div>
+            <div class="d-none d-lg-block position-absolute top-50 start-0 w-100 translate-middle-y border-top border-2 border-danger border-dashed z-n1" style="height: 0;"></div>
 
             <!-- Step 1 -->
             <div class="col-md-6 col-lg-3 text-center">
                 <div class="bg-white p-4 rounded shadow-sm h-100 position-relative">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-warning text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #FEC81A;">1</div>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-danger text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #fe1a1a;">1</div>
                     <h5 class="fw-bold">Pilih Layanan</h5>
                     <p class="text-muted small">Cari masalah rumah Anda di daftar layanan kami.</p>
                 </div>
@@ -79,7 +80,7 @@
             <!-- Step 2 -->
             <div class="col-md-6 col-lg-3 text-center">
                 <div class="bg-white p-4 rounded shadow-sm h-100 position-relative">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-warning text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #FEC81A;">2</div>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-danger text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #fe1a1a;">2</div>
                     <h5 class="fw-bold">Atur Jadwal</h5>
                     <p class="text-muted small">Tentukan lokasi dan waktu survei yang Anda inginkan.</p>
                 </div>
@@ -88,7 +89,7 @@
             <!-- Step 3 -->
             <div class="col-md-6 col-lg-3 text-center">
                 <div class="bg-white p-4 rounded shadow-sm h-100 position-relative">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-warning text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #FEC81A;">3</div>
+                    <div class="d-inline-flex align-items-center justify-content-center bg-danger text-white rounded-circle fs-3 fw-bold mb-3" style="width: 60px; height: 60px; border: 4px solid #fff; box-shadow: 0 0 0 2px #fe1a1a;">3</div>
                     <h5 class="fw-bold">Survei & Deal</h5>
                     <p class="text-muted small">Mandor datang, cek kerusakan, dan sepakati harga final.</p>
                 </div>
@@ -108,8 +109,8 @@
 
 <section id="service" class="section-padding bg-light">
     <div class="container text-center">
-        <h2 class="section-title">Our Service</h2>
-        <p class="section-subtitle text-secondary mx-auto" style="max-width: 600px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <h2 class="section-title">Layanan Kami</h2>
+        <p class="section-subtitle text-secondary mx-auto" style="max-width: 600px;">Beragam solusi terbaik untuk kebutuhan renovasi dan perbaikan rumah Anda.</p>
         <div class="row g-4 mt-5">
             <div class="col-lg-3 col-md-6">
                 <div class="flip-card">
@@ -175,7 +176,7 @@
 <section id="why-us" class="section-padding">
     <div class="container">
         <div class="text-center">
-             <h2 class="section-title">Why Us?</h2>
+             <h2 class="section-title">Mengapa Kami?</h2>
         </div>
         <div class="row align-items-center mt-5">
             <div class="col-lg-6">
@@ -212,32 +213,32 @@
     <div class="container">
          <div class="row align-items-center">
              <div class="col-lg-4 text-center text-lg-start mb-4 mb-lg-0">
-                 <h4 class="fw-bold">Our company stats</h4>
+                 <h4 class="fw-bold">Statistik Perusahaan Kami</h4>
              </div>
              <div class="col-lg-8">
                  <div class="row text-center">
-                     
+
                      <!-- SATISFACTION -->
                      <div class="col-md-4">
                          <!-- [DINAMIS] Pakai variable $satisfactionRate -->
                          <h2 class="fw-bold">{{ $satisfactionRate }}%</h2>
-                         <p class="fw-medium">Satisfaction</p>
+                         <p class="fw-medium">Tingkat Kepuasan</p>
                      </div>
-                      
+
                      <!-- ACTIVE USERS -->
                      <div class="col-md-4">
                          <!-- [DINAMIS] Pakai variable $activeUsers -->
                          <h2 class="fw-bold">{{ $activeUsers }}</h2>
-                         <p class="fw-medium">Active users</p>
+                         <p class="fw-medium">Pengguna Aktif</p>
                      </div>
-                      
+
                      <!-- TEAM MEMBERS -->
                      <div class="col-md-4">
                          <!-- [DINAMIS] Pakai variable $teamCount -->
                          <h2 class="fw-bold">{{ $teamCount }}+</h2>
-                         <p class="fw-medium">Team members</p>
+                         <p class="fw-medium">Anggota Tim</p>
                      </div>
-                     
+
                  </div>
              </div>
          </div>
@@ -247,26 +248,26 @@
 <!-- SECTION 5: TESTIMONI KLASIK -->
 <section id="testimoni" class="section-padding bg-light">
     <div class="container text-center mb-5">
-        <h3 class="section-subtitle text-warning fw-bold">- Ulasan Pengguna -</h3>
+        <h3 class="section-subtitle text-danger fw-bold">- Ulasan Pengguna -</h3>
         <h1 class="section-title fw-bold">Apa Kata Mereka?</h1>
     </div>
-    
+
     <div class="container">
         <!-- Swiper Container -->
         <div class="swiper testimonial-slider-classic">
             <div class="swiper-wrapper py-3"> <!-- Padding y biar shadow gak kepotong -->
-                
+
                 @forelse($reviews as $review)
                     <div class="swiper-slide">
                         <div class="testi-card-classic">
                             <!-- 1. Foto Profil -->
-                            <img src="{{ $review->user->profile_picture_url ? Storage::url($review->user->profile_picture_url) : asset('assets/img/default-avatar.png') }}" 
-                                 class="testi-profile-img" 
+                            <img src="{{ $review->user->profile_picture_url ? Storage::url($review->user->profile_picture_url) : asset('assets/img/default-avatar.png') }}"
+                                 class="testi-profile-img"
                                  alt="{{ $review->user->name }}">
-                            
+
                             <!-- 2. Nama -->
                             <h5 class="testi-name">{{ $review->user->name }}</h5>
-                            
+
                             <!-- 3. Rating Bintang -->
                             <div class="testi-stars">
                                 @php
@@ -296,7 +297,7 @@
                                 <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
                             </div>
                             <p class="testi-comment">"Belum ada ulasan. Jadilah yang pertama!"</p>
-                            <span class="testi-date">Today</span>
+                            <span class="testi-date">Hari Ini</span>
                         </div>
                     </div>
                 @endforelse

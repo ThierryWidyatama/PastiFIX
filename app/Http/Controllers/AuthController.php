@@ -57,11 +57,9 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required',
             'password' => 'required',
-            'g-recaptcha-response' => 'required'
         ], [
             'username.required' => 'Username harus diisi',
             'password.required' => 'Password harus diisi',
-            'g-recaptcha-response.required' => 'Silahkan centang captcha'
         ]);
 
         $user = User::where('username', $request->username)->first();
@@ -88,7 +86,7 @@ class AuthController extends Controller
                     'redirect_url' => route('2fa.verify')
                 ]);
             }
-            
+
             $user->last_login_ip = $request->ip();
             $user->last_login_at = now();
             $user->save();
@@ -107,7 +105,7 @@ class AuthController extends Controller
            $pesanSapaan = "Selamat datang di PastiFIX, " . $user->name . "!";
 
             return response()->json([
-                'status' => 'success', 
+                'status' => 'success',
                 'pesan' => $pesanSapaan,
                 'redirect_url' => $redirect_url
             ]);

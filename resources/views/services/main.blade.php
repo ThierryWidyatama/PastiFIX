@@ -6,7 +6,7 @@
 
     <header class="services-header">
         <div class="container" style="padding-top: 80px; padding-bottom: 50px;">
-            <h1>Services</h1>
+            <h1>Layanan Kami</h1>
         </div>
     </header>
 
@@ -17,8 +17,8 @@
                     <input type="text" class="form-control form-control-lg" placeholder="Search Services"
                         aria-label="Search Services">
                     <button class="btn btn-warning btn-lg px-4" type="submit"
-                        style="background-color: #FEC81A; color: #333;">
-                    <i class="bi bi-search"></i> Search
+                        style="background-color: #bf3131; color: #333;">
+                    <i class="bi bi-search"></i> Cari
                 </button>
                 </div>
             </form>
@@ -30,8 +30,8 @@
 
             <nav aria-label="breadcrumb" class="mb-3">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Services</li>
+                    <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Beranda</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Layanan</li>
                 </ol>
             </nav>
 
@@ -46,7 +46,7 @@
                         </div>
                         <div class="collapse show" id="collapseFilter">
                             <div class="filter-body">
-                                
+
                                 <!-- [FIX] Ganti jadi loop dinamis dari database -->
                                 @forelse ($all_categories as $category)
                                     <div class="form-check">
@@ -63,7 +63,7 @@
                                 @empty
                                     <small class="text-muted">Belum ada kategori.</small>
                                 @endforelse
-                                
+
                             </div>
                         </div>
                     </div>
@@ -71,14 +71,14 @@
 
                 <div class="col-lg-9 mt-4 mt-lg-0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted">Showing {{ $services->firstItem() }}-{{ $services->lastItem() }} of {{ $services->total() }} results</span>
+                        <span class="text-muted">Menampilkan {{ $services->firstItem() }}-{{ $services->lastItem() }} dari {{ $services->total() }} produk</span>
                         <div class="col-md-4 col-lg-3">
                             <!-- [FIX] 'name' & 'onchange' ditambahkan -->
                             <select class="form-select" name="sort" onchange="this.form.submit()">
-                                <option value="popular" {{ request('sort') == 'popular' ? 'selected' : '' }}>Sort By: Popular</option>
-                                <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Sort By: Harga Terendah</option>
-                                <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Sort By: Harga Tertinggi</option>
-                                <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Sort By: Terbaru</option>
+                                <option value="popular" {{ request('sort') == 'popular' ? 'selected' : '' }}>Popular</option>
+                                <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Harga Terendah</option>
+                                <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Harga Tertinggi</option>
+                                <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Terbaru</option>
                             </select>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                                 <a href="{{ route('services.detail', $service->id) }}" class="text-decoration-none text-dark">
                                     <div class="card service-card h-100">
                                         <!-- [FIX] Tampilkan gambar asli dari DB, atau placeholder jika kosong -->
-                                        <img src="{{ $service->image_url ? Storage::url($service->image_url) : 'https://placehold.co/600x400/FEC81A/333?text=' . urlencode($service->name) }}" 
+                                        <img src="{{ $service->image_url ? Storage::url($service->image_url) : 'https://placehold.co/600x400/FEC81A/333?text=' . urlencode($service->name) }}"
                                             class="card-img-top" alt="{{ $service->name }}" style="height: 200px; object-fit: cover;">
                                         <div class="card-body">
                                             <h5 class="card-title">{{ $service->name }}</h5>
@@ -117,7 +117,7 @@
                         @endforelse
 
                     </div>
-                    
+
                     <!-- [FIX] Ganti 'Load More' jadi Pagination Laravel -->
                     <div class="text-center mt-5 mb-5">
                          {{ $services->links() }}

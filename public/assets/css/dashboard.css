@@ -27,7 +27,7 @@ body {
 }
 
 .sidebar-logo img {
-    max-width: 100px;
+    max-width: 120px;
 }
 
 .sidebar-nav .nav-link {
@@ -46,12 +46,12 @@ body {
 }
 
 .sidebar-nav .nav-link:hover {
-    background-color: #FEF7DA;
+    background-color: #fedada;
     color: #333;
 }
 
 .sidebar-nav .nav-link.active {
-    background-color: #EECB2F;
+    background-color: #bf3131;
     color: #FFFFFF;
 }
 
@@ -103,7 +103,7 @@ body {
 
 /* Content Wrapper (Area Kuning) */
 .content-wrapper {
-    background-color: #FDD14A;
+    background-image: url('../img/section4bar.png');
     height: calc(100vh - 90px); /* 100% height minus header height */
     overflow-y: auto;
 }
@@ -117,7 +117,7 @@ body {
 
 /* Tombol Brand (Kuning) */
 .btn-brand {
-    background-color: #EECB2F;
+    background-color: #bf3131;
     color: white;
     font-weight: 500;
     border: none;
@@ -126,7 +126,7 @@ body {
     transition: all 0.3s ease;
 }
 .btn-brand:hover {
-    background-color: #d8b82a;
+    background-color: #f50000;
     color: white;
 }
 
@@ -136,7 +136,7 @@ body {
     height: 120px;
     object-fit: cover;
     border-radius: 50%;
-    border: 4px solid #EECB2F;
+    border: 4px solid #bf3131;
 }
 .profile-info-label {
     font-weight: 500;
@@ -162,7 +162,7 @@ body {
 .form-minimal-input:focus {
     background-color: transparent;
     box-shadow: none;
-    border-color: #EECB2F;
+    border-color: #bf3131;
 }
 
 /* Card 3: Pesanan */
@@ -217,7 +217,7 @@ body {
 .month-slider .nav-link.active {
     color: #000;
     font-weight: 700;
-    border-bottom-color: #EECB2F;
+    border-bottom-color: #bf3131;
 }
 
 /* Tombol panah slider bulan */
@@ -239,9 +239,9 @@ body {
     transition: all 0.2s ease;
 }
 .month-slider-nav:hover {
-    background-color: #EECB2F;
+    background-color: #bf3131;
     color: #fff;
-    border-color: #EECB2F;
+    border-color: #bf3131;
 }
 .month-slider-prev { left: 0; }
 .month-slider-next { right: 0; }
@@ -283,7 +283,7 @@ body {
     transition: all 0.2s ease;
 }
 .order-item-detail:hover {
-    color: #EECB2F;
+    color: #bf3131;
 }
 
 /* Status Badge */
@@ -322,7 +322,7 @@ body {
 
 /* Terapkan HANYA saat layar 992px atau lebih kecil */
 @media (max-width: 991.98px) {
-    
+
     .hamburger-btn {
         display: block; /* Tampilkan tombol hamburger */
     }
@@ -330,7 +330,7 @@ body {
     .header-user span {
         display: none; /* Sembunyikan teks "Hello Thierry" */
     }
-    
+
     .sidebar {
         position: fixed; /* Ubah jadi 'fixed' */
         top: 0;
@@ -347,7 +347,7 @@ body {
         width: 100%; /* Konten jadi full width */
         margin-left: 0;
     }
-    
+
     /* Overlay gelap saat sidebar terbuka */
     .sidebar-overlay {
         display: block; /* Munculkan overlay */
@@ -362,7 +362,7 @@ body {
         visibility: hidden;
         transition: opacity 0.3s ease;
     }
-    
+
     .sidebar-overlay.is-open {
         opacity: 1;
         visibility: visible;
@@ -515,7 +515,7 @@ body {
 
 .star-icon {
         display: flex;
-        flex-direction: row-reverse; 
+        flex-direction: row-reverse;
         justify-content: center;
         gap: 10px;
     }
@@ -585,7 +585,7 @@ body {
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        color: #FEC81A;
+        color: #fe1a1a;
         font-weight: bold;
     }
 
@@ -599,15 +599,15 @@ body {
 
 /* [FIX] Style Container Peta */
     #map-profile-main, #map-container {
-        height: 300px; 
-        width: 100%; 
-        border-radius: 8px; 
+        height: 300px;
+        width: 100%;
+        border-radius: 8px;
         border: 2px solid #e0e0e0;
-        z-index: 0; 
+        z-index: 0;
     }
 
     /* [FIX UI CROP V2] Stabilisasi Tampilan Mobile */
-    
+
     /* 1. Wrapper Modal Body */
     #cropModal .modal-body {
         padding: 0;
@@ -617,7 +617,7 @@ body {
         align-items: center;
         justify-content: center;
         /* Tinggi dinamis: 60% layar HP, max 500px di desktop */
-        height: 60vh; 
+        height: 60vh;
         max-height: 500px;
         min-height: 300px;
     }
@@ -634,7 +634,7 @@ body {
     #imageToCrop {
         display: block;
         max-width: 100%;
-        max-height: 100%; 
+        max-height: 100%;
     }
 
 
