@@ -3,7 +3,7 @@
 @section('title', 'Checkout')
 
 @section('content')
-    <header class="services-header">
+    <header class="services-hero">
         <div class="container" style="padding-top: 100px; padding-bottom: 50px;">
             <h1>Checkout</h1>
         </div>
@@ -14,24 +14,24 @@
         <form action="{{ route('order.store') }}" method="POST" id="checkoutForm">
             @csrf
             <input type="hidden" name="service_id" value="{{ $service->id }}">
-            
+
             <div class="row g-5">
                 <div class="col-lg-7">
                     <h4 class="mb-4 fw-bold">Pilih Alamat Survei</h4>
 
                     @forelse ($addresses as $address)
                         <div class="address-card-wrapper mt-3">
-                            <input type="radio" name="address_id" id="address{{ $address->id }}" 
-                                   class="address-radio" value="{{ $address->id }}" 
+                            <input type="radio" name="address_id" id="address{{ $address->id }}"
+                                   class="address-radio" value="{{ $address->id }}"
                                    {{-- Logic Checked: Prioritas Alamat Baru (Session), lalu Utama --}}
                                    {{ (session('new_address_id') == $address->id) ? 'checked' : ($address->is_primary && !session('new_address_id') ? 'checked' : '') }}>
-                            
+
                             <label for="address{{ $address->id }}" class="address-card">
                                 <div class="address-card-body">
                                     <div class="fw-bold">
                                         {{ $address->address_line }}
                                         @if($address->is_primary)
-                                            <span class="badge bg-warning-subtle text-warning-emphasis fw-medium ms-2">UTAMA</span>
+                                            <span class="badge bg-danger-subtle text-danger-emphasis fw-medium ms-2">UTAMA</span>
                                         @endif
                                     </div>
                                     <div class="text-muted small my-2">
@@ -41,33 +41,33 @@
                                         {{ $address->landmark_details }}
                                     </div>
                                 </div>
-                                
+
                                 <!-- TOMBOL AKSI -->
                                 <div class="address-card-actions d-flex align-items-center gap-2" onclick="event.preventDefault()">
-                                    
+
                                     <!-- TOMBOL EDIT -->
                                     <!-- [PENTING] Pastikan data-saved ada -->
-                                    <button type="button" class="btn btn-icon btn-sm btn-light-primary btn-edit-address" 
+                                    <button type="button" class="btn btn-icon btn-sm btn-light-primary btn-edit-address"
                                             data-id="{{ $address->id }}"
                                             data-line="{{ $address->address_line }}"
                                             data-rt="{{ $address->rt_rw }}"
                                             data-pos="{{ $address->postal_code }}"
                                             data-patokan="{{ $address->landmark_details }}"
-                                            data-primary="{{ $address->is_primary ? '1' : '0' }}" 
+                                            data-primary="{{ $address->is_primary ? '1' : '0' }}"
                                             data-saved="{{ $address->is_saved ? '1' : '0' }}"
-                                            
+
                                             {{-- [BARU] Kirim koordinat lama --}}
                                             data-lat="{{ $address->latitude }}"
                                             data-lng="{{ $address->longitude }}"
-                                            
-                                            data-bs-toggle="modal" 
+
+                                            data-bs-toggle="modal"
                                             data-bs-target="#editAddressModal">
                                         <i class="bi bi-pencil"></i>
                                     </button>
 
                                     <!-- TOMBOL DELETE -->
-                                    @if(!$address->is_primary) 
-                                        <button type="button" class="btn btn-icon btn-sm btn-light-danger" 
+                                    @if(!$address->is_primary)
+                                        <button type="button" class="btn btn-icon btn-sm btn-light-danger"
                                                 onclick="confirmDelete('{{ $address->id }}')">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -108,7 +108,7 @@
                                 <span>Total (Estimasi)</span>
                                 <span>Rp{{ number_format($prices['total'], 0, ',', '.') }}</span>
                             </div>
-                            
+
                             <!-- [PENTING] Tambahkan ID dan type="button" -->
                             <button type="button" id="btnSubmitCheckout" class="btn btn-brand btn-lg w-100 fw-bold">
                                 Kirim Permintaan Survei
@@ -124,7 +124,7 @@
     @foreach ($addresses as $address)
         @if(!$address->is_primary)
             <form id="delete-form-{{ $address->id }}" action="{{ route('address.destroy', $address->id) }}" method="POST" style="display: none;">
-                @csrf 
+                @csrf
                 @method('DELETE')
             </form>
         @endif
@@ -145,7 +145,7 @@
                         <!-- [BARU] AREA PETA -->
                         <div class="mb-3">
                         <label class="form-label fw-bold">Titik Lokasi</label>
-                        
+
                         <!-- Wrapper Baru -->
                         <div class="map-wrapper">
                             <!-- Overlay Loading -->
@@ -153,11 +153,11 @@
                                 <div class="spinner-border mb-2" role="status"></div>
                                 <span>Mencari titik...</span>
                             </div>
-                            
+
                             <!-- Peta Asli -->
                             <div id="map-checkout" class="map-canvas"></div>
                         </div>
-                        
+
                         <div class="form-text small text-muted">
                             <i class="bi bi-geo-alt-fill text-danger"></i> Geser pin untuk isi alamat otomatis.
                         </div>
@@ -170,7 +170,7 @@
                             <label class="form-label fw-bold">Alamat Lengkap <span id="status-text-new" class="text-warning small fst-italic ms-2" style="display:none;">(Memuat alamat...)</span></label>
                             <textarea class="form-control" name="address_line" id="address_input_new" rows="3" required placeholder="Cari di peta atau ketik manual..."></textarea>
                         </div>
-                        
+
                         <div class="row mb-3">
                             <div class="col-6">
                                 <label class="form-label">RT/RW</label>
@@ -181,14 +181,14 @@
                                 <input type="text" class="form-control" name="postal_code" id="postal_code_new" placeholder="Otomatis">
                             </div>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label class="form-label">Detail Patokan</label>
                             <input type="text" class="form-control" name="landmark_details" placeholder="Cth: Pagar hitam">
                         </div>
-                        
+
                         <hr class="my-3">
-                        
+
                         <!-- Checkbox Simpan & Utama (Logika Lama Tetap Ada) -->
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="checkbox" name="is_saved" value="1" id="new_is_saved" checked>
@@ -200,10 +200,10 @@
                             <label class="form-check-label" for="new_is_primary">Jadikan Alamat Utama</label>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-brand">Simpan</button>
+                        <button type="submit" class="btn btn-pesan">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -217,7 +217,7 @@
                 <form id="editAddressForm" action="" method="POST">
                     @csrf
                     @method('PUT')
-                    
+
                     <div class="modal-header">
                         <h5 class="modal-title">Edit Alamat</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -226,14 +226,14 @@
                     <!-- [BARU] AREA PETA EDIT -->
                     <div class="mb-3">
                         <label class="form-label fw-bold">Perbarui Titik Lokasi</label>
-                        
+
                         <div class="map-wrapper">
                             <!-- Overlay Loading -->
                             <div id="loading-map-edit" class="map-loading">
                                 <div class="spinner-border mb-2" role="status"></div>
                                 <span>Mencari titik...</span>
                             </div>
-                            
+
                             <div id="map-edit" class="map-canvas"></div>
                         </div>
 
@@ -246,7 +246,7 @@
                         <label class="form-label">Alamat Lengkap <span id="status-text-edit" class="text-warning small fst-italic ms-2" style="display:none;">(Memuat alamat...)</span></label>
                         <textarea class="form-control" id="edit_address_line" name="address_line" rows="3" required></textarea>
                     </div>
-                    
+
                     <div class="row mb-3">
                         <div class="col-6">
                             <label class="form-label">RT/RW</label>
@@ -259,7 +259,7 @@
                         </div>
                     </div>
                         <div class="mb-3"><label class="form-label">Detail Patokan</label><input type="text" class="form-control" id="edit_landmark_details" name="landmark_details"></div>
-                        
+
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="is_primary" value="1" id="edit_is_primary">
                             <label class="form-check-label" for="edit_is_primary">Jadikan Alamat Utama</label>
@@ -267,7 +267,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-brand">Update Alamat</button>
+                        <button type="submit" class="btn btn-pesan">Update Alamat</button>
                     </div>
                 </form>
             </div>
@@ -295,7 +295,7 @@
                 <div class="modal-footer border-0 justify-content-center pb-4">
                     <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Batal</button>
                     <!-- [PENTING] ID tombol konfirmasi -->
-                    <button type="button" class="btn btn-warning px-4 fw-bold" id="btnConfirmDoubleOrder">Ya, Pesan Lagi</button>
+                    <button type="button" class="btn btn-success px-4 fw-bold" id="btnConfirmDoubleOrder">Ya, Pesan Lagi</button>
                 </div>
             </div>
         </div>
@@ -303,8 +303,8 @@
 
     @push('scripts')
 <!-- 1. JS Leaflet (Wajib untuk Peta) -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""></script>
 
 <script>
@@ -374,7 +374,7 @@
                         }
                         if (data && data.address && data.address.postcode && zipInput) {
                             zipInput.value = data.address.postcode;
-                            zipInput.style.backgroundColor = "#fff9db"; 
+                            zipInput.style.backgroundColor = "#fff9db";
                             setTimeout(() => zipInput.style.backgroundColor = "", 1500);
                         }
                     })
@@ -410,7 +410,7 @@
             marker.on('dragstart', function() {
                 toggleInputLoading(true); // [START LOADING] Saat mulai geser
             });
-            
+
             marker.on('dragend', function (e) {
                 const pos = marker.getLatLng();
                 updateInputs(pos.lat, pos.lng);
@@ -445,7 +445,7 @@
 
         function initMapNew() {
             if (!document.getElementById('map-checkout')) return;
-            if (mapNew !== null) return; 
+            if (mapNew !== null) return;
 
             mapNew = L.map('map-checkout').setView([DEFAULT_LAT, DEFAULT_LNG], 15);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' }).addTo(mapNew);
@@ -453,12 +453,12 @@
 
             // Sambungkan event dengan ID elemen Modal Tambah
             setupMapEvents(mapNew, markerNew, 'lat_new', 'lng_new', 'address_input_new', 'postal_code_new', 'loading-map-new', 'status-text-new');
-            
+
             // Set default hidden input
             document.getElementById('lat_new').value = DEFAULT_LAT;
             document.getElementById('lng_new').value = DEFAULT_LNG;
         }
-        
+
         const modalNew = document.getElementById('newAddressModal');
         if (modalNew) {
             modalNew.addEventListener('shown.bs.modal', function () {
@@ -475,7 +475,7 @@
 
         function initMapEdit(lat, lng, addressText) {
             if (!document.getElementById('map-edit')) return;
-            
+
             const isValidCoord = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
             let startLat = isValidCoord ? lat : DEFAULT_LAT;
             let startLng = isValidCoord ? lng : DEFAULT_LNG;
@@ -485,17 +485,17 @@
                 mapEdit = L.map('map-edit').setView([startLat, startLng], 15);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OSM' }).addTo(mapEdit);
                 markerEdit = L.marker([startLat, startLng], { draggable: true }).addTo(mapEdit);
-                
+
                 // Sambungkan event dengan ID elemen Modal Edit
                 setupMapEvents(mapEdit, markerEdit, 'lat_edit', 'lng_edit', 'edit_address_line', 'edit_postal_code', 'loading-map-edit', 'status-text-edit');
             } else {
                 mapEdit.setView([startLat, startLng], 15);
                 markerEdit.setLatLng([startLat, startLng]);
             }
-            
+
             // Refresh ukuran map (PENTING BUAT MOBILE)
             setTimeout(() => { mapEdit.invalidateSize(); }, 200);
-            
+
             // Set input hidden
             const elLatEdit = document.getElementById('lat_edit');
             const elLngEdit = document.getElementById('lng_edit');
@@ -511,7 +511,7 @@
                         if (data && data.length > 0) {
                             const newLat = parseFloat(data[0].lat);
                             const newLng = parseFloat(data[0].lon);
-                            
+
                             if(mapEdit && markerEdit) {
                                 mapEdit.setView([newLat, newLng], 16);
                                 markerEdit.setLatLng([newLat, newLng]);
@@ -529,7 +529,7 @@
         // ==========================================
         const editButtons = document.querySelectorAll('.btn-edit-address');
         const editForm = document.getElementById('editAddressForm');
-        
+
         editButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const { id, line, rt, pos, patokan, primary, saved, lat, lng } = this.dataset;
@@ -539,7 +539,7 @@
                 if(document.getElementById('edit_rt_rw')) document.getElementById('edit_rt_rw').value = rt;
                 if(document.getElementById('edit_postal_code')) document.getElementById('edit_postal_code').value = pos;
                 if(document.getElementById('edit_landmark_details')) document.getElementById('edit_landmark_details').value = patokan;
-                
+
                 // Isi Hidden Input Koordinat (Fallback ke default jika null)
                 if(document.getElementById('lat_edit')) document.getElementById('lat_edit').value = lat || DEFAULT_LAT;
                 if(document.getElementById('lng_edit')) document.getElementById('lng_edit').value = lng || DEFAULT_LNG;
@@ -564,7 +564,7 @@
                     } else {
                         if (containerPrimary) containerPrimary.style.display = 'block';
                         checkPrimary.checked = isPrimaryAddress;
-                        checkPrimary.disabled = isPrimaryAddress; 
+                        checkPrimary.disabled = isPrimaryAddress;
                     }
                 }
 
@@ -596,7 +596,7 @@
         const checkoutForm = document.getElementById('checkoutForm');
         const btnSubmit = document.getElementById('btnSubmitCheckout');
         const btnConfirm = document.getElementById('btnConfirmDoubleOrder');
-        
+
         const doubleOrderModalEl = document.getElementById('doubleOrderModal');
         let doubleOrderModal = null;
         if(doubleOrderModalEl) doubleOrderModal = new bootstrap.Modal(doubleOrderModalEl);

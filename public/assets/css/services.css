@@ -1,201 +1,304 @@
-/* GENERAL STYLING */
+/* =========================
+   GLOBAL STYLE
+========================= */
 body {
     font-family: 'Outfit', sans-serif;
+    background-color: #f6f6f6;
+    color: #212529;
+}
+
+a {
+    text-decoration: none;
 }
 
 .section-padding {
-    padding: 100px 0;
+    padding: 80px 0;
 }
 
-.section-title {
-    font-size: 64px;
-    font-weight: 700;
-}
-
-.section-subtitle {
-    font-size: 20px;
-    font-weight: 500;
-}
-
+/* =========================
+   BUTTON
+========================= */
 .btn-brand {
     background-color: #bf3131;
-    color: white;
-    border-color: #bf3131;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 .btn-brand:hover {
     background-color: #f50000;
-    border-color: #f50000;
-    color: white;
+    transform: translateY(-2px);
+    color: #fff;
     box-shadow: 0 4px 12px rgba(254, 26, 26, 0.3);
 }
 
-.btn-outline-brand {
-    border-color: #bf3131;
-    color: #bf3131;
-}
-
-.btn-outline-brand:hover {
+.btn-pesan {
     background-color: #bf3131;
-    color: white;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    font-weight: 600;
 }
 
+.btn-pesan:hover {
+    background-color: #f50000;
+    color: #fff;
+}
 
-/* NAVBAR */
+/* =========================
+   NAVBAR
+========================= */
 .navbar {
-    transition: background-color 0.3s ease, padding 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .navbar.scrolled {
-    background-color: rgba(18, 18, 18, 0.8);
+    background-color: rgba(18, 18, 18, 0.9);
     backdrop-filter: blur(10px);
-    padding-top: 5px;
-    padding-bottom: 5px;
 }
 
 .navbar-nav .nav-link {
+    color: #fff;
     font-weight: 500;
-    color: white;
 }
 
-.navbar-nav .nav-link.active,
-.navbar-nav .nav-link:hover {
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
     color: #bf3131;
 }
 
-
-/* SECTION 1: HERO */
-#home {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/section1.jpeg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+.logo-navbar {
+    height: 60px;
 }
 
-#home h1 {
-    font-size: 64px;
-    font-weight: 700;
+@media (max-width: 991px) {
+    .logo-navbar {
+        height: 40px;
+    }
+
+    .navbar-collapse {
+        background: rgba(18, 18, 18, 0.95);
+        padding: 20px;
+        border-radius: 16px;
+    }
 }
 
-#home p {
-    font-weight: 500;
-}
-
-/* FOOTER */
+/* =========================
+   FOOTER
+========================= */
 .footer-section {
-    background-color: #4B4B4B;
-    padding: 30px 0 30px 0;
+    background-color: #4b4b4b;
+    color: #fff;
+    padding: 30px 0;
 }
 
-.social-icons a {
-    transition: color 0.3s ease;
+.footer-section a {
+    color: #fff;
 }
 
-.social-icons a:hover {
-    color: #bf3131 !important;
+.footer-section a:hover {
+    color: #bf3131;
 }
 
-.services-header {
-    background-image: url('../img/section4bar.png');
-    background-repeat: repeat;
-    background-blend-mode: multiply;
-    /* Opsional, agar menyatu */
-    padding: 3rem 0;
+/* =====================================================
+   SERVICES PAGE (TOTAL REDESIGN, NOT REUSE OLD STYLE)
+===================================================== */
+
+/* HERO */
+.services-hero {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../img/section4bar.png');
+    color: #fff;
+    padding: 90px 0 120px; /* bawah ditambah */
     text-align: center;
+    position: relative; /* PENTING */
 }
 
-.services-header h1 {
-    font-size: 3.5rem;
+.services-hero h1 {
+    font-size: 48px;
     font-weight: 700;
-    color: #ffffff;
-    /* Warna teks gelap */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.search-bar-container {
-    background-color: #ffffff;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    margin-top: -1.5rem;
-    /* Menarik ke atas agar menimpa header */
-    position: relative;
-    z-index: 10;
+.services-hero p {
+    margin-top: 10px;
+    opacity: 0.9;
 }
 
-.search-bar-container .form-control {
-    border-right: 0;
+/* SEARCH */
+.services-search {
+    position: absolute;
+    left: 50%;
+    bottom: -28px; /* mainkan angka ini */
+    transform: translateX(-50%);
+
+    display: flex;
+    gap: 10px;
+
+    background: white;
+    padding: 10px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    z-index: 5;
 }
 
-.search-bar-container .btn-warning {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+.services-search input {
+    width: 320px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
 }
 
-/* Filter Sidebar */
-.filter-card {
-    border-radius: 0.5rem;
-    border: 1px solid #e9ecef;
-}
-
-.filter-header {
-    cursor: pointer;
+.services-search button {
+    padding: 12px 22px;
+    border-radius: 8px;
+    border: none;
+    background: #bf3131;
+    color: #fff;
     font-weight: 600;
-}
-
-.filter-body {
-    padding: 1rem;
-}
-
-.filter-body .form-check {
-    margin-bottom: 0.75rem;
-}
-
-.filter-body .form-check-label {
     cursor: pointer;
 }
 
-/* Service Card (Product) */
-.service-card {
-    border: 1px solid #e9ecef;
-    border-radius: 0.5rem;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+/* WRAPPER */
+.services-wrapper {
+    padding-top: 90px;
 }
 
-.service-card:hover {
-    box-shadow: 0 4px 12px rgba(254, 26, 26, 0.3);
-    transform: translateY(-5px);
+/* LAYOUT */
+.services-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 30px;
 }
 
-.service-card .card-img-top {
-    background-color: #e9ecef;
-    /* Warna placeholder abu-abu */
-    height: 200px;
+/* FILTER */
+.services-filter {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px;
+    height: fit-content;
+}
+
+.services-filter h4 {
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-group label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.filter-group select,
+.filter-group input[type="range"] {
     width: 100%;
-    object-fit: cover;
 }
 
-.service-card .card-body {
-    padding: 1rem;
+.rating-option {
+    font-size: 14px;
+    margin-bottom: 6px;
 }
 
-.service-card .card-title {
+/* GRID */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 26px;
+}
+
+/* CARD */
+.service-item {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.service-item:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 4px 12px rgba(254, 26, 26, 0.3);
+}
+
+.service-thumb {
+    height: 170px;
+    background: linear-gradient(135deg, #ddd, #bbb);
+    position: relative;
+}
+
+.service-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: #bf3131;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.service-info {
+    padding: 20px;
+}
+
+.service-info h3 {
+    font-size: 18px;
     font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
 }
 
-.service-card .card-price {
+.service-desc {
+    font-size: 14px;
+    color: #666;
+    margin: 10px 0;
+}
+
+.service-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.service-meta .price {
+    color: #bf3131;
     font-weight: 700;
-    font-size: 1.2rem;
-    color: #ff0707;
-    /* Warna kuning */
 }
 
+.service-meta .rating {
+    color: #f5a623;
+    font-size: 14px;
+}
+
+.service-btn {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    background: #bf3131;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.service-btn:hover {
+    background: #9e2525;
+}
+
+/* RESPONSIVE */
+@media (max-width: 991px) {
+    .services-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .services-filter {
+        margin-bottom: 30px;
+    }
+}
 
 /* 2. Halaman Checkout & Pembayaran */
 
@@ -271,7 +374,7 @@ body {
 .address-radio:checked+.address-card {
     border-color: #bf3131;
     /* Brand color */
-    box-shadow: 0 4px 12px rgba(238, 203, 47, 0.3);
+    box-shadow: 0 4px 12px rgba(238, 47, 47, 0.3);
 }
 
 /* Tambahkan pseudo-element "radio" di dalam card */
@@ -347,87 +450,4 @@ body {
     font-weight: 500;
     color: #212529;
     /* Pastikan teks harga jelas */
-}
-
-
-#map-container {
-    width: 100%;
-    height: 300px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-}
-
-.map-wrapper {
-        position: relative;
-        height: 250px;
-        width: 100%;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 2px solid #e0e0e0;
-    }
-
-    /* Map itu sendiri */
-    .map-canvas {
-        height: 100%;
-        width: 100%;
-        z-index: 1;
-    }
-
-    /* Overlay Loading di Peta */
-    .map-loading {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.7); /* Putih Transparan */
-        z-index: 10; /* Di atas peta */
-        display: none; /* Default sembunyi */
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        color: #fe1a1a;
-        font-weight: bold;
-    }
-
-    /* Efek Input Loading */
-    .input-loading {
-        background-color: #f9f9f9 !important;
-        color: #999 !important;
-        cursor: wait !important;
-        transition: all 0.3s;
-    }
-
-.logo-navbar {
-    height: 70px;
-}
-
-@media (max-width: 991.98px) {
-
-    /* Saat menu dibuka, kasih background gelap */
-    .navbar-collapse {
-        background-color: rgba(18, 18, 18, 0.95); /* Hitam transparan dikit */
-        backdrop-filter: blur(10px); /* Efek blur biar estetik */
-        padding: 20px;
-        margin-top: 15px;
-        border-radius: 15px; /* Biar ujungnya melengkung */
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Kasih bayangan biar timbul */
-        border: 1px solid rgba(255, 255, 255, 0.1); /* Garis tipis halus */
-    }
-
-    /* Kasih jarak antar menu biar enak dipencet */
-    .navbar-nav .nav-item {
-        margin-bottom: 10px;
-        border-bottom: 1px solid rgba(255,255,255,0.05); /* Garis pemisah tipis */
-        padding-bottom: 10px;
-    }
-
-    .navbar-nav .nav-item:last-child {
-        margin-bottom: 0;
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-    .logo-navbar {
-        height: 40px;
-    }
 }

@@ -25,7 +25,7 @@
 @endpush
 
 @section('content')
-    <header class="services-header">
+    <header class="services-hero">
         <div class="container" style="padding-top: 100px; padding-bottom: 50px;">
             <h1>Detail Jasa</h1>
             <small class="text-muted">

@@ -2,6 +2,12 @@
 
 @section('title', 'PastiFIX - Order Sukses')
 
+@section('hide-navbar')
+@endsection
+
+@section('hide-footer')
+@endsection
+
 @section('content')
     <div class="container" style="padding-top: 150px; padding-bottom: 100px;">
         <div class="row justify-content-center">
@@ -9,9 +15,9 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-5">
                         <i class="bi bi-check-circle-fill display-1 text-success mb-3"></i>
-                        
+
                         <h1 class="mb-3 fw-bold">Permintaan Terkirim!</h1>
-                        
+
                         <p class="lead text-muted">
                             Permintaan Anda telah berhasil dikirim. Admin kami akan segera memverifikasi pesanan Anda.
                         </p>
