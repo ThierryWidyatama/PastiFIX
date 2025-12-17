@@ -217,6 +217,11 @@
                                 <p class="mb-0 small text-center fst-italic">"{{ $order->review->comment }}"</p>
                             </div>
                         </div>
+                         <div class="mb-3">
+                                <a href="{{ route('invoice.download', $order->id) }}" class="btn btn-outline-dark w-100 py-2 fw-bold border-2">
+                                    <i class="bi bi-file-earmark-pdf-fill me-2"></i> Download Invoice Resmi
+                                </a>
+                            </div>
                     @else
                         <div class="mt-4">
                             <div class="alert alert-success d-flex align-items-center mb-3" role="alert">

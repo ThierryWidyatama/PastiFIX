@@ -50,11 +50,40 @@ class AdminOrderController extends Controller
     /**
      * Tampilkan daftar semua pesanan (Index).
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua order, urutkan dari terbaru
-        // Eager load 'user' dan 'category' biar query ringan
-        $orders = Order::with(['user', 'category', 'mandor'])->orderBy('created_at', 'desc')->get();
+        // Mulai Query
+        $query = Order::with(['user', 'category', 'mandor']);
+
+        // 1. [LOGIC FILTER STATUS UPDATED]
+        if ($request->filled('status')) {
+            
+            // [FIX] Jika statusnya 'ALL_CANCELLED', cari semua jenis batal
+            if ($request->status == 'ALL_CANCELLED') {
+                $query->whereIn('status', ['CANCELLED', 'REJECTED_BY_ADMIN', 'REJECTED_BY_MANDOR']);
+            } 
+            // [FIX] Jika statusnya 'ALL_PROCESS', cari semua yg sedang jalan (Opsional, biar konsisten dgn grafik)
+            elseif ($request->status == 'ALL_PROCESS') {
+                $query->whereIn('status', ['APPROVED_IN_PROGRESS', 'PENDING_MANDOR_QUOTE', 'COMPLETED_PENDING_PAYMENT']);
+            }
+            // Jika status spesifik biasa
+            else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        // 2. LOGIC SEARCH (Tetap sama)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function($u) use ($search) {
+                      $u->where('name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         return view('admin.orders.index', compact('orders'));
     }

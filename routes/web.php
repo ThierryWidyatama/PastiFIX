@@ -294,4 +294,14 @@ Route::middleware(['auth'])->group(function () {
     // Route Proxy Peta (Biar gak kena CORS Error)
     Route::get('/geocode/reverse', [UserDashboardController::class, 'proxyReverseGeocode'])->name('geocode.reverse');
     Route::get('/geocode/search', [UserDashboardController::class, 'proxySearchGeocode'])->name('geocode.search');
+
+    // Route Download Invoice PDF
+    Route::get('/invoice/{id}', [UserDashboardController::class, 'downloadInvoice'])->name('invoice.download');
+
+    // Route Export Excel
+    Route::get('/admin/export/revenue', [DashboardController::class, 'exportExcel'])->name('admin.export.revenue');
+    
+    // Route Import Data
+    Route::get('/admin/import/template', [DashboardController::class, 'downloadTemplate'])->name('admin.import.template');
+    Route::post('/admin/import/store', [DashboardController::class, 'importRevenue'])->name('admin.import.store');
 });

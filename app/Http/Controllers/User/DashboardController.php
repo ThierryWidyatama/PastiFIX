@@ -10,7 +10,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Http; // <-- PENTING
+use Illuminate\Support\Facades\Http;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DashboardController extends Controller
 {
@@ -331,5 +332,33 @@ class DashboardController extends Controller
         ]);
 
         return $response->json();
+    }
+
+    public function downloadInvoice($id)
+    {
+        $user = Auth::user();
+
+        // 1. Cari Order (Pastikan milik user yang login & status sudah lunas)
+        $order = \App\Models\Order::with(['category', 'mandor', 'projectAddress', 'costItems'])
+                    ->where('user_id', $user->id)
+                    ->where('status', 'FINISHED') // Hanya boleh download kalo udah lunas
+                    ->findOrFail($id);
+
+        // 2. Siapkan data untuk PDF
+        $data = [
+            'order' => $order,
+            'user' => $user,
+            'date' => now()->format('d F Y'),
+            'invoice_no' => 'INV-' . strtoupper(substr($order->id, 0, 8)), // Contoh: INV-A1B2C3D4
+        ];
+
+        // 3. Load View PDF (Kita akan buat view ini nanti)
+        $pdf = Pdf::loadView('user.invoice_pdf', $data);
+
+        // 4. Download file
+        return $pdf->download('Invoice_PastiFIX_' . $data['invoice_no'] . '.pdf');
+        
+        // Tips Debugging: Kalau mau lihat tampilan HTML-nya dulu tanpa download, pakai ini:
+        // return view('user.invoice_pdf', $data);
     }
 }

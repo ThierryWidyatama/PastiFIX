@@ -6,6 +6,46 @@
         <div class="card-title">
             <h2>Daftar Pesanan Masuk</h2>
         </div>
+        <!-- [BARU] TOOLBAR FILTER & SEARCH -->
+        <div class="card-toolbar">
+            <form action="{{ route('admin.orders.index') }}" method="GET" class="d-flex align-items-center gap-2 my-1">
+                
+                <!-- INPUT SEARCH -->
+                <div class="position-relative w-250px me-2">
+                    <span class="svg-icon svg-icon-3 position-absolute top-50 translate-middle-y ms-4">
+                        <i class="bi bi-search text-gray-500"></i>
+                    </span>
+                    <input type="text" name="search" value="{{ request('search') }}" 
+                           class="form-control form-control-solid ps-12" 
+                           placeholder="Cari Order ID / Nama..." />
+                </div>
+                <!-- TOMBOL SUBMIT (Optional, buat Search) -->
+                <button type="submit" class="btn btn-primary btn-icon">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+
+                <!-- DROPDOWN STATUS -->
+                <div class="w-200px">
+                    <select name="status" class="form-select form-select-solid" onchange="this.form.submit()">
+                        <option value="">Semua Status</option>
+                        <option value="PENDING_ADMIN_REVIEW" {{ request('status') == 'PENDING_ADMIN_REVIEW' ? 'selected' : '' }}>Pending Review</option>
+                        <option value="PENDING_MANDOR_QUOTE" {{ request('status') == 'PENDING_MANDOR_QUOTE' ? 'selected' : '' }}>Survei Mandor</option>
+                        <option value="APPROVED_IN_PROGRESS" {{ request('status') == 'APPROVED_IN_PROGRESS' ? 'selected' : '' }}>Sedang Dikerjakan</option>
+                        <option value="COMPLETED_PENDING_PAYMENT" {{ request('status') == 'COMPLETED_PENDING_PAYMENT' ? 'selected' : '' }}>Menunggu Pembayaran</option>
+                        <option value="FINISHED" {{ request('status') == 'FINISHED' ? 'selected' : '' }}>Selesai (Lunas)</option>
+                        <option value="ALL_CANCELLED" {{ request('status') == 'ALL_CANCELLED' ? 'selected' : '' }} class="fw-bold text-danger">Semua Dibatalkan</option>
+                    </select>
+                </div>
+                
+                <!-- TOMBOL RESET -->
+                @if(request('status') || request('search'))
+                    <a href="{{ route('admin.orders.index') }}" class="btn btn-light btn-icon" title="Reset Filter">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                @endif
+            </form>
+        </div>
+        <!-- END TOOLBAR -->
     </div>
     <div class="card-body pt-0">
         <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_orders_table">

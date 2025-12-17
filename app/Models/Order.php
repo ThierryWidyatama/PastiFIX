@@ -38,9 +38,10 @@ class Order extends Model
     }
 
     // Relasi ke Alamat Proyek
+    // Relasi ke Alamat Proyek
     public function projectAddress()
     {
-        return $this->belongsTo(UserAddress::class, 'project_address_id');
+        return $this->belongsTo(UserAddress::class, 'project_address_id')->withTrashed();
     }
 
     // Relasi ke Rincian Harga
