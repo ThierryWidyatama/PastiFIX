@@ -55,11 +55,11 @@
                 <div class="card-body">
                     <h4 class="fw-bold mb-4">Pesanan</h4>
                     <div class="status-item mb-3">
-                        <div class="status-dot-wrapper"> <span class="status-dot dot-green"></span> Sedang Berlangsung </div>
+                        <div class="status-dot-wrapper"> <span class="status-dot dot-yellow"></span> Sedang Berlangsung </div>
                         <span>{{ $stats['on_progress'] }}</span>
                     </div>
                     <div class="status-item mb-3">
-                        <div class="status-dot-wrapper"> <span class="status-dot dot-yellow"></span> Selesai </div>
+                        <div class="status-dot-wrapper"> <span class="status-dot dot-green"></span> Selesai </div>
                         <span>{{ $stats['selesai'] }}</span>
                     </div>
                     <div class="status-item">
