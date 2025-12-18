@@ -43,12 +43,13 @@
             </div>
             <!--end::Input group-->
 
-            <!--[BARU] Input Harga-->
+            <!--[MODIFIKASI] Input Harga-->
             <div class="mb-10 fv-row">
                 <label for="price" class="form-label">Harga Mulai Dari</label>
-                <input type="number" class="form-control form-control-solid" id="price" name="price" 
-                       placeholder="Contoh: 150000" value="{{ old('price') }}">
-                <div class="text-muted fs-7">Masukkan angka saja, tanpa "Rp" atau titik. Contoh: 150000</div>
+                <!-- [UBAH] type="text" dan tambah class "rupiah-input" -->
+                <input type="text" class="form-control form-control-solid rupiah-input" id="price" name="price" 
+                       placeholder="Contoh: 150.000" value="{{ old('price') }}">
+                <div class="text-muted fs-7">Masukkan angka saja.</div>
             </div>
             <!--end::Input group-->
 

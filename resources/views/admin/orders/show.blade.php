@@ -148,7 +148,8 @@
                         <input type="text" name="item_name" class="form-control" placeholder="Nama Item (Misal: Semen 1 Sak)" required>
                     </div>
                     <div class="col-md-4">
-                        <input type="number" name="price" class="form-control" placeholder="Harga (Rp)" required>
+                        <input type="text" class="form-control form-control-solid rupiah-input" id="price" name="price" 
+                       placeholder="Contoh: 150.000" value="{{ old('price') }}">
                     </div>
                     <div class="col-md-2">
                         <button type="submit" class="btn btn-sm btn-primary w-100 h-100">Tambah</button>

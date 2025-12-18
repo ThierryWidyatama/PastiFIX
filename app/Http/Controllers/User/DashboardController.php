@@ -227,11 +227,18 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Ambil order berdasarkan ID, pastikan milik user yg login
-        // Load relasi: kategori, mandor, timeline, dan rincian biaya
-        $order = \App\Models\Order::with(['category', 'mandor', 'workTimelines', 'costItems'])
-                    ->where('user_id', $user->id)
-                    ->findOrFail($id);
+        $order = \App\Models\Order::with([
+            'category', 
+            'mandor', 
+            'costItems',
+            'workTimelines' => function ($query) {
+                // [FIX] Ubah jadi 'desc' (Terbaru Paling Atas)
+                // Jadi tanggal 30 muncul duluan, baru tanggal 1 di bawahnya
+                $query->orderBy('work_date', 'desc');
+            }
+        ])
+        ->where('user_id', $user->id)
+        ->findOrFail($id);
 
         return view('user.activity-detail', compact('order'));
     }

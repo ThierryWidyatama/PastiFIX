@@ -73,10 +73,18 @@ class KategoriController extends Controller
      */
     public function store(Request $request)
     {
+        // [FIX PENTING] Hapus titik DULUAN sebelum validasi
+        // Biar "150.000" jadi "150000" (Angka murni)
+        if ($request->has('price')) {
+            $cleanPrice = str_replace('.', '', $request->price);
+            $request->merge(['price' => $cleanPrice]);
+        }
+
+        // Baru divalidasi
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
-            'price' => 'nullable|numeric|min:0',
+            'price' => 'nullable|numeric|min:0', // Sekarang aman karena sudah jadi angka
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -90,7 +98,7 @@ class KategoriController extends Controller
             'id' => Str::uuid(),
             'name' => $request->name,
             'description' => $request->description,
-            'price' => $request->price,
+            'price' => $request->price, // Ini sekarang sudah 150000
             'image_url' => $imageUrl,
         ]);
 
@@ -112,6 +120,10 @@ class KategoriController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        if ($request->has('price')) {
+            $cleanPrice = str_replace('.', '', $request->price);
+            $request->merge(['price' => $cleanPrice]);
+        }
         // 1. Validasi
         $request->validate([
             // Validasi unik, tapi 'ignore' (abaikan) ID kategori ini sendiri

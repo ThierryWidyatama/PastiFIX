@@ -174,6 +174,13 @@ class AdminOrderController extends Controller
      */
     public function storeCost(Request $request, $order_id)
     {
+        // 1. [FIX] Hapus titik dari input harga (Format Rupiah JS -> Angka Murni)
+        if ($request->has('price')) {
+            $cleanPrice = str_replace('.', '', $request->price);
+            $request->merge(['price' => $cleanPrice]);
+        }
+
+        // 2. Validasi
         $request->validate([
             'item_name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
@@ -181,14 +188,14 @@ class AdminOrderController extends Controller
 
         $order = Order::findOrFail($order_id);
 
-        // 1. Tambah item biaya baru
+        // 3. Tambah item biaya baru
         $order->costItems()->create([
             'id' => \Illuminate\Support\Str::uuid(),
             'item_name' => $request->item_name,
-            'price' => $request->price,
+            'price' => $request->price, // Ini sekarang sudah angka murni (cth: 80000)
         ]);
 
-        // 2. Hitung ulang total harga di tabel orders
+        // 4. Hitung ulang total harga di tabel orders
         $totalCost = $order->costItems()->sum('price');
         $order->update(['estimated_cost' => $totalCost]);
 
