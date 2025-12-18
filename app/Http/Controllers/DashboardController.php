@@ -187,4 +187,22 @@ class DashboardController extends Controller
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    public function resetRevenue(Request $request)
+    {
+        // Ambil bulan & tahun dari input (atau default saat ini)
+        $month = $request->input('month', date('m'));
+        $year = $request->input('year', date('Y'));
+
+        // Hapus data import yang cocok
+        $deleted = \App\Models\ImportedRevenue::whereMonth('revenue_date', $month)
+                    ->whereYear('revenue_date', $year)
+                    ->delete();
+
+        if ($deleted > 0) {
+            return redirect()->back()->with('success', "Berhasil mereset $deleted data import untuk periode $month/$year.");
+        }
+
+        return redirect()->back()->with('warning', "Tidak ada data import yang ditemukan untuk periode $month/$year.");
+    }
 }

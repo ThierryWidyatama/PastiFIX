@@ -304,4 +304,5 @@ Route::middleware(['auth'])->group(function () {
     // Route Import Data
     Route::get('/admin/import/template', [DashboardController::class, 'downloadTemplate'])->name('admin.import.template');
     Route::post('/admin/import/store', [DashboardController::class, 'importRevenue'])->name('admin.import.store');
+    Route::delete('/admin/import/reset', [DashboardController::class, 'resetRevenue'])->name('admin.import.reset');
 });

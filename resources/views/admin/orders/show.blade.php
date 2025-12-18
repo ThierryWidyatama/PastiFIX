@@ -63,9 +63,24 @@
                             <tr>
                                 <td class="fw-bold text-gray-600">Alamat Proyek</td>
                                 <td class="text-gray-800">
-                                    {{ $order->projectAddress->address_line }} <br>
-                                    RT/RW: {{ $order->projectAddress->rt_rw }}, Kode Pos: {{ $order->projectAddress->postal_code }} <br>
-                                    <span class="text-muted fs-7">Patokan: {{ $order->projectAddress->landmark_details }}</span>
+                                    <!-- Alamat Teks -->
+                                    <div class="mb-2">
+                                        {{ $order->projectAddress->address_line }} <br>
+                                        RT/RW: {{ $order->projectAddress->rt_rw ?? '-' }}, 
+                                        Kode Pos: {{ $order->projectAddress->postal_code ?? '-' }} <br>
+                                        <span class="text-muted fs-7 fst-italic">Patokan: {{ $order->projectAddress->landmark_details ?? '-' }}</span>
+                                    </div>
+
+                                    <!-- Tombol Google Maps -->
+                                    @if($order->projectAddress->latitude && $order->projectAddress->longitude)
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ $order->projectAddress->latitude }},{{ $order->projectAddress->longitude }}" 
+                                           target="_blank" 
+                                           class="btn btn-sm btn-outline btn-outline-success btn-active-light-success fw-bold dashed border-success">
+                                            <i class="bi bi-geo-alt-fill fs-5 me-1"></i> Buka di Google Maps
+                                        </a>
+                                    @else
+                                        <span class="badge badge-light-danger">Lokasi Peta Tidak Tersedia</span>
+                                    @endif
                                 </td>
                             </tr>
                             <tr>

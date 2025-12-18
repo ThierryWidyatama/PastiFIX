@@ -30,6 +30,20 @@
                         <div class="info-label">Kategori Perbaikan:</div>
                         <div class="info-value">{{ $order->category->name }}</div>
                     </div>
+                    <div class="info-item align-items-start"> <!-- align-items-start biar rapi kalo teks panjang -->
+                        <div class="info-label mt-1">Lokasi:</div>
+                        <div class="info-value">
+                            <p class="mb-1">{{ \Illuminate\Support\Str::limit($order->projectAddress->address_line, 50) }}</p>
+                            
+                            @if($order->projectAddress->latitude && $order->projectAddress->longitude)
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ $order->projectAddress->latitude }},{{ $order->projectAddress->longitude }}" 
+                                   target="_blank"
+                                   class="text-decoration-none text-success fw-bold small">
+                                    <i class="bi bi-geo-alt-fill"></i> Lihat di Peta
+                                </a>
+                            @endif
+                        </div>
+                    </div>
                     <div class="info-item">
                         <div class="info-label">Status:</div>
                         <div class="info-value">

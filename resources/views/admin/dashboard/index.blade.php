@@ -163,14 +163,16 @@
                 <h5 class="modal-title fw-bold">Import Data Keuangan Manual</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <!-- Form Upload (Ini Form Asli) -->
             <form action="{{ route('admin.import.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
-                    <div class="alert alert-primary d-flex align-items-center p-4 mb-4">
+                    <!-- ... (Isi body modal sama seperti sebelumnya) ... -->
+                     <div class="alert alert-primary d-flex align-items-center p-4 mb-4">
                         <i class="bi bi-info-circle-fill fs-2hx text-primary me-4"></i>
                         <div class="d-flex flex-column">
                             <h4 class="mb-1 text-primary">Panduan Import</h4>
-                            <span>Unduh template, isi data sesuai format, lalu upload kembali.</span>
+                            <span>Unduh template, isi data sesuai format, lalu upload kembali. Data akan <strong>ditambahkan</strong> ke grafik.</span>
                         </div>
                     </div>
                     
@@ -185,10 +187,30 @@
                         <input type="file" name="file" class="form-control" accept=".xlsx, .xls, .csv" required>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Upload & Proses</button>
+
+                <!-- Footer dengan 2 Aksi -->
+                <div class="modal-footer d-flex justify-content-between">
+                    
+                    <!-- [BARU] Tombol Reset (Form Terpisah) -->
+                    <!-- Kita pakai trik button type="button" yang men-trigger form delete di luar -->
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmReset()">
+                        <i class="bi bi-trash me-1"></i> Reset Data Bulan Ini
+                    </button>
+
+                    <div>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Upload & Proses</button>
+                    </div>
                 </div>
+            </form>
+
+            <!-- [BARU] Form Reset Tersembunyi -->
+            <form id="reset-import-form" action="{{ route('admin.import.reset') }}" method="POST" style="display: none;">
+                @csrf
+                @method('DELETE')
+                <!-- Kirim parameter filter saat ini -->
+                <input type="hidden" name="month" value="{{ $filterMonth }}">
+                <input type="hidden" name="year" value="{{ $filterYear }}">
             </form>
         </div>
     </div>
@@ -322,6 +344,12 @@
 
         var chartStatus = new ApexCharts(elementStatus, optionsStatus);
         chartStatus.render();
+    }
+
+    function confirmReset() {
+        if (confirm('PERINGATAN: Apakah Anda yakin ingin menghapus SEMUA data import manual untuk bulan yang sedang dipilih? Data tidak bisa dikembalikan.')) {
+            document.getElementById('reset-import-form').submit();
+        }
     }
 </script>
 @endpush
