@@ -148,7 +148,46 @@
                 prevEl: '.month-slider-prev',
             },
         });
+
+        window.setLoading = function(btn) {
+            if (!btn) return;
+            
+            // Simpan teks asli tombol di atribut data
+            if (!btn.hasAttribute('data-original-text')) {
+                btn.setAttribute('data-original-text', btn.innerHTML);
+            }
+            
+            // Ubah jadi spinner
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memproses...';
+        };
+
+        // [GLOBAL HELPER] Fungsi Reset Button (Opsional, buat jaga-jaga)
+        window.resetLoading = function(btn) {
+            if (!btn) return;
+            btn.disabled = false;
+            if (btn.hasAttribute('data-original-text')) {
+                btn.innerHTML = btn.getAttribute('data-original-text');
+            }
+        };
+
+        // [OTOMATIS] Tangani semua form biasa (type="submit")
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('submit', function(e) {
+                const form = e.target;
+                const btn = form.querySelector('button[type="submit"]');
+                
+                // Jika form valid dan tombol ketemu, jalankan loading
+                if (btn && form.checkValidity()) {
+                    window.setLoading(btn);
+                    
+                    // Safety: Balikin tombol setelah 15 detik (jaga-jaga koneksi putus)
+                    setTimeout(() => window.resetLoading(btn), 15000);
+                }
+            });
+        });
     </script>
 
-    @stack('scripts') </body>
+    @stack('scripts') 
+</body>
 </html>

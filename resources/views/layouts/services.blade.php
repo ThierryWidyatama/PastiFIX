@@ -203,12 +203,14 @@
         </footer>
     @endif
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    
+    <!-- SwiperJS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-        // Navbar scroll effect
+        // 1. NAVBAR SCROLL EFFECT
         const nav = document.querySelector('#main-nav');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
@@ -218,26 +220,82 @@
             }
         });
 
-        // Swiper Initializer (REVISED)
+        // 2. SWIPER INITIALIZER (TESTIMONI)
         const swiper = new Swiper('.testimonial-slider', {
             effect: 'coverflow',
             grabCursor: true,
             centeredSlides: true,
-            slidesPerView: 3, // <-- Kunci utama di sini
+            slidesPerView: 1, // Default HP
             loop: true,
             coverflowEffect: {
                 rotate: 0,
-                stretch: 80, // Jarak antar slide
-                depth: 200, // Efek 3D
+                stretch: 0,
+                depth: 100,
                 modifier: 1,
-                slideShadows: false, // Bayangan bisa dihilangkan agar lebih bersih
+                slideShadows: false,
             },
             pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
             },
+            // Responsif Breakpoints
+            breakpoints: {
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 30,
+                    coverflowEffect: { stretch: 40, depth: 150 }
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                    coverflowEffect: { stretch: 80, depth: 200 }
+                },
+            }
+        });
+
+        // [GLOBAL HELPER] Fungsi Loading Button
+        // Bisa dipanggil dari mana saja: window.setLoading(tombol);
+        window.setLoading = function(btn) {
+            if (!btn) return;
+            
+            // Simpan teks asli tombol di atribut data
+            if (!btn.hasAttribute('data-original-text')) {
+                btn.setAttribute('data-original-text', btn.innerHTML);
+            }
+            
+            // Ubah jadi spinner
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memproses...';
+        };
+
+        // [GLOBAL HELPER] Fungsi Reset Button (Opsional, buat jaga-jaga)
+        window.resetLoading = function(btn) {
+            if (!btn) return;
+            btn.disabled = false;
+            if (btn.hasAttribute('data-original-text')) {
+                btn.innerHTML = btn.getAttribute('data-original-text');
+            }
+        };
+
+        // [OTOMATIS] Tangani semua form biasa (type="submit")
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('submit', function(e) {
+                const form = e.target;
+                const btn = form.querySelector('button[type="submit"]');
+                
+                // Jika form valid dan tombol ketemu, jalankan loading
+                if (btn && form.checkValidity()) {
+                    window.setLoading(btn);
+                    
+                    // Safety: Balikin tombol setelah 15 detik (jaga-jaga koneksi putus)
+                    setTimeout(() => window.resetLoading(btn), 15000);
+                }
+            });
         });
     </script>
-</body>
+    
+    <!-- Stack Scripts untuk halaman spesifik (seperti Checkout/Profil) -->
+    @stack('scripts') 
 
+</body>
 </html>

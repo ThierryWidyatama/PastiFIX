@@ -590,13 +590,13 @@
         }
 
         // ==========================================
-        // LOGIC DOUBLE ORDER
+        // BAGIAN 4: CEK DOUBLE ORDER
         // ==========================================
         const busyAddressIds = @json($busyAddressIds ?? []);
         const checkoutForm = document.getElementById('checkoutForm');
         const btnSubmit = document.getElementById('btnSubmitCheckout');
         const btnConfirm = document.getElementById('btnConfirmDoubleOrder');
-
+        
         const doubleOrderModalEl = document.getElementById('doubleOrderModal');
         let doubleOrderModal = null;
         if(doubleOrderModalEl) doubleOrderModal = new bootstrap.Modal(doubleOrderModalEl);
@@ -605,16 +605,25 @@
             btnSubmit.addEventListener('click', function(e) {
                 const selectedRadio = document.querySelector('input[name="address_id"]:checked');
                 if (!selectedRadio) { alert("Silakan pilih alamat terlebih dahulu."); return; }
+                
                 const selectedAddressId = selectedRadio.value;
+
                 if (busyAddressIds.includes(selectedAddressId) && doubleOrderModal) {
                     doubleOrderModal.show();
                 } else {
+                    // [CLEAN CODE] Cukup panggil ini, dia otomatis jadi spinner
+                    setLoading(btnSubmit);
                     checkoutForm.submit();
                 }
             });
         }
+
         if(btnConfirm) {
-            btnConfirm.addEventListener('click', function() { checkoutForm.submit(); });
+            btnConfirm.addEventListener('click', function() {
+                // [CLEAN CODE] Ini juga sama
+                setLoading(btnConfirm);
+                checkoutForm.submit(); 
+            });
         }
     });
 </script>

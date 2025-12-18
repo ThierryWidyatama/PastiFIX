@@ -239,6 +239,35 @@
                 },
             },
         });
+        window.setLoading = function(btn) {
+            if (!btn) return;
+            if (!btn.hasAttribute('data-original-text')) {
+                btn.setAttribute('data-original-text', btn.innerHTML);
+            }
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...';
+        };
+
+        window.resetLoading = function(btn) {
+            if (!btn) return;
+            btn.disabled = false;
+            if (btn.hasAttribute('data-original-text')) {
+                btn.innerHTML = btn.getAttribute('data-original-text');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('submit', function(e) {
+                const form = e.target;
+                const btn = form.querySelector('button[type="submit"]');
+                
+                // Metronic kadang punya validasi sendiri, tapi ini layer keamanan tambahan
+                if (btn && form.checkValidity()) {
+                    window.setLoading(btn);
+                    setTimeout(() => window.resetLoading(btn), 15000); 
+                }
+            });
+        });
     </script>
     @stack('scripts')
 </body>
