@@ -28,8 +28,8 @@
             <div class="container position-relative"> <!-- [PENTING] position-relative untuk acuan tengah -->
 
                 <!-- 1. KIRI: LOGO -->
-                <a class="navbar-brand" href="{{ route('home') }}">
-                    <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" class="logo-navbar">
+                <a class="navbar-brand" href="#">
+                    <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" style="height: 70px;">
                 </a>
 
                 <!-- 2. TENGAH: USER PROFILE (KHUSUS MOBILE) -->
@@ -161,7 +161,7 @@
                                     href="{{ route('home') }}#testimoni">Testimonial</a>
                             </li>
                             <li class="nav-item ms-lg-3">
-                                <a href="{{ route('login') }}" class="btn btn-pesan fw-medium">Pesan</a>
+                                <a href="{{ route('login') }}" class="btn btn-brand fw-medium">Pesan</a>
                             </li>
                         @endauth
                     </ul>
@@ -205,7 +205,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- SwiperJS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
@@ -257,12 +257,12 @@
         // Bisa dipanggil dari mana saja: window.setLoading(tombol);
         window.setLoading = function(btn) {
             if (!btn) return;
-            
+
             // Simpan teks asli tombol di atribut data
             if (!btn.hasAttribute('data-original-text')) {
                 btn.setAttribute('data-original-text', btn.innerHTML);
             }
-            
+
             // Ubah jadi spinner
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memproses...';
@@ -282,20 +282,20 @@
             document.addEventListener('submit', function(e) {
                 const form = e.target;
                 const btn = form.querySelector('button[type="submit"]');
-                
+
                 // Jika form valid dan tombol ketemu, jalankan loading
                 if (btn && form.checkValidity()) {
                     window.setLoading(btn);
-                    
+
                     // Safety: Balikin tombol setelah 15 detik (jaga-jaga koneksi putus)
                     setTimeout(() => window.resetLoading(btn), 15000);
                 }
             });
         });
     </script>
-    
+
     <!-- Stack Scripts untuk halaman spesifik (seperti Checkout/Profil) -->
-    @stack('scripts') 
+    @stack('scripts')
 
 </body>
 </html>

@@ -20,12 +20,8 @@ a {
 ========================= */
 .btn-brand {
     background-color: #bf3131;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    color: white;
+    border-color: #bf3131;
 }
 
 .btn-brand:hover {
@@ -35,29 +31,28 @@ a {
     box-shadow: 0 4px 12px rgba(254, 26, 26, 0.3);
 }
 
-.btn-pesan {
-    background-color: #bf3131;
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    font-weight: 600;
+.btn-outline-brand {
+    border-color: #bf3131;
+    color: #bf3131;
 }
 
-.btn-pesan:hover {
-    background-color: #f50000;
-    color: #fff;
+.btn-outline-brand:hover {
+    background-color: #bf3131;
+    color: white;
 }
 
 /* =========================
    NAVBAR
 ========================= */
 .navbar {
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, padding 0.3s ease;
 }
 
 .navbar.scrolled {
-    background-color: rgba(18, 18, 18, 0.9);
+    background-color: rgba(18, 18, 18, 0.8);
     backdrop-filter: blur(10px);
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .navbar-nav .nav-link {
@@ -71,7 +66,7 @@ a {
 }
 
 .logo-navbar {
-    height: 60px;
+    height: 70px;
 }
 
 @media (max-width: 991px) {
@@ -86,34 +81,29 @@ a {
     }
 }
 
-/* =========================
-   FOOTER
-========================= */
+/* FOOTER */
 .footer-section {
-    background-color: #4b4b4b;
-    color: #fff;
-    padding: 30px 0;
+    background-color: #4B4B4B;
+    padding: 30px 0 30px 0;
 }
 
-.footer-section a {
-    color: #fff;
+.social-icons a {
+    transition: color 0.3s ease;
 }
 
-.footer-section a:hover {
-    color: #bf3131;
+.social-icons a:hover {
+    color: #bf3131 !important;
 }
-
-/* =====================================================
-   SERVICES PAGE (TOTAL REDESIGN, NOT REUSE OLD STYLE)
-===================================================== */
 
 /* HERO */
 .services-hero {
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../img/section4bar.png');
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/section4bar.png');
     color: #fff;
-    padding: 90px 0 120px; /* bawah ditambah */
+    padding: 90px 0 120px;
+    /* bawah ditambah */
     text-align: center;
-    position: relative; /* PENTING */
+    position: relative;
+    /* PENTING */
 }
 
 .services-hero h1 {
@@ -130,7 +120,8 @@ a {
 .services-search {
     position: absolute;
     left: 50%;
-    bottom: -28px; /* mainkan angka ini */
+    bottom: -28px;
+    /* mainkan angka ini */
     transform: translateX(-50%);
 
     display: flex;
@@ -139,7 +130,7 @@ a {
     background: white;
     padding: 10px;
     border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     z-index: 5;
 }
 
@@ -450,4 +441,13 @@ a {
     font-weight: 500;
     color: #212529;
     /* Pastikan teks harga jelas */
+}
+
+.modal .map-wrapper {
+    height: 250px !important;
+}
+
+.modal .map-canvas {
+    height: 100% !important;
+    width: 100% !important;
 }
