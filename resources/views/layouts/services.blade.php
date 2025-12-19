@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PastiFIX - Solusi Renovasi Rumah Anda</title>
+    <link rel="shortcut icon" href="{{ asset('assets/img/logo.png') }}" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,7 +29,7 @@
             <div class="container position-relative"> <!-- [PENTING] position-relative untuk acuan tengah -->
 
                 <!-- 1. KIRI: LOGO -->
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="{{ route('home') }}">
                     <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" style="height: 70px;">
                 </a>
 

@@ -26,9 +26,7 @@ a {
 
 .btn-brand:hover {
     background-color: #f50000;
-    transform: translateY(-2px);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(254, 26, 26, 0.3);
 }
 
 .btn-outline-brand {

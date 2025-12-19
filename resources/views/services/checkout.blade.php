@@ -208,7 +208,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-pesan">Simpan</button>
+                        <button type="submit" class="btn btn-brand">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -276,7 +276,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-pesan">Update Alamat</button>
+                        <button type="submit" class="btn btn-brand">Update Alamat</button>
                     </div>
                 </form>
             </div>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard - PastiFIX</title>
+    <link rel="shortcut icon" href="{{ asset('assets/img/logo.png') }}" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +34,7 @@
     <div class="dashboard-wrapper d-flex">
 
         <aside id="main-sidebar" class="sidebar vh-100 d-flex flex-column p-3">
-            <a class="sidebar-logo text-center my-4" href="/">
+            <a class="sidebar-logo text-center my-4" href="{{ route('home') }}">
                 <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" style="height: 90px;">
             </a>
 
@@ -151,12 +152,12 @@
 
         window.setLoading = function(btn) {
             if (!btn) return;
-            
+
             // Simpan teks asli tombol di atribut data
             if (!btn.hasAttribute('data-original-text')) {
                 btn.setAttribute('data-original-text', btn.innerHTML);
             }
-            
+
             // Ubah jadi spinner
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memproses...';
@@ -176,11 +177,11 @@
             document.addEventListener('submit', function(e) {
                 const form = e.target;
                 const btn = form.querySelector('button[type="submit"]');
-                
+
                 // Jika form valid dan tombol ketemu, jalankan loading
                 if (btn && form.checkValidity()) {
                     window.setLoading(btn);
-                    
+
                     // Safety: Balikin tombol setelah 15 detik (jaga-jaga koneksi putus)
                     setTimeout(() => window.resetLoading(btn), 15000);
                 }
@@ -188,6 +189,6 @@
         });
     </script>
 
-    @stack('scripts') 
+    @stack('scripts')
 </body>
 </html>
