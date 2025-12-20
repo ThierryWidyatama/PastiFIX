@@ -41,8 +41,8 @@
                     <label>Urutkan</label>
                     <select name="sort" onchange="this.form.submit()">
                         <option value="popular" {{ request('sort') == 'popular' ? 'selected' : '' }}>Popular</option>
-                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Harga Terendah</option>
-                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Harga Tertinggi</option>
+                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Harga Terendah</option>
+                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Harga Tertinggi</option>
                         <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Terbaru</option>
                     </select>
                 </div>
@@ -102,7 +102,6 @@
                                             : 'Harga via Survei'
                                         }}
                                     </span>
-                                    <span class="rating">★ 4.8</span>
                                 </div>
 
                                 <div class="service-btn">
