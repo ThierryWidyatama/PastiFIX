@@ -101,6 +101,8 @@ a {
     /* bawah ditambah */
     text-align: center;
     position: relative;
+    background-size: cover;
+    background-repeat: no-repeat;
     /* PENTING */
 }
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,22 +15,47 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
 
-    <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 </head>
+
 <body>
 
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- MOBILE HEADER -->
+    <header class="mobile-header">
+        <div class="mobile-header-left">
+            <img src="{{ asset('assets/img/logo.png') }}" alt="Logo">
+            <span>PastiFIX</span>
+        </div>
+
+        <div class="mobile-header-right dropdown">
+            <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{{ Auth::user()->profile_picture_url ? Storage::url(Auth::user()->profile_picture_url) : asset('assets/img/default-avatar.png') }}"
+                    class="mobile-avatar">
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end mobile-profile-dropdown shadow">
+                <li>
+                    <a class="dropdown-item text-danger" href="#"
+                        onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
+                        <i class="bi bi-box-arrow-right me-2"></i> Keluar
+                    </a>
+                    <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </header>
 
     <div class="dashboard-wrapper d-flex">
 
@@ -57,12 +83,14 @@
             </ul>
 
             <ul class="nav flex-column sidebar-nav mt-auto">
-                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('dashboard-logout-form').submit();">
+                <li class="nav-item">
+                    <a class="nav-link" href="#"
+                        onclick="event.preventDefault(); document.getElementById('dashboard-logout-form').submit();">
                         <i class="bi bi-box-arrow-left"></i> Keluar
                     </a>
 
-                    <form id="dashboard-logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    <form id="dashboard-logout-form" action="{{ route('logout') }}" method="POST"
+                        style="display: none;">
                         @csrf
                     </form>
                 </li>
@@ -85,11 +113,13 @@
                 <div class="header-user d-flex align-items-center">
                     @auth
                         <img src="{{ Auth::user()->profile_picture_url ? Storage::url(Auth::user()->profile_picture_url) : asset('assets/img/default-avatar.png') }}"
-                             alt="User Avatar" class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover; margin-right: 10px;">
+                            alt="User Avatar" class="rounded-circle"
+                            style="width: 45px; height: 45px; object-fit: cover; margin-right: 10px;">
 
                         <span class="me-5">Halo, {{ \Illuminate\Support\Str::words(Auth::user()->name, 2, '') }}</span>
                     @else
-                        <img src="{{ asset('assets/img/default-avatar.png') }}" alt="User Avatar" class="rounded-circle" style="width: 45px; height: 45px; object-fit: cover; margin-right: 10px;">
+                        <img src="{{ asset('assets/img/default-avatar.png') }}" alt="User Avatar" class="rounded-circle"
+                            style="width: 45px; height: 45px; object-fit: cover; margin-right: 10px;">
                         <span class="me-5">Halo, Pengguna</span>
                     @endauth
                 </div>
@@ -102,12 +132,34 @@
 
     </div>
 
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-bottom-nav">
+        <a href="/" class="{{ Request::is('/') ? 'active' : '' }}">
+            <i class="bi bi-house-fill"></i>
+            <span>Home</span>
+        </a>
+
+        <a href="/profil" class="{{ Request::is('profil') ? 'active' : '' }}">
+            <i class="bi bi-person-fill"></i>
+            <span>Profile</span>
+        </a>
+
+        <a href="/profil/activity" class="{{ Request::is('profil/activity*') ? 'active' : '' }}">
+            <i class="bi bi-clock-history"></i>
+            <span>Aktivitas</span>
+        </a>
+
+        <a href="/profil/settings" class="{{ Request::is('profil/settings*') ? 'active' : '' }}">
+            <i class="bi bi-gear-fill"></i>
+            <span>Pengaturan</span>
+        </a>
+    </nav>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-
         // [FIX 5] JS UNTUK TOGGLE SIDEBAR RESPONSIVE
         document.getElementById('hamburger-toggle').addEventListener('click', function() {
             document.getElementById('main-sidebar').classList.toggle('is-open');
@@ -123,23 +175,23 @@
 
         // [REVISI BUG 1 & 2] Inisialisasi Swiper untuk Slider Bulan
         var monthSwiper = new Swiper('.month-slider', {
-            // slidesPerView: 'auto', // <-- DIHAPUS
-            centeredSlides: true,  // <-- INI KUNCI BUG 1
-            spaceBetween: 25,
+            centeredSlides: true,
             loop: true,
-            initialSlide: 10, // Default ke November (index 10)
+            spaceBetween: 20,
 
-            // [FIX BUG 2] Menggunakan breakpoints untuk jumlah slide
-            slidesPerView: 3, // Tampilan default (mobile)
+            slidesPerView: 1, // ⬅️ DEFAULT MOBILE
+
             breakpoints: {
-                // Saat layar 768px (tablet)
-                768: {
-                    slidesPerView: 4, // Tampilkan 4 bulan
+                551: {
+                    slidesPerView: 3,
                     spaceBetween: 20
                 },
-                // Saat layar 992px (desktop)
+                768: {
+                    slidesPerView: 4,
+                    spaceBetween: 24
+                },
                 992: {
-                    slidesPerView: 5, // Tampilkan 5 bulan
+                    slidesPerView: 5,
                     spaceBetween: 25
                 }
             },
@@ -149,6 +201,7 @@
                 prevEl: '.month-slider-prev',
             },
         });
+
 
         window.setLoading = function(btn) {
             if (!btn) return;
@@ -160,7 +213,8 @@
 
             // Ubah jadi spinner
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memproses...';
+            btn.innerHTML =
+                '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memproses...';
         };
 
         // [GLOBAL HELPER] Fungsi Reset Button (Opsional, buat jaga-jaga)
@@ -190,5 +244,7 @@
     </script>
 
     @stack('scripts')
+
 </body>
+
 </html>
