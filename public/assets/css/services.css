@@ -459,3 +459,169 @@ a {
     height: 100% !important;
     width: 100% !important;
 }
+
+/* ===============================
+   MOBILE HEADER & BOTTOM NAV
+   =============================== */
+@media (max-width: 1024.98px) {
+
+    :root {
+        --mobile-header-height: 64px;
+        --mobile-bottom-nav-height: calc(80px + env(safe-area-inset-bottom));
+    }
+
+    /* BIAR KONTEN BISA SCROLL & MODAL TETAP AMAN */
+    body {
+        overflow: auto;
+    }
+
+    .main-nav, .navbar-brand {
+        display: none !important;
+    }
+
+    main {
+        position: fixed;
+        top: var(--mobile-header-height);
+        left: 0;
+        right: 0;
+        bottom: var(--mobile-bottom-nav-height);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* ================= HEADER ================= */
+    .mobile-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--mobile-header-height);
+        background: #fff;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .mobile-header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+    }
+
+    .mobile-header-left img {
+        height: 36px;
+    }
+
+    .mobile-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #bf3131;
+    }
+
+    .mobile-profile-dropdown {
+        border-radius: 12px;
+        border: none;
+        padding: 6px 0;
+        min-width: 190px;
+    }
+
+    /* ================= BOTTOM NAV ================= */
+    .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        background: #fff;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 10000;
+        padding-bottom: env(safe-area-inset-bottom);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .mobile-bottom-nav a {
+        flex: 1;
+        height: 100%;
+        text-align: center;
+        text-decoration: none;
+        color: #aaa;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        position: relative;
+    }
+
+    .mobile-bottom-nav a i {
+        font-size: 22px;
+        z-index: 2;
+    }
+
+    .mobile-bottom-nav a span {
+        z-index: 2;
+    }
+
+    .mobile-bottom-nav a.active {
+        color: #bf3131;
+    }
+
+    /* GLOW ACTIVE */
+    .mobile-bottom-nav a.active::before {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 44px;
+        height: 44px;
+        background: rgba(191, 49, 49, 0.18);
+        border-radius: 50%;
+        filter: blur(6px);
+        z-index: 1;
+    }
+}
+
+/* DESKTOP: MATIKAN MOBILE UI */
+@media (min-width: 1025px) {
+
+    .mobile-header,
+    .mobile-bottom-nav {
+        display: none !important;
+    }
+}
+
+/* ===============================
+   FIX MODAL DI MOBILE (FINAL)
+   =============================== */
+@media (max-width: 1024.98px) {
+
+    /* SAAT MODAL TERBUKA */
+    body.modal-open {
+        overflow: hidden !important;
+    }
+
+    /* MATIKAN APP-SCROLL SAAT MODAL */
+    body.modal-open main.content-wrapper {
+        position: static !important;
+        overflow: visible !important;
+    }
+
+    /* PASTIKAN MODAL DI ATAS SEMUANYA */
+    .modal {
+        z-index: 20000;
+    }
+
+    .modal-backdrop {
+        z-index: 19999;
+    }
+}

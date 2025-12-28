@@ -8,6 +8,9 @@
 @section('hide-footer')
 @endsection
 
+@section('hide-botnav')
+@endsection
+
 @section('content')
     <div class="container" style="padding-top: 150px; padding-bottom: 100px;">
         <div class="row justify-content-center">

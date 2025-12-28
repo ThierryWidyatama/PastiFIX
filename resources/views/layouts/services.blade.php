@@ -23,8 +23,59 @@
 
 </head>
 
-<body data-bs-spy="scroll" data-bs-target="#main-nav">
+<body>
     @if (!View::hasSection('hide-navbar'))
+        <!-- MOBILE HEADER -->
+        <header class="mobile-header d-lg-none">
+            <div class="mobile-header-left" href="{{ route('home') }}">
+                <img src="{{ asset('assets/img/logo.png') }}" alt="Logo">
+                <span>PastiFIX</span>
+            </div>
+
+            @auth
+                <div class="mobile-header-right dropdown">
+                    <a href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ Auth::user()->profile_picture_url
+                            ? Storage::url(Auth::user()->profile_picture_url)
+                            : asset('assets/img/default-avatar.png') }}"
+                            class="mobile-avatar">
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end mobile-profile-dropdown shadow">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('profil') }}">
+                                <i class="bi bi-person me-2"></i> Profil Saya
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('profil.activity') }}">
+                                <i class="bi bi-clock-history me-2"></i> Aktivitas Akun
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('profil.settings') }}">
+                                <i class="bi bi-gear me-2"></i> Pengaturan
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="#"
+                                onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
+                                <i class="bi bi-box-arrow-right me-2"></i> Keluar
+                            </a>
+                            <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-brand fw-medium">Pesan</a>
+            @endauth
+        </header>
+
         <nav id="main-nav" class="navbar navbar-expand-lg fixed-top navbar-dark">
             <div class="container position-relative"> <!-- [PENTING] position-relative untuk acuan tengah -->
 
@@ -32,66 +83,6 @@
                 <a class="navbar-brand" href="{{ route('home') }}">
                     <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" style="height: 70px;">
                 </a>
-
-                <!-- 2. TENGAH: USER PROFILE (KHUSUS MOBILE) -->
-                @auth
-                    <div class="d-lg-none position-absolute start-50 top-50 translate-middle">
-                        <div class="dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 text-white" href="#"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <!-- Foto Kecil -->
-                                <img src="{{ Auth::user()->profile_picture_url ? Storage::url(Auth::user()->profile_picture_url) : asset('assets/img/default-avatar.png') }}"
-                                    alt="User" class="rounded-circle"
-                                    style="width: 30px; height: 30px; object-fit: cover; border: 1px solid #fff;">
-                                <!-- Nama Depan Saja (Biar muat di HP) -->
-                                <span class="fw-bold"
-                                    style="font-size: 0.9rem;">{{ strtok(Auth::user()->name, ' ') }}</span>
-                            </a>
-
-                            <!-- Dropdown Menu Mobile (Centered) -->
-                            <ul class="dropdown-menu dropdown-menu-center mt-2 shadow-sm border-0"
-                                style="left: 50%; transform: translateX(-50%);">
-                                <li>
-                                    <div class="d-flex align-items-center px-3 py-2">
-                                        <div class="text-start">
-                                            <div style="font-weight: 700; color: #333; font-size: 0.9rem;">
-                                                {{ Auth::user()->name }}</div>
-                                            <div style="font-size: 0.75rem; color: #777;">{{ Auth::user()->email }}</div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="{{ route('profil') }}"><i class="bi bi-person me-2"></i>
-                                        Profil Saya</a></li>
-                                <li><a class="dropdown-item" href="{{ route('profil.activity') }}"><i
-                                            class="bi bi-list-check me-2"></i> Aktifitas Saya</a></li>
-                                <li><a class="dropdown-item" href="{{ route('profil.settings') }}"><i
-                                            class="bi bi-gear me-2"></i> Pengaturan</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item text-danger" href="#"
-                                        onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
-                                        <i class="bi bi-box-arrow-right me-2"></i> Keluar
-                                    </a>
-                                    <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST"
-                                        style="display: none;">
-                                        @csrf
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                @endauth
-
-                <!-- 3. KANAN: HAMBURGER MENU -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
 
                 <!-- 4. MENU COLLAPSE (ISI BAWAH/KANAN) -->
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -171,37 +162,75 @@
         </nav>
     @endif
 
-    <main>
+    <main class="content-wrapper">
         @yield('content')
-    </main>
 
-    @if (!View::hasSection('hide-footer'))
-        <footer class="footer-section">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 col-md-12 mb-4 mb-lg-0">
-                        <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" class="mb-3"
-                            style="height: 120px;">
-                        <h5 class="text-white">PT. PastiFIX Indonesia</h5>
-                        <p class="text-white-50">Jl. Klipang No. 123, Semarang, Indonesia.<br> Kami adalah solusi
-                            terpercaya untuk semua kebutuhan renovasi dan perbaikan bangunan Anda.</p>
-                    </div>
-                    <div class="col-lg-6 col-md-12 text-lg-end">
-                        <h5 class="text-white mb-3">Bantuan & Sosial Media</h5>
-                        <a href="#" class="btn btn-outline-brand me-2">Hubungi Kami</a>
-                        <div class="social-icons mt-4">
-                            <a href="#" class="text-white-50 me-3"><i class="bi bi-facebook fs-4"></i></a>
-                            <a href="#" class="text-white-50 me-3"><i class="bi bi-twitter-x fs-4"></i></a>
-                            <a href="#" class="text-white-50 me-3"><i class="bi bi-instagram fs-4"></i></a>
-                            <a href="#" class="text-white-50"><i class="bi bi-linkedin fs-4"></i></a>
+        @if (!View::hasSection('hide-footer'))
+            <footer class="footer-section">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 col-md-12 mb-4 mb-lg-0">
+                            <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" class="mb-3"
+                                style="height: 120px;">
+                            <h5 class="text-white">PT. PastiFIX Indonesia</h5>
+                            <p class="text-white-50">Jl. Klipang No. 123, Semarang, Indonesia.<br> Kami adalah solusi
+                                terpercaya untuk semua kebutuhan renovasi dan perbaikan bangunan Anda.</p>
+                        </div>
+                        <div class="col-lg-6 col-md-12 text-lg-end">
+                            <h5 class="text-white mb-3">Bantuan & Sosial Media</h5>
+                            <a href="#" class="btn btn-outline-brand me-2">Hubungi Kami</a>
+                            <div class="social-icons mt-4">
+                                <a href="#" class="text-white-50 me-3"><i class="bi bi-facebook fs-4"></i></a>
+                                <a href="#" class="text-white-50 me-3"><i class="bi bi-twitter-x fs-4"></i></a>
+                                <a href="#" class="text-white-50 me-3"><i class="bi bi-instagram fs-4"></i></a>
+                                <a href="#" class="text-white-50"><i class="bi bi-linkedin fs-4"></i></a>
+                            </div>
                         </div>
                     </div>
+                    <div class="border-top pt-4 mt-4">
+                        <p class="text-center text-white-50 mb-0">Copyright © 2025 PastiFIX</p>
+                    </div>
                 </div>
-                <div class="border-top pt-4 mt-4">
-                    <p class="text-center text-white-50 mb-0">Copyright © 2025 PastiFIX</p>
-                </div>
-            </div>
-        </footer>
+            </footer>
+        @endif
+    </main>
+
+    @if (!View::hasSection('hide-botnav'))
+        <nav class="mobile-bottom-nav">
+            @auth
+                <a href="/" class="{{ Request::is('/') ? 'active' : '' }}">
+                    <i class="bi bi-house-fill"></i>
+                    <span>Beranda</span>
+                </a>
+
+                <a href="/services" class="{{ Request::is('services*') ? 'active' : '' }}">
+                    <i class="bi bi-hammer"></i>
+                    <span>Layanan</span>
+                </a>
+            @else
+                <a href="/" class="{{ Request::is('/') ? 'active' : '' }}">
+                    <i class="bi bi-house-fill"></i>
+                    <span>Beranda</span>
+                </a>
+
+                <a href="#about" class="{{ Request::is('#about') ? 'active' : '' }}">
+                    <i class="bi bi-hammer"></i>
+                    <span>Tentang Kami</span>
+                </a>
+                <a href="/services" class="{{ Request::is('services') ? 'active' : '' }}">
+                    <i class="bi bi-hammer"></i>
+                    <span>Layanan</span>
+                </a>
+                <a href="#why-us" class="{{ Request::is('#why-us') ? 'active' : '' }}">
+                    <i class="bi bi-hammer"></i>
+                    <span>Mengapa Kami</span>
+                </a>
+                <a href="#tesmonial" class="{{ Request::is('#testimoni') ? 'active' : '' }}">
+                    <i class="bi bi-hammer"></i>
+                    <span>Testimonial</span>
+                </a>
+            @endauth
+        </nav>
     @endif
 
     <!-- Bootstrap JS -->
@@ -244,12 +273,18 @@
                 768: {
                     slidesPerView: 2,
                     spaceBetween: 30,
-                    coverflowEffect: { stretch: 40, depth: 150 }
+                    coverflowEffect: {
+                        stretch: 40,
+                        depth: 150
+                    }
                 },
                 1024: {
                     slidesPerView: 3,
                     spaceBetween: 30,
-                    coverflowEffect: { stretch: 80, depth: 200 }
+                    coverflowEffect: {
+                        stretch: 80,
+                        depth: 200
+                    }
                 },
             }
         });
@@ -266,7 +301,8 @@
 
             // Ubah jadi spinner
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memproses...';
+            btn.innerHTML =
+                '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memproses...';
         };
 
         // [GLOBAL HELPER] Fungsi Reset Button (Opsional, buat jaga-jaga)
@@ -299,4 +335,5 @@
     @stack('scripts')
 
 </body>
+
 </html>

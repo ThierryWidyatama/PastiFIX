@@ -27,9 +27,7 @@
 </head>
 
 <body>
-
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
     <!-- MOBILE HEADER -->
     <header class="mobile-header">
         <div class="mobile-header-left">
@@ -86,7 +84,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#"
                         onclick="event.preventDefault(); document.getElementById('dashboard-logout-form').submit();">
-                        <i class="bi bi-box-arrow-left"></i> Keluar
+                        <i class="bi bi-box-arrow-right me-2"></i> Keluar
                     </a>
 
                     <form id="dashboard-logout-form" action="{{ route('logout') }}" method="POST"
@@ -101,9 +99,6 @@
             <header class="header-dashboard d-flex justify-content-between align-items-center p-4">
 
                 <div class="d-flex align-items-center">
-                    <button class="hamburger-btn me-3" id="hamburger-toggle">
-                        <i class="bi bi-list"></i>
-                    </button>
                     <div>
                         <h2 class="header-title">Dashboard Pengguna</h2>
                         <p class="header-subtitle mb-0">Selamat datang di dashboard anda.</p>
@@ -136,7 +131,7 @@
     <nav class="mobile-bottom-nav">
         <a href="/" class="{{ Request::is('/') ? 'active' : '' }}">
             <i class="bi bi-house-fill"></i>
-            <span>Home</span>
+            <span>Beranda</span>
         </a>
 
         <a href="/profil" class="{{ Request::is('profil') ? 'active' : '' }}">
@@ -160,12 +155,6 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-        // [FIX 5] JS UNTUK TOGGLE SIDEBAR RESPONSIVE
-        document.getElementById('hamburger-toggle').addEventListener('click', function() {
-            document.getElementById('main-sidebar').classList.toggle('is-open');
-            document.getElementById('sidebar-overlay').classList.toggle('is-open');
-        });
-
         // [FIX 5] JS UNTUK MENUTUP SIDEBAR SAAT KLIK OVERLAY
         document.getElementById('sidebar-overlay').addEventListener('click', function() {
             document.getElementById('main-sidebar').classList.remove('is-open');

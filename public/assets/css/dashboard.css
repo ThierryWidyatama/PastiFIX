@@ -652,17 +652,22 @@ body {
 /* MOBILE UI */
 @media (max-width: 1024.98px) {
     :root {
-        --mobile-header-height: 64px; /* FIX KONTEN KEPOTONG */
-        --mobile-bottom-nav-height: calc(64px + env(safe-area-inset-bottom)); /* FIX KONTEN KEPOTONG */
+        --mobile-header-height: 64px;
+        /* FIX KONTEN KEPOTONG */
+        --mobile-bottom-nav-height: calc(64px + env(safe-area-inset-bottom));
+        /* FIX KONTEN KEPOTONG */
     }
 
+    /* BIAR KONTEN BISA SCROLL & MODAL TETAP AMAN */
     body {
         overflow: hidden;
     }
 
     .content-wrapper {
-        height: auto !important; /* FIX KONTEN KEPOTONG */
-        min-height: 0 !important; /* FIX KONTEN KEPOTONG */
+        height: auto !important;
+        /* FIX KONTEN KEPOTONG */
+        min-height: 0 !important;
+        /* FIX KONTEN KEPOTONG */
         position: fixed;
         top: var(--mobile-header-height);
         left: 0;
@@ -671,7 +676,8 @@ body {
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         padding:
-            16px 16px calc(var(--mobile-bottom-nav-height) + 16px) 16px; /* FIX KONTEN KEPOTONG */
+            16px 16px calc(var(--mobile-bottom-nav-height) + 16px) 16px;
+        /* FIX KONTEN KEPOTONG */
     }
 
     /* Matikan layout desktop */
@@ -804,6 +810,39 @@ body {
         z-index: 1;
     }
 
+    /* Saat modal terbuka */
+    body.modal-open {
+        overflow: hidden !important;
+        height: 100vh;
+    }
+
+    /* Lepaskan fixed layout saat modal aktif */
+    body.modal-open main,
+    body.modal-open .content-wrapper {
+        position: static !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Pastikan modal bisa scroll */
+    .modal {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        z-index: 20000;
+    }
+
+    .modal-dialog {
+        margin: 1.5rem auto;
+    }
+
+    .modal-body {
+        max-height: calc(100vh - 160px);
+        overflow-y: auto;
+    }
+
+    .modal-backdrop {
+        z-index: 19999;
+    }
 }
 
 /* DESKTOP: HIDE MOBILE UI */
@@ -857,3 +896,8 @@ body {
         text-align: left;
     }
 }
+
+/* ===============================
+   FIX MODAL MOBILE (FINAL)
+   =============================== */
+@media (max-width: 1024.98px) {}

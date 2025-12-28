@@ -8,6 +8,7 @@
             <h1>Checkout</h1>
         </div>
     </header>
+
     <div class="container" style="padding-top: 50px; padding-bottom: 50px;">
 
         <!-- [PENTING] Tambahkan id="checkoutForm" -->
@@ -737,4 +738,5 @@
                 }
             });
         </script>
-    @endsection
+    @endpush
+@endsection
