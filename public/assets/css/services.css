@@ -589,21 +589,6 @@ a {
         filter: blur(6px);
         z-index: 1;
     }
-}
-
-/* DESKTOP: MATIKAN MOBILE UI */
-@media (min-width: 1025px) {
-
-    .mobile-header,
-    .mobile-bottom-nav {
-        display: none !important;
-    }
-}
-
-/* ===============================
-   FIX MODAL DI MOBILE (FINAL)
-   =============================== */
-@media (max-width: 1024.98px) {
 
     /* SAAT MODAL TERBUKA */
     body.modal-open {
@@ -623,5 +608,14 @@ a {
 
     .modal-backdrop {
         z-index: 19999;
+    }
+}
+
+/* DESKTOP: MATIKAN MOBILE UI */
+@media (min-width: 1025px) {
+
+    .mobile-header,
+    .mobile-bottom-nav {
+        display: none !important;
     }
 }

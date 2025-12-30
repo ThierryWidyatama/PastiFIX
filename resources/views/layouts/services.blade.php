@@ -195,6 +195,7 @@
         @endif
     </main>
 
+    <!-- BOTTOM NAV MOBILE -->
     @if (!View::hasSection('hide-botnav'))
         <nav class="mobile-bottom-nav">
             @auth

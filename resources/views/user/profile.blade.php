@@ -729,8 +729,8 @@
                 }
             });
         }
-    </script>
-    <script>
+
+        /* FIX MODAL KELOLA + TAMBAH ALAMAT */
         document.addEventListener('DOMContentLoaded', function() {
             const manageEl = document.getElementById('manageAddressModal');
             const addEl = document.getElementById('addProfileAddressModal');

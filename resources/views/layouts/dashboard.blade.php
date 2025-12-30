@@ -127,7 +127,7 @@
 
     </div>
 
-    <!-- MOBILE BOTTOM NAV -->
+    <!-- BOTTOM NAV MOBILE -->
     <nav class="mobile-bottom-nav">
         <a href="/" class="{{ Request::is('/') ? 'active' : '' }}">
             <i class="bi bi-house-fill"></i>
@@ -162,13 +162,13 @@
         });
 
 
-        // [REVISI BUG 1 & 2] Inisialisasi Swiper untuk Slider Bulan
+        // [REVISI BUG 1 & 2] Inisialisasi Swiper untuk Slider Bulan + revisi responsive
         var monthSwiper = new Swiper('.month-slider', {
             centeredSlides: true,
             loop: true,
             spaceBetween: 20,
 
-            slidesPerView: 1, // ⬅️ DEFAULT MOBILE
+            slidesPerView: 1,
 
             breakpoints: {
                 551: {

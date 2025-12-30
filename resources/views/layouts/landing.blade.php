@@ -184,6 +184,7 @@
         </footer>
     </main>
 
+    <!-- BOTTOM NAV MOBILE -->
     <nav class="mobile-bottom-nav">
         @auth
             <a href="/" class="{{ Request::is('/') ? 'active' : '' }}">

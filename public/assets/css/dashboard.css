@@ -758,15 +758,11 @@ body {
         text-align: center;
         text-decoration: none;
         color: #aaa;
-
         display: flex;
         flex-direction: column;
         align-items: center;
-
-        /* 🔑 KUNCI UTAMA */
         justify-content: center;
         gap: 6px;
-
         position: relative;
         height: 100%;
         font-size: 11px;
@@ -776,7 +772,6 @@ body {
         font-size: 22px;
         line-height: 1;
         height: 24px;
-        /* 🔑 SAMAKAN TINGGI IKON */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -799,7 +794,6 @@ body {
         content: "";
         position: absolute;
         top: 10px;
-        /* FIXED */
         left: 50%;
         transform: translateX(-50%);
         width: 44px;
@@ -824,7 +818,6 @@ body {
         overflow: visible !important;
     }
 
-    /* Pastikan modal bisa scroll */
     .modal {
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
@@ -856,7 +849,6 @@ body {
 
 @media (max-width: 550px) {
 
-    /* CARD UTAMA */
     .content-wrapper .card {
         padding: 16px !important;
         border-radius: 22px;
@@ -866,7 +858,6 @@ body {
         margin-bottom: 4px;
     }
 
-    /* ===== ORDER ITEM ===== */
     .order-item {
         padding: 14px;
         border-radius: 16px;
@@ -888,7 +879,6 @@ body {
         gap: 4px;
     }
 
-    /* SEMUA KOLOM JADI STACK */
     .order-item .col-6,
     .order-item .col-md-3,
     .order-item .col-md-4 {
@@ -896,8 +886,3 @@ body {
         text-align: left;
     }
 }
-
-/* ===============================
-   FIX MODAL MOBILE (FINAL)
-   =============================== */
-@media (max-width: 1024.98px) {}
