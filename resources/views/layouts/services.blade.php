@@ -96,7 +96,7 @@
                                 <a class="nav-link" href="{{ route('services.index') }}">Layanan</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}#testimoni">Testimonial</a>
+                                <a class="nav-link" href="{{ route('home') }}#testimoni">Testimoni</a>
                             </li>
 
                             <!-- USER MENU DESKTOP -->
@@ -149,8 +149,7 @@
                             <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#service">Layanan</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#why-us">Mengapa Kami</a>
                             </li>
-                            <li class="nav-item"><a class="nav-link"
-                                    href="{{ route('home') }}#testimoni">Testimonial</a>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#testimoni">Testimoni</a>
                             </li>
                             <li class="nav-item ms-lg-3">
                                 <a href="{{ route('login') }}" class="btn btn-brand fw-medium">Pesan</a>
@@ -199,7 +198,7 @@
     @if (!View::hasSection('hide-botnav'))
         <nav class="mobile-bottom-nav">
             @auth
-                <a href="/" class="{{ Request::is('/') ? 'active' : '' }}">
+                <a href="/" data-section="home">
                     <i class="bi bi-house-fill"></i>
                     <span>Beranda</span>
                 </a>
@@ -209,26 +208,29 @@
                     <span>Layanan</span>
                 </a>
             @else
-                <a href="/" class="{{ Request::is('/') ? 'active' : '' }}">
+                <a href="/" data-section="home">
                     <i class="bi bi-house-fill"></i>
                     <span>Beranda</span>
                 </a>
 
-                <a href="#about" class="{{ Request::is('#about') ? 'active' : '' }}">
-                    <i class="bi bi-hammer"></i>
+                <a href="/#about" data-section="about">
+                    <i class="bi bi-info-circle-fill"></i>
                     <span>Tentang Kami</span>
                 </a>
+
                 <a href="/services" class="{{ Request::is('services') ? 'active' : '' }}">
-                    <i class="bi bi-hammer"></i>
+                    <i class="bi bi-briefcase-fill"></i>
                     <span>Layanan</span>
                 </a>
-                <a href="#why-us" class="{{ Request::is('#why-us') ? 'active' : '' }}">
-                    <i class="bi bi-hammer"></i>
+
+                <a href="/#why-us" data-section="why-us">
+                    <i class="bi bi-patch-check-fill"></i>
                     <span>Mengapa Kami</span>
                 </a>
-                <a href="#tesmonial" class="{{ Request::is('#testimoni') ? 'active' : '' }}">
-                    <i class="bi bi-hammer"></i>
-                    <span>Testimonial</span>
+
+                <a href="/#testimoni" data-section="testimoni">
+                    <i class="bi bi-chat-quote-fill"></i>
+                    <span>Testimoni</span>
                 </a>
             @endauth
         </nav>
@@ -329,6 +331,44 @@
                     setTimeout(() => window.resetLoading(btn), 15000);
                 }
             });
+        });
+
+        // GLOW ICON BOTTOM NAV
+        document.addEventListener('DOMContentLoaded', function() {
+            const wrapper = document.querySelector('.content-wrapper');
+            if (!wrapper) return;
+
+            const navLinks = document.querySelectorAll('.mobile-bottom-nav a[data-section]');
+            const sections = [];
+
+            navLinks.forEach(link => {
+                const id = link.dataset.section;
+                const section = document.getElementById(id);
+                if (section) {
+                    sections.push({
+                        id,
+                        link,
+                        section
+                    });
+                }
+            });
+
+            function setActiveSection() {
+                const scrollPos = wrapper.scrollTop + wrapper.clientHeight / 2;
+
+                navLinks.forEach(l => l.classList.remove('active'));
+
+                for (let i = sections.length - 1; i >= 0; i--) {
+                    const sectionTop = sections[i].section.offsetTop;
+                    if (scrollPos >= sectionTop) {
+                        sections[i].link.classList.add('active');
+                        break;
+                    }
+                }
+            }
+
+            wrapper.addEventListener('scroll', setActiveSection);
+            setActiveSection();
         });
     </script>
 
