@@ -407,3 +407,197 @@ body {
         display: none !important;
     }
 }
+
+/* =========================
+   TOKOPEDIA / SHOPEE STYLE
+========================= */
+
+.review-page {
+    position: relative !important;
+    min-height: calc(100vh - 200px);
+    padding-bottom: 80px;
+}
+
+.review-market-hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/section4bar.png');
+    color: #fff;
+    padding: 90px 0 120px;
+    /* bawah ditambah */
+    text-align: center;
+    position: relative;
+    background-size: cover;
+    background-repeat: no-repeat;
+    /* PENTING */
+}
+
+.review-market-hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.review-market-hero p {
+    margin-top: 10px;
+    opacity: 0.9;
+}
+
+.review-market-wrapper {
+    padding-top: 30px;
+}
+
+/* FILTER */
+.review-market-filter {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    margin-bottom: 30px;
+}
+
+.review-market-filter a {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: #f6f6f6;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.review-market-filter a.active {
+    background: #bf3131;
+    color: #fff;
+}
+
+/* GRID */
+.review-market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+    gap: 22px;
+}
+
+/* CARD */
+.review-market-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid #eee;
+}
+
+.review-market-card header {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.review-market-card img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.review-market-card h4 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.review-market-card small {
+    color: #888;
+}
+
+.review-market-card .stars i {
+    color: #FEC81A;
+    font-size: 12px;
+}
+
+.rating-badge {
+    margin-left: auto;
+    background: #FEC81A;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+/* BODY */
+.review-body {
+    margin-top: 12px;
+}
+
+.service-label {
+    display: inline-block;
+    background: #f1f1f1;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+}
+
+.review-body p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 6px 0 0;
+}
+
+/* FOOTER */
+.review-market-card footer {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed #eee;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.review-market-card footer i {
+    color: #FEC81A;
+}
+
+/* =========================
+   SKELETON LOADING
+========================= */
+
+.review-skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+    gap: 22px;
+}
+
+.review-skeleton-card {
+    height: 220px;
+    border-radius: 12px;
+    background: linear-gradient(
+        90deg,
+        #eee 25%,
+        #f5f5f5 37%,
+        #eee 63%
+    );
+    background-size: 400% 100%;
+    animation: skeleton 1.4s ease infinite;
+}
+
+@keyframes skeleton {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+}
+
+/* EMPTY */
+.review-empty {
+    text-align: center;
+    grid-column: 1/-1;
+}
+
+.review-empty img {
+    width: 90px;
+    opacity: .5;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .review-market-hero {
+        padding-top: 90px;
+    }
+    .review-page {
+        position: static !important;
+        overflow: visible !important;
+    }
+}

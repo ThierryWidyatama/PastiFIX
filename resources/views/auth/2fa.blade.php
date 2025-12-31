@@ -86,7 +86,7 @@ License: For each use you must have a valid license purchased only from above li
                             @csrf <!--begin::Heading-->
                             <div class="text-center mb-11">
                                 <!--begin::Title-->
-                                <h1 class="text-gray-900 fw-bolder mb-3">Two Factor Authentication</h1>
+                                <h1 class="text-gray-900 fw-bolder mb-3">Verifikasi Dua Langkah</h1>
                                 <!--end::Title-->
                                 <!--begin::Subtitle-->
                                 <div class="text-gray-500 fw-semibold fs-6">Silahkan masukkan kode OTP yang telah kami kirim ke email anda
@@ -114,14 +114,14 @@ License: For each use you must have a valid license purchased only from above li
                             <div class="d-grid mb-10">
                                 <button type="submit" id="login_submit" class="btn btn-primary"data-action='submit'>
                                     <!--begin::Indicator label-->
-                                    <span class="indicator-label">Sign In</span>
+                                    <span class="indicator-label">Masuk</span>
                                     <!--end::Indicator label-->
                                 </button>
                             </div>
                             <!--end::Submit button-->
                             <!--begin::Sign up-->
-                            <div class="text-gray-500 text-center fw-semibold fs-6">Not a Member yet?
-                                <a href="{{route('register')}}" class="link-primary">Sign up</a>
+                            <div class="text-gray-500 text-center fw-semibold fs-6">Belom memiliki akun?
+                                <a href="{{route('register')}}" class="link-primary">Registrasi</a>
                             </div>
                             <!--end::Sign up-->
                         </form>

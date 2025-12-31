@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>PastiFIX - Verifikasi Email</title>
     <link href="{{ asset('plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
@@ -28,9 +29,8 @@
 
             <!-- [BARU] Ilustrasi / Foto -->
             <!-- Saya pakai gambar placeholder renovasi rumah yang estetik -->
-            <img src="https://i.ibb.co.com/1fYPFHzr/Adobe-Express-file.png"
-                 alt="Ilustrasi Renovasi"
-                 class="auth-illustration">
+            <img src="https://i.ibb.co.com/1fYPFHzr/Adobe-Express-file.png" alt="Ilustrasi Renovasi"
+                class="auth-illustration">
 
             <!-- Teks Pendukung (Opsional, biar gak sepi) -->
             <div class="text-center pe-5 d-none d-lg-block">
@@ -44,7 +44,8 @@
 
                 <div class="text-center mb-4">
                     <h4 class="fw-bold">Masukkan Kode Verifikasi</h4>
-                    <p class="text-muted small">Kami telah mengirim 6 digit kode ke email Anda. Cek inbox (atau spam).</p>
+                    <p class="text-muted small">Kami telah mengirim 6 digit kode ke email Anda. Cek inbox (atau spam).
+                    </p>
                 </div>
 
                 @if (session('success'))
@@ -66,8 +67,7 @@
                     <div class="form-group-minimal">
                         <label for="verification_code">6 Digit Kode</label>
                         <input type="text" id="verification_code" name="verification_code"
-                               class="form-control-minimal verification-code-input"
-                               required maxlength="6" autofocus />
+                            class="form-control-minimal verification-code-input" required maxlength="6" autofocus />
                     </div>
 
                     <div class="d-grid mb-4 mt-5">
@@ -80,5 +80,6 @@
         </div>
     </div>
 
-    </body>
+</body>
+
 </html>

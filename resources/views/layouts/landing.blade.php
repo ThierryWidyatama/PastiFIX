@@ -94,7 +94,7 @@
                             <a class="nav-link" href="{{ route('services.index') }}">Layanan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('home') }}#testimoni">Testimoni</a>
+                            <a class="nav-link" href="{{ route('reviews.index') }}">Testimoni</a>
                         </li>
 
                         <!-- USER MENU DESKTOP -->
@@ -139,10 +139,12 @@
                     @else
                         <!-- SAAT BELUM LOGIN: MENU LENGKAP -->
                         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Beranda</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#about">Tentang Kami</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#service">Layanan</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#why-us">Mengapa Kami</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#testimoni">Testimoni</a>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#about">Tentang Kami</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" hhref="{{ route('services.index') }}">Layanan</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#why-us">Mengapa Kami</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('reviews.index') }}">Testimoni</a>
                         </li>
                         <li class="nav-item ms-lg-3">
                             <a href="{{ route('login') }}" class="btn btn-brand fw-medium">Pesan</a>
@@ -196,6 +198,11 @@
                 <i class="bi bi-hammer"></i>
                 <span>Layanan</span>
             </a>
+
+            <a href="/reviews" class="{{ Request::is('reviews') ? 'active' : '' }}">
+                <i class="bi bi-chat-quote-fill"></i>
+                <span>Testimoni</span>
+            </a>
         @else
             <a href="/" data-section="home">
                 <i class="bi bi-house-fill"></i>
@@ -217,7 +224,7 @@
                 <span>Mengapa Kami</span>
             </a>
 
-            <a href="/#testimoni" data-section="testimoni">
+            <a href="/reviews" class="{{ Request::is('reviews') ? 'active' : '' }}">
                 <i class="bi bi-chat-quote-fill"></i>
                 <span>Testimoni</span>
             </a>
@@ -333,6 +340,17 @@
 
             wrapper.addEventListener('scroll', setActiveSection);
             setActiveSection();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const skeleton = document.getElementById('reviewSkeleton');
+            const list = document.getElementById('reviewList');
+
+            // Simulasi loading UX (biar terasa seperti marketplace)
+            setTimeout(() => {
+                if (skeleton) skeleton.classList.add('d-none');
+                if (list) list.classList.remove('d-none');
+            }, 700);
         });
     </script>
     @stack('scripts')
