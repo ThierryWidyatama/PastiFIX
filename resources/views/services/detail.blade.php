@@ -1,6 +1,6 @@
 @extends('layouts.services')
 
-@section('title', 'Detail Jasa - ' . $service->name)
+@section('title', 'Detail Layanan ' . $service->name)
 
 @push('styles')
 <style>

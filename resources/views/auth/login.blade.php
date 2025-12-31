@@ -43,8 +43,8 @@
             <div class="auth-card">
 
                 <div class="auth-tabs">
-                    <a href="{{ route('register') }}">Sign Up</a>
-                    <a href="{{ route('login') }}" class="active">Sign In</a>
+                    <a href="{{ route('register') }}">Registrasi</a>
+                    <a href="{{ route('login') }}" class="active">Masuk</a>
                 </div>
 
                     @if (session('success'))
@@ -58,13 +58,13 @@
                     @csrf
 
                     <div class="form-group-minimal">
-                        <label for="username">Username</label>
+                        <label for="username">Nama Pengguna</label>
                         <input type="text" id="username" name="username" autocomplete="off"
                                class="form-control-minimal" required />
                     </div>
 
                     <div class="form-group-minimal">
-                        <label for="password">Password</label>
+                        <label for="password">Kata Sandi</label>
                         <input class="form-control-minimal" type="password" id="password"
                                name="password" autocomplete="off" required />
                     </div>
@@ -72,9 +72,9 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <label class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" name="remember_me" value="1" />
-                            <span class="form-check-label fw-semibold text-gray-700 fs-base ms-1">Remember me</span>
+                            <span class="form-check-label fw-semibold text-gray-700 fs-base ms-1">Ingat Saya</span>
                         </label>
-                        <a href="#" class="link-forgot">Forgot Password?</a>
+                        <a href="#" class="link-forgot">Lupa Kata Sandi?</a>
                     </div>
                     <br>
                     <div class="g-recaptcha mb-4" data-sitekey="{{ env('CAPTCHA_SITE_KEY') }}"
@@ -82,13 +82,13 @@
                     <br>
                     <div class="d-grid mb-4">
                         <button type="submit" id="login_submit" class="btn btn-brand-auth">
-                            <span class="indicator-label">Sign In</span>
+                            <span class="indicator-label">Masuk</span>
                         </button>
                     </div>
                     <br>
                     <div class="text-center text-muted fw-semibold fs-6">
-                        Don't have an account?
-                        <a href="{{ route('register') }}" class="link-register">Sign up</a>
+                        Belum memiliki akun?
+                        <a href="{{ route('register') }}" class="link-register">Registrasi</a>
                     </div>
                     <br>
                     <div class="social-icons">
@@ -112,7 +112,7 @@
             $('#login_submit').on('click', function(event) {
                 event.preventDefault();
                 Swal.fire({
-                    title: 'Logging in',
+                    title: 'Mencoba masuk',
                     text: 'Silahkan tunggu...',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
@@ -140,7 +140,7 @@
                         } else {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Gagal Login!',
+                                title: 'Gagal Masuk!',
                                 text: response.pesan
                             });
                         }
@@ -156,7 +156,7 @@
                         }
                         Swal.fire({
                             icon: 'error',
-                            title: 'Gagal login!',
+                            title: 'Gagal Masuk!',
                             text: firstErrorMessage,
                             showConfirmButton: true,
                         });

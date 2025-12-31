@@ -45,8 +45,8 @@
             <div class="auth-card">
 
                 <div class="auth-tabs">
-                    <a href="{{ route('register') }}" class="active">Sign Up</a>
-                    <a href="{{ route('login') }}">Sign In</a>
+                    <a href="{{ route('register') }}" class="active">Registrasi</a>
+                    <a href="{{ route('login') }}">Masuk</a>
                 </div>
 
                 <form class="form w-100" novalidate="novalidate" id="register_form"
@@ -60,7 +60,7 @@
                     </div>
 
                     <div class="form-group-minimal">
-                        <label for="username">Username</label>
+                        <label for="username">Nama Pengguna</label>
                         <input type="text" id="username" name="username" autocomplete="off"
                                class="form-control-minimal" required />
                     </div>
@@ -72,26 +72,26 @@
                     </div>
 
                     <div class="form-group-minimal">
-                        <label for="password">Password</label>
+                        <label for="password">Kata Sandi</label>
                         <input class="form-control-minimal" type="password" id="password"
                                name="password" autocomplete="off" required />
                     </div>
 
                     <div class="form-group-minimal">
-                        <label for="password_confirmation">Confirm Password</label>
+                        <label for="password_confirmation">Konfirmasi Kata Sandi</label>
                         <input class="form-control-minimal" type="password" id="password_confirmation"
                                name="password_confirmation" autocomplete="off" required />
                     </div>
 
                     <div class="d-grid mb-4">
                         <button type="submit" id="register_submit" class="btn btn-brand-auth">
-                            <span class="indicator-label">Sign Up</span>
+                            <span class="indicator-label">Registrasi</span>
                         </button>
                     </div>
                     <br>
                     <div class="text-center text-muted fw-semibold fs-6">
-                        Already have an account?
-                        <a href="{{ route('login') }}" class="link-register">Sign In</a>
+                        Sudah memiliki akun?
+                        <a href="{{ route('login') }}" class="link-register">Masuk</a>
                     </div>
                 </form>
                 </div>

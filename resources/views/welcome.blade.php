@@ -1,5 +1,7 @@
 @extends('layouts.landing')
 
+@section('title', 'Solusi Renovasi Rumah Anda')
+
 @section('content')
 
 <section id="home">

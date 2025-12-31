@@ -1,6 +1,6 @@
 @extends('layouts.services')
 
-@section('title', 'PastiFIX - Services')
+@section('title', 'Layanan')
 
 @section('content')
 

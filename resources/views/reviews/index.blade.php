@@ -1,6 +1,6 @@
 @extends('layouts.services')
 
-@section('title', 'Ulasan Pelanggan - PastiFIX')
+@section('title', 'Ulasan Pelanggan')
 
 @push('styles')
 <style>
@@ -23,7 +23,7 @@
 
     <div class="container mt-5 mb-5">
         <div class="row">
-            
+
             <div class="col-lg-3 mb-4">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white fw-bold">Filter Rating</div>
@@ -32,7 +32,7 @@
                             Semua Bintang
                             <span class="badge bg-secondary rounded-pill">{{ \App\Models\Review::count() }}</span>
                         </a>
-                        
+
                         @foreach(range(5, 1) as $i)
                             <a href="{{ route('reviews.index', ['star' => $i]) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ request('star') == $i ? 'active fw-bold' : '' }}">
                                 <div>
@@ -55,7 +55,7 @@
                         <div class="col-md-6">
                             <div class="card h-100 border-0 shadow-sm p-3">
                                 <div class="d-flex align-items-start mb-3">
-                                    <img src="{{ $review->user->profile_picture_url ? Storage::url($review->user->profile_picture_url) : asset('assets/img/default-avatar.png') }}" 
+                                    <img src="{{ $review->user->profile_picture_url ? Storage::url($review->user->profile_picture_url) : asset('assets/img/default-avatar.png') }}"
                                          class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
                                     <div>
                                         <h6 class="fw-bold mb-0">{{ $review->user->name }}</h6>

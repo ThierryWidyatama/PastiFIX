@@ -1,6 +1,6 @@
 @extends('layouts.services')
 
-@section('title', 'PastiFIX - Order Sukses')
+@section('title', 'Order Sukses')
 
 @section('hide-navbar')
 @endsection
