@@ -26,7 +26,7 @@ class ReviewController extends Controller
         }
 
         // Default urutan: Terbaru
-        $reviews = $query->orderBy('created_at', 'desc')->paginate(9)->withQueryString();
+        $reviews = $query->orderBy('created_at', 'desc')->paginate(8)->withQueryString();
 
         // Hitung total review per bintang (untuk sidebar filter)
         // Ini agak advanced raw query, tapi efisien

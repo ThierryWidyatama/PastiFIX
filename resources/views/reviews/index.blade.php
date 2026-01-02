@@ -75,7 +75,7 @@
             </div>
 
             <div class="review-pagination">
-                {{ $reviews->links() }}
+                {{ $reviews->links('pagination::bootstrap-5') }}
             </div>
 
         </section>

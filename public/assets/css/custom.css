@@ -408,10 +408,6 @@ body {
     }
 }
 
-/* =========================
-   TOKOPEDIA / SHOPEE STYLE
-========================= */
-
 .review-page {
     position: relative !important;
     min-height: calc(100vh - 200px);
@@ -591,7 +587,91 @@ body {
     opacity: .5;
 }
 
-/* RESPONSIVE */
+/* ===============================
+   REVIEW PAGINATION
+   STYLE: SHOPEE / TOKOPEDIA
+   =============================== */
+
+.review-pagination {
+    margin: 48px 0 24px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Laravel bungkus pagination pakai <nav> */
+.review-pagination nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* HILANGKAN:
+   "Showing 1 to x of y results" */
+.review-pagination p,
+.review-pagination .text-sm {
+    display: none !important;
+}
+
+/* UL pagination */
+.review-pagination .pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+}
+
+/* Semua item */
+.review-pagination .page-item {
+    list-style: none;
+}
+
+/* Tombol */
+.review-pagination .page-link {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    color: #374151;
+    font-weight: 600;
+    font-size: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.review-pagination .page-link:hover {
+    background: #f3f4f6;
+    color: #bf3131;
+}
+
+/* Active */
+.review-pagination .page-item.active .page-link {
+    background: #bf3131;
+    border-color: #bf3131;
+    color: #ffffff;
+}
+
+/* Disabled */
+.review-pagination .page-item.disabled .page-link {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* Prev & Next */
+.review-pagination .page-item:first-child .page-link,
+.review-pagination .page-item:last-child .page-link {
+    border-radius: 999px;
+    padding: 0 14px;
+}
+
 @media (max-width: 1024px) {
     .review-market-hero {
         padding-top: 90px;
@@ -599,5 +679,15 @@ body {
     .review-page {
         position: static !important;
         overflow: visible !important;
+    }
+    .review-pagination {
+        margin: 32px 0 20px;
+    }
+
+    .review-pagination .page-link {
+        min-width: 32px;
+        height: 32px;
+        font-size: 13px;
+        padding: 0 10px;
     }
 }

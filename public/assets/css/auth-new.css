@@ -351,7 +351,7 @@ div:where(.swal2-container) .swal2-icon.swal2-error [class^='swal2-x-mark-line']
 }
 
 /* Responsif untuk Mobile */
-@media (max-width: 991.98px) {
+@media (max-width: 1024.98px) {
     /* ... (style body dll tetap) ... */
 
     /* [FIX] Sembunyikan total kolom kiri di Mobile */

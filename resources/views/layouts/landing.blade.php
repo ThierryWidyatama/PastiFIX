@@ -26,7 +26,7 @@
 
 <body data-bs-spy="scroll" data-bs-target="#main-nav">
     <!-- MOBILE HEADER -->
-    <header class="mobile-header d-lg-none">
+    <header class="mobile-header">
         <div class="mobile-header-left">
             <img src="{{ asset('assets/img/logo.png') }}" alt="Logo">
             <span>PastiFIX</span>

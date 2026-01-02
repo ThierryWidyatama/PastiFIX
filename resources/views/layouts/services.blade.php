@@ -26,7 +26,7 @@
 <body>
     @if (!View::hasSection('hide-navbar'))
         <!-- MOBILE HEADER -->
-        <header class="mobile-header d-lg-none">
+        <header class="mobile-header">
             <div class="mobile-header-left" href="{{ route('home') }}">
                 <img src="{{ asset('assets/img/logo.png') }}" alt="Logo">
                 <span>PastiFIX</span>

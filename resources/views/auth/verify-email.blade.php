@@ -2,20 +2,30 @@
 <html lang="en">
 
 <head>
-    <title>PastiFIX - Verifikasi Email</title>
-    <link href="{{ asset('plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="{{ asset('assets/css/auth-new.css') }}">
+    <base href="../../../" />
+    <title>PastiFIX - Verifikiasi Email</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="{{ asset('assets/img/logo.png') }}" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
-    <style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link href="{{ asset('plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="{{ asset('assets/css/auth-new.css') }}">
+</head>
+
+<style>
         .verification-code-input {
             font-size: 2rem !important;
             letter-spacing: 10px;
             text-align: center;
         }
     </style>
-</head>
 
 <body id="kt_body" class="auth-page-new">
     <div class="auth-container">

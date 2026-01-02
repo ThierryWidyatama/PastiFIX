@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <base href="../../../" />
     <title>PastiFIX - Login</title>
@@ -17,7 +18,9 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/auth-new.css') }}">
 </head>
-<body id="kt_body" class="auth-page-new"> <div class="auth-container">
+
+<body id="kt_body" class="auth-page-new">
+    <div class="auth-container">
 
         <div class="auth-container-left">
             <!-- Logo -->
@@ -28,9 +31,8 @@
 
             <!-- [BARU] Ilustrasi / Foto -->
             <!-- Saya pakai gambar placeholder renovasi rumah yang estetik -->
-            <img src="https://i.ibb.co.com/1fYPFHzr/Adobe-Express-file.png"
-                 alt="Ilustrasi Renovasi"
-                 class="auth-illustration">
+            <img src="https://i.ibb.co.com/1fYPFHzr/Adobe-Express-file.png" alt="Ilustrasi Renovasi"
+                class="auth-illustration">
 
             <!-- Teks Pendukung (Opsional, biar gak sepi) -->
             <div class="text-center pe-5 d-none d-lg-block">
@@ -47,26 +49,26 @@
                     <a href="{{ route('login') }}" class="active">Masuk</a>
                 </div>
 
-                    @if (session('success'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+                @if (session('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
-                <form class="form w-100" novalidate="novalidate" id="login_form"
-                      action="{{ route('login.auth') }}" method="POST">
+                <form class="form w-100" novalidate="novalidate" id="login_form" action="{{ route('login.auth') }}"
+                    method="POST">
                     @csrf
 
                     <div class="form-group-minimal">
                         <label for="username">Nama Pengguna</label>
                         <input type="text" id="username" name="username" autocomplete="off"
-                               class="form-control-minimal" required />
+                            class="form-control-minimal" required />
                     </div>
 
                     <div class="form-group-minimal">
                         <label for="password">Kata Sandi</label>
-                        <input class="form-control-minimal" type="password" id="password"
-                               name="password" autocomplete="off" required />
+                        <input class="form-control-minimal" type="password" id="password" name="password"
+                            autocomplete="off" required />
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -77,8 +79,8 @@
                         <a href="#" class="link-forgot">Lupa Kata Sandi?</a>
                     </div>
                     <br>
-                    <div class="g-recaptcha mb-4" data-sitekey="{{ env('CAPTCHA_SITE_KEY') }}"
-                         data-action="LOGIN"></div>
+                    <div class="g-recaptcha mb-4" data-sitekey="{{ env('CAPTCHA_SITE_KEY') }}" data-action="LOGIN">
+                    </div>
                     <br>
                     <div class="d-grid mb-4">
                         <button type="submit" id="login_submit" class="btn btn-brand-auth">
@@ -98,7 +100,7 @@
                         <a href="#"><i class="bi bi-linkedin"></i></a>
                     </div>
                 </form>
-                </div>
+            </div>
         </div>
 
     </div>
@@ -135,7 +137,8 @@
                                 // [FIX 3] Arahkan ke URL dinamis dari Controller
                                 document.location = response.redirect_url;
                             });
-                        } else if (response.status == '2fa_required' && response['2fa_required']) {
+                        } else if (response.status == '2fa_required' && response[
+                            '2fa_required']) {
                             window.location.href = response.redirect_url;
                         } else {
                             Swal.fire({
@@ -166,4 +169,5 @@
         });
     </script>
 </body>
+
 </html>
