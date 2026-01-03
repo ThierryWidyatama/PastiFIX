@@ -200,6 +200,7 @@
                     @endphp
 
                     @forelse($allAddresses as $addr)
+                        @if(!$addr->id) @continue @endif
                         <div
                             class="card border-0 shadow-sm mb-3 {{ $addr->is_primary ? 'border-start border-danger border-5' : '' }}">
                             <div class="card-body p-4 d-flex justify-content-between align-items-center">
@@ -226,11 +227,14 @@
                                         </form>
                                     @endif
 
-                                    <form action="{{ route('address.destroy', $addr->id) }}" method="POST"
-                                        onsubmit="return confirm('Yakin ingin menghapus alamat ini?');">
+                                    <!-- [FIX] Tambahkan ID unik -->
+                                    <form id="delete-form-profile-{{ $addr->id }}" action="{{ route('address.destroy', $addr->id) }}" method="POST">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            title="Hapus Alamat">
+                                        
+                                        <!-- [FIX] Ubah jadi type="button" dan pakai onclick -->
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                title="Hapus Alamat"
+                                                onclick="confirmDeleteProfile('{{ $addr->id }}', this)">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -527,6 +531,24 @@
             }
         }
 
+        // Fungsi Hapus Alamat di Profil
+            function confirmDeleteProfile(id, btn) {
+                if (confirm('Apakah Anda yakin ingin menghapus alamat ini?')) {
+                    // 1. Matikan tombol & kasih efek loading (Panggil Helper Global)
+                    if (window.setLoading) {
+                        window.setLoading(btn);
+                    } else {
+                        // Fallback manual kalau helper gak ketemu
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                    }
+
+                    // 2. Submit form secara manual
+                    document.getElementById('delete-form-profile-' + id).submit();
+                }
+                // Kalau pilih Cancel, kode di atas gak jalan, jadi tombol TETAP AMAN (gak loading).
+            }
+
 
         // =====================================================
         // BAGIAN 2 — MAP PROFIL UTAMA (MAIN)
@@ -580,30 +602,76 @@
 
 
         // =====================================================
-        // BAGIAN 3 — MODE EDIT TRIGGER
+        // BAGIAN 3 — MODE EDIT TRIGGER (LOGIKA BARU)
         // =====================================================
-        if (editButton) {
-            editButton.addEventListener("click", function() {
-                document.querySelectorAll("input[disabled], textarea[disabled]").forEach(el => el.disabled = false);
+        if(editButton) {
+            editButton.addEventListener("click", function () {
+                
+                // 1. HIDUPKAN KOLOM NAMA & HP (Selalu boleh)
+                const inputName = document.getElementById('name');
+                const inputPhone = document.getElementById('phone_number');
+                
+                if(inputName) {
+                    inputName.disabled = false;
+                    inputName.classList.remove('form-control-static');
+                    inputName.classList.add('form-minimal-input');
+                }
+                if(inputPhone) {
+                    inputPhone.disabled = false;
+                    inputPhone.classList.remove('form-control-static');
+                    inputPhone.classList.add('form-minimal-input');
+                }
+
+                // 2. CEK APAKAH ALAMAT ADA ISINYA?
+                // Kita cek value dari textarea alamat utama
+                const currentAddress = document.getElementById("profile_address").value.trim();
+                const hasAddress = currentAddress.length > 0;
+
+                if (hasAddress) {
+                    // JIKA ADA ALAMAT: Hidupkan semua input alamat & Peta
+                    document.getElementById("profile_address").disabled = false;
+                    document.getElementById("rt_rw").disabled = false;
+                    document.getElementById("profile_postcode").disabled = false;
+                    document.getElementById("landmark_details").disabled = false;
+                    
+                    // Ubah style input alamat jadi mode edit
+                    [
+                        "profile_address", "rt_rw", "profile_postcode", "landmark_details"
+                    ].forEach(id => {
+                        const el = document.getElementById(id);
+                        if(el) {
+                            el.classList.remove('form-control-static');
+                            el.classList.add('form-minimal-input');
+                        }
+                    });
+
+                    // Hidupkan Peta Utama
+                    if (mainMap && mainMarker) {
+                        mainMap.dragging.enable();
+                        mainMap.touchZoom.enable();
+                        mainMap.scrollWheelZoom.enable();
+                        mainMap.doubleClickZoom.enable();
+                        if (!document.querySelector('.leaflet-control-zoom')) {
+                            L.control.zoom({ position: 'topleft' }).addTo(mainMap);
+                        }
+                        mainMarker.dragging.enable();
+                        document.getElementById("map-profile-main").style.border = "2px solid #FEC81A";
+                        setTimeout(() => mainMap.invalidateSize(), 200);
+                    }
+                } else {
+                    // JIKA ALAMAT KOSONG:
+                    // Jangan hidupkan input alamat & peta.
+                    // Opsional: Kasih alert kecil/console log
+                    console.log("Alamat kosong, edit via Kelola Alamat.");
+                }
+
+                // 3. UI Umum (Tombol & Foto)
                 saveButton.classList.remove("d-none");
                 editButton.classList.add("d-none");
+                
                 const editIcon = document.querySelector(".profile-pic-edit-button");
-                if (editIcon) editIcon.classList.remove("d-none");
-
-                if (mainMap && mainMarker) {
-                    mainMap.dragging.enable();
-                    mainMap.touchZoom.enable();
-                    mainMap.scrollWheelZoom.enable();
-                    mainMap.doubleClickZoom.enable();
-                    if (!document.querySelector('.leaflet-control-zoom')) {
-                        L.control.zoom({
-                            position: 'topleft'
-                        }).addTo(mainMap);
-                    }
-                    mainMarker.dragging.enable();
-                    document.getElementById("map-profile-main").style.border = "2px solid #FEC81A";
-                    setTimeout(() => mainMap.invalidateSize(), 200);
-                }
+                if(editIcon) editIcon.classList.remove("d-none");
+                if(previewImg) previewImg.style.cursor = 'pointer';
             });
         }
 

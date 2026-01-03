@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules\Password;
 use App\Mail\SendVerificationCode;
 use App\Mail\SendWelcomeEmail;
+use App\Mail\SendResetPasswordCode;
 
 class AuthController extends Controller
 {
@@ -57,9 +58,11 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required',
             'password' => 'required',
+            // 'g-recaptcha-response' => 'required' // Uncomment jika captcha sudah aktif
         ], [
             'username.required' => 'Username harus diisi',
             'password.required' => 'Password harus diisi',
+            // 'g-recaptcha-response.required' => 'Silahkan centang captcha'
         ]);
 
         $user = User::where('username', $request->username)->first();
@@ -72,13 +75,22 @@ class AuthController extends Controller
             return response()->json(['status' => false, 'pesan' => 'Akun Tidak Aktif']);
         }
 
-        $remember = $request->has('remember_me') ? true : false;
+        // [FIX] Cara paling aman mendeteksi checkbox di Laravel
+        // Ini akan bernilai TRUE jika dicentang (value="1"), dan FALSE jika tidak.
+        $remember = $request->boolean('remember_me'); 
+        
         $credentials = ['username' => $request->username, 'password' => $request->password, 'status' => 1];
 
+        // [FIX] Masukkan variabel $remember ke parameter kedua Auth::attempt
         if (Auth::attempt($credentials, $remember)) {
-            // ... (Kode 2FA kamu ... biarkan saja)
+            
+            // --- Logika 2FA (Biarkan Apa Adanya) ---
             if ($user->is_twofa_enabled && $this->isUserLoggedInToday($user)) {
-                // ... (logic 2FA) ...
+                $user->twofa_code = Str::random(6);
+                $user->twofa_expires_at = now()->addMinutes(10);
+                $user->save();
+                $this->send2faCode($user);
+                Auth::logout();
                 return response()->json([
                     'status' => '2fa_required',
                     'pesan' => '2FA is required. A code has been sent to your email.',
@@ -86,6 +98,7 @@ class AuthController extends Controller
                     'redirect_url' => route('2fa.verify')
                 ]);
             }
+            // ----------------------------------------
 
             $user->last_login_ip = $request->ip();
             $user->last_login_at = now();
@@ -93,16 +106,13 @@ class AuthController extends Controller
 
             // insert_log('Username ' . $request->username . ' berhasil masuk sistem ');
 
-            // [FIX 3] Logika Redirect Dinamis
-            $redirect_url = '';
-            // Asumsi relasi role() ada di model User
+            // Logika Redirect Dinamis
+            $redirect_url = '/dashboard'; // Default Admin
             if ($user->role && $user->role->code == 'USR') {
-                $redirect_url = route('profil'); // Redirect ke /profil
-            } else {
-                $redirect_url = '/dashboard'; // Redirect ke admin dashboard
+                $redirect_url = route('profil'); // Redirect User
             }
 
-           $pesanSapaan = "Selamat datang di PastiFIX, " . $user->name . "!";
+            $pesanSapaan = "Selamat datang di PastiFIX, " . $user->name . "!";
 
             return response()->json([
                 'status' => 'success',
@@ -113,7 +123,6 @@ class AuthController extends Controller
             // insert_log('Username ' . $request->username . ' mencoba masuk sistem, password salah');
             return response()->json(['status' => false, 'pesan' => 'Password Salah']);
         }
-
     }
 
     protected function isUserLoggedInToday($user)
@@ -236,6 +245,80 @@ class AuthController extends Controller
 
         // 5. Redirect ke Login dengan pesan sukses
         return redirect()->route('login')->with('success', 'Verifikasi berhasil! Akun Anda sudah aktif, silakan login.');
+    }
+
+    // 1. Tampilkan Form Lupa Password (Input Email)
+    public function showForgotPasswordForm()
+    {
+        return view('auth.forgot-password');
+    }
+
+    // 2. Proses Kirim Kode
+    public function sendResetCode(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        // Generate Kode
+        $user->verification_code = rand(100000, 999999);
+        $user->verification_expires_at = \Carbon\Carbon::now()->addMinutes(15);
+        $user->save();
+
+        // Kirim Email
+        try {
+            // [FIX] Pastikan parameter user & code dikirim dengan benar
+            Mail::to($user->email)->send(new SendResetPasswordCode($user, $user->verification_code));
+        } catch (\Exception $e) {
+            return back()->withErrors('Gagal mengirim email: ' . $e->getMessage());
+        }
+
+        return redirect()->route('password.reset.form', ['id' => $user->id])
+            ->with('success', 'Kode reset password telah dikirim ke email Anda.');
+    }
+
+    // 3. Tampilkan Form Reset (Input Kode & Password Baru)
+    public function showResetPasswordForm($id)
+    {
+        // [FIX] Cari user dulu buat ambil emailnya
+        $user = User::find($id);
+        
+        // Kalau user gak ketemu (misal ID ngawur), balikin ke login
+        if (!$user) {
+            return redirect()->route('login')->withErrors('User tidak ditemukan.');
+        }
+
+        // Kirim data user ke view
+        return view('auth.reset-password', ['user' => $user]);
+    }
+
+    // 4. Proses Reset Password
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'code' => 'required|numeric',
+            'password' => 'required|min:6|confirmed', // Konfirmasi password
+        ]);
+
+        $user = User::find($request->user_id);
+
+        // Cek Kode
+        if ($user->verification_code != $request->code) {
+            return back()->withErrors('Kode verifikasi salah.');
+        }
+        // Cek Expired
+        if (\Carbon\Carbon::now()->isAfter($user->verification_expires_at)) {
+            return back()->withErrors('Kode kadaluarsa.');
+        }
+
+        // Reset Password & Bersihkan Kode
+        $user->password = Hash::make($request->password);
+        $user->verification_code = null;
+        $user->verification_expires_at = null;
+        $user->save();
+
+        return redirect()->route('login')->with('success', 'Password berhasil diubah. Silakan login.');
     }
 
     /**

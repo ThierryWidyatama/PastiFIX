@@ -73,14 +73,17 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <label class="form-check form-check-inline">
+                            <!-- [PASTIKAN INI] name="remember_me" dan value="1" -->
                             <input class="form-check-input" type="checkbox" name="remember_me" value="1" />
                             <span class="form-check-label fw-semibold text-gray-700 fs-base ms-1">Ingat Saya</span>
                         </label>
-                        <a href="#" class="link-forgot">Lupa Kata Sandi?</a>
+                        
+                        <!-- [FIX] Arahkan ke route password.request -->
+                        <a href="{{ route('password.request') }}" class="link-forgot">Lupa Kata Sandi?</a>
                     </div>
                     <br>
-                    <div class="g-recaptcha mb-4" data-sitekey="{{ env('CAPTCHA_SITE_KEY') }}" data-action="LOGIN">
-                    </div>
+                    {{-- <div class="g-recaptcha mb-4" data-sitekey="{{ env('CAPTCHA_SITE_KEY') }}" data-action="LOGIN">
+                    </div> --}}
                     <br>
                     <div class="d-grid mb-4">
                         <button type="submit" id="login_submit" class="btn btn-brand-auth">

@@ -62,8 +62,8 @@
 
                                     <!-- TOMBOL DELETE -->
                                     @if (!$address->is_primary)
-                                        <button type="button" class="btn btn-icon btn-sm btn-light-danger"
-                                            onclick="confirmDelete('{{ $address->id }}')">
+                                        <button type="button" class="btn btn-icon btn-sm btn-light-danger" 
+                                                onclick="confirmDelete('{{ $address->id }}')">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     @endif
@@ -321,8 +321,16 @@
         <script>
             function confirmDelete(id) {
                 if (confirm('Apakah Anda yakin ingin menghapus alamat ini?')) {
-                    document.getElementById('delete-form-' + id).submit();
+                    // [FIX] Cari form-nya
+                    const form = document.getElementById('delete-form-' + id);
+                    
+                    // [FIX] Buat loading manual (karena ini submit via JS, global script mungkin ga nangkep)
+                    // Atau biarkan global script nangkep event submit form ini
+                    if (form) {
+                        form.submit();
+                    }
                 }
+                // Kalau Cancel, tidak ada code yg jalan, jadi gak loading.
             }
 
             document.addEventListener('DOMContentLoaded', function() {

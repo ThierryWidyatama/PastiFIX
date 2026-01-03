@@ -90,6 +90,19 @@
         </div>
     </div>
 
-</body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const btn = form.querySelector('button[type="submit"]');
 
+            if(form && btn) {
+                form.addEventListener('submit', function() {
+                    // Karena inputnya cuma satu, validitas biasanya aman
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Verifikasi...';
+                });
+            }
+        });
+    </script>
+</body>
 </html>

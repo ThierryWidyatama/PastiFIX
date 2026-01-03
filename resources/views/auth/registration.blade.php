@@ -118,5 +118,21 @@
         </script>
     @endif
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const btn = document.getElementById('register_submit');
+
+            if(form && btn) {
+                form.addEventListener('submit', function() {
+                    if(form.checkValidity()) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Memproses...';
+                    }
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>

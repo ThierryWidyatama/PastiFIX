@@ -78,20 +78,23 @@ class DashboardController extends Controller
 
         $user->update($userData);
 
-        // 2. [FIX UTAMA] Update Alamat Utama + KOORDINAT
-        $user->addresses()->updateOrCreate(
-            ['is_primary' => true],
-            [
-                'address_line' => $request->address_line,
-                'rt_rw' => $request->rt_rw,
-                'postal_code' => $request->postal_code,
-                'landmark_details' => $request->landmark_details,
+        if ($request->has('address_line') && $request->filled('address_line')) {
                 
-                // MAPPING DATA BARU
-                'latitude' => $request->profile_latitude, 
-                'longitude' => $request->profile_longitude,
-            ]
-        );
+                $user->addresses()->updateOrCreate(
+                    ['is_primary' => true], // Cari alamat utama
+                    [ 
+                        'address_line' => $request->address_line,
+                        'rt_rw' => $request->rt_rw,
+                        'postal_code' => $request->postal_code,
+                        'landmark_details' => $request->landmark_details,
+                        
+                        'latitude' => $request->profile_latitude, 
+                        'longitude' => $request->profile_longitude,
+                        
+                        'is_saved' => true, // Pastikan tersimpan
+                    ]
+                );
+            }
 
         return redirect()->route('profil')->with('success', 'Profil dan Lokasi berhasil diperbarui!');
     }

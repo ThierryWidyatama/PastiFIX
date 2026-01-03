@@ -86,6 +86,13 @@ Route::get('/produk-hukum', [PencarianController::class, 'index'])->name('produk
 // Rute untuk melihat semua review
 Route::get('/reviews', [App\Http\Controllers\ReviewController::class, 'index'])->name('reviews.index');
 
+// Route Lupa Password
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetCode'])->name('password.email');
+
+    Route::get('/reset-password/{id}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset.form');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
 
 /*
 |--------------------------------------------------------------------------
