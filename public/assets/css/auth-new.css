@@ -215,6 +215,16 @@ body.auth-page-new {
     text-decoration: none;
 }
 
+.to-login {
+    display: block;          /* KUNCI UTAMA */
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #7E8299;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 15px;
+}
+
 .link-forgot:hover {
     color: #bf3131;
 }
@@ -445,3 +455,41 @@ div:where(.swal2-container) .swal2-icon.swal2-error [class^='swal2-x-mark-line']
         overflow: visible;
     }
 }
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-field {
+    position: relative; /* INI KUNCI UTAMA */
+    display: flex;
+    align-items: center;
+}
+
+.password-field input {
+    width: 100%;
+    padding-right: 44px; /* ruang icon */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #999;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.toggle-password:hover {
+    color: #bf3131;
+}
+
+.toggle-password:focus {
+    outline: none;
+}
+

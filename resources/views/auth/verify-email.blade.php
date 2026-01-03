@@ -53,7 +53,7 @@
             <div class="auth-card">
 
                 <div class="text-center mb-4">
-                    <h4 class="fw-bold">Masukkan Kode Verifikasi</h4>
+                    <h4 class="fw-bold" style="font-size: 20px;">Masukkan Kode Verifikasi</h4>
                     <p class="text-muted small">Kami telah mengirim 6 digit kode ke email Anda. Cek inbox (atau spam).
                     </p>
                 </div>

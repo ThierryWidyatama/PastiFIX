@@ -65,10 +65,17 @@
                             class="form-control-minimal" required />
                     </div>
 
-                    <div class="form-group-minimal">
+                    <div class="form-group-minimal password-wrapper">
                         <label for="password">Kata Sandi</label>
-                        <input class="form-control-minimal" type="password" id="password" name="password"
-                            autocomplete="off" required />
+
+                        <div class="password-field">
+                            <input class="form-control-minimal" type="password" id="password" name="password"
+                                autocomplete="off" required />
+
+                            <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+                                <i class="bi bi-eye-slash" id="passwordIcon"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -77,7 +84,7 @@
                             <input class="form-check-input" type="checkbox" name="remember_me" value="1" />
                             <span class="form-check-label fw-semibold text-gray-700 fs-base ms-1">Ingat Saya</span>
                         </label>
-                        
+
                         <!-- [FIX] Arahkan ke route password.request -->
                         <a href="{{ route('password.request') }}" class="link-forgot">Lupa Kata Sandi?</a>
                     </div>
@@ -141,7 +148,7 @@
                                 document.location = response.redirect_url;
                             });
                         } else if (response.status == '2fa_required' && response[
-                            '2fa_required']) {
+                                '2fa_required']) {
                             window.location.href = response.redirect_url;
                         } else {
                             Swal.fire({
@@ -168,6 +175,23 @@
                         });
                     }
                 });
+            });
+        });
+
+        // Toggle Password Visibility
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const toggleButton = document.querySelector('.toggle-password');
+            const icon = document.getElementById('passwordIcon');
+
+            if (!passwordInput || !toggleButton) return;
+
+            toggleButton.addEventListener('click', function() {
+                const isHidden = passwordInput.type === 'password';
+
+                passwordInput.type = isHidden ? 'text' : 'password';
+                icon.classList.toggle('bi-eye');
+                icon.classList.toggle('bi-eye-slash');
             });
         });
     </script>

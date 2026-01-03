@@ -177,13 +177,15 @@
             </div>
         </div>
     </div>
-
+@endsection
+@push('modals')
     <div class="modal fade" id="manageAddressModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Kelola Daftar Alamat</h5>
-                    <button type="button" class="btn btn-sm btn-brand fw-bold" id="btnOpenAddAddress">
+                    <h5 class="modal-title fw-bold me-2 ">Kelola Daftar Alamat</h5>
+                    <button type="button" class="btn btn-sm btn-danger fw-bold" data-bs-toggle="modal"
+                        data-bs-target="#addProfileAddressModal">
                         <i class="bi bi-plus-lg"></i> Tambah
                     </button>
 
@@ -200,7 +202,9 @@
                     @endphp
 
                     @forelse($allAddresses as $addr)
-                        @if(!$addr->id) @continue @endif
+                        @if (!$addr->id)
+                            @continue
+                        @endif
                         <div
                             class="card border-0 shadow-sm mb-3 {{ $addr->is_primary ? 'border-start border-danger border-5' : '' }}">
                             <div class="card-body p-4 d-flex justify-content-between align-items-center">
@@ -228,13 +232,13 @@
                                     @endif
 
                                     <!-- [FIX] Tambahkan ID unik -->
-                                    <form id="delete-form-profile-{{ $addr->id }}" action="{{ route('address.destroy', $addr->id) }}" method="POST">
+                                    <form id="delete-form-profile-{{ $addr->id }}"
+                                        action="{{ route('address.destroy', $addr->id) }}" method="POST">
                                         @csrf @method('DELETE')
-                                        
+
                                         <!-- [FIX] Ubah jadi type="button" dan pakai onclick -->
-                                        <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                title="Hapus Alamat"
-                                                onclick="confirmDeleteProfile('{{ $addr->id }}', this)">
+                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Alamat"
+                                            onclick="confirmDeleteProfile('{{ $addr->id }}', this)">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -350,7 +354,7 @@
             </div>
         </div>
     </div>
-@endsection
+@endpush
 @push('scripts')
     <!-- ================== CROPper ================== -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
@@ -532,22 +536,22 @@
         }
 
         // Fungsi Hapus Alamat di Profil
-            function confirmDeleteProfile(id, btn) {
-                if (confirm('Apakah Anda yakin ingin menghapus alamat ini?')) {
-                    // 1. Matikan tombol & kasih efek loading (Panggil Helper Global)
-                    if (window.setLoading) {
-                        window.setLoading(btn);
-                    } else {
-                        // Fallback manual kalau helper gak ketemu
-                        btn.disabled = true;
-                        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-                    }
-
-                    // 2. Submit form secara manual
-                    document.getElementById('delete-form-profile-' + id).submit();
+        function confirmDeleteProfile(id, btn) {
+            if (confirm('Apakah Anda yakin ingin menghapus alamat ini?')) {
+                // 1. Matikan tombol & kasih efek loading (Panggil Helper Global)
+                if (window.setLoading) {
+                    window.setLoading(btn);
+                } else {
+                    // Fallback manual kalau helper gak ketemu
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
                 }
-                // Kalau pilih Cancel, kode di atas gak jalan, jadi tombol TETAP AMAN (gak loading).
+
+                // 2. Submit form secara manual
+                document.getElementById('delete-form-profile-' + id).submit();
             }
+            // Kalau pilih Cancel, kode di atas gak jalan, jadi tombol TETAP AMAN (gak loading).
+        }
 
 
         // =====================================================
@@ -604,19 +608,19 @@
         // =====================================================
         // BAGIAN 3 — MODE EDIT TRIGGER (LOGIKA BARU)
         // =====================================================
-        if(editButton) {
-            editButton.addEventListener("click", function () {
-                
+        if (editButton) {
+            editButton.addEventListener("click", function() {
+
                 // 1. HIDUPKAN KOLOM NAMA & HP (Selalu boleh)
                 const inputName = document.getElementById('name');
                 const inputPhone = document.getElementById('phone_number');
-                
-                if(inputName) {
+
+                if (inputName) {
                     inputName.disabled = false;
                     inputName.classList.remove('form-control-static');
                     inputName.classList.add('form-minimal-input');
                 }
-                if(inputPhone) {
+                if (inputPhone) {
                     inputPhone.disabled = false;
                     inputPhone.classList.remove('form-control-static');
                     inputPhone.classList.add('form-minimal-input');
@@ -633,13 +637,13 @@
                     document.getElementById("rt_rw").disabled = false;
                     document.getElementById("profile_postcode").disabled = false;
                     document.getElementById("landmark_details").disabled = false;
-                    
+
                     // Ubah style input alamat jadi mode edit
                     [
                         "profile_address", "rt_rw", "profile_postcode", "landmark_details"
                     ].forEach(id => {
                         const el = document.getElementById(id);
-                        if(el) {
+                        if (el) {
                             el.classList.remove('form-control-static');
                             el.classList.add('form-minimal-input');
                         }
@@ -652,7 +656,9 @@
                         mainMap.scrollWheelZoom.enable();
                         mainMap.doubleClickZoom.enable();
                         if (!document.querySelector('.leaflet-control-zoom')) {
-                            L.control.zoom({ position: 'topleft' }).addTo(mainMap);
+                            L.control.zoom({
+                                position: 'topleft'
+                            }).addTo(mainMap);
                         }
                         mainMarker.dragging.enable();
                         document.getElementById("map-profile-main").style.border = "2px solid #FEC81A";
@@ -668,10 +674,10 @@
                 // 3. UI Umum (Tombol & Foto)
                 saveButton.classList.remove("d-none");
                 editButton.classList.add("d-none");
-                
+
                 const editIcon = document.querySelector(".profile-pic-edit-button");
-                if(editIcon) editIcon.classList.remove("d-none");
-                if(previewImg) previewImg.style.cursor = 'pointer';
+                if (editIcon) editIcon.classList.remove("d-none");
+                if (previewImg) previewImg.style.cursor = 'pointer';
             });
         }
 

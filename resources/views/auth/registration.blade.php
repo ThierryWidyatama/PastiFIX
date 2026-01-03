@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <base href="../../../" />
     <title>PastiFIX - Registrasi</title>
@@ -17,6 +18,7 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/auth-new.css') }}">
 </head>
+
 <body id="kt_body" class="auth-page-new">
 
     <div class="auth-container">
@@ -30,9 +32,8 @@
 
             <!-- [BARU] Ilustrasi / Foto -->
             <!-- Saya pakai gambar placeholder renovasi rumah yang estetik -->
-            <img src="https://i.ibb.co.com/1fYPFHzr/Adobe-Express-file.png"
-                 alt="Ilustrasi Renovasi"
-                 class="auth-illustration">
+            <img src="https://i.ibb.co.com/1fYPFHzr/Adobe-Express-file.png" alt="Ilustrasi Renovasi"
+                class="auth-illustration">
 
             <!-- Teks Pendukung (Opsional, biar gak sepi) -->
             <div class="text-center pe-5 d-none d-lg-block">
@@ -50,37 +51,49 @@
                 </div>
 
                 <form class="form w-100" novalidate="novalidate" id="register_form"
-                      action="{{ route('register.post') }}" method="POST">
+                    action="{{ route('register.post') }}" method="POST">
                     @csrf
 
                     <div class="form-group-minimal">
                         <label for="name">Nama Lengkap</label>
                         <input type="text" id="name" name="name" autocomplete="off"
-                               class="form-control-minimal" required />
+                            class="form-control-minimal" required />
                     </div>
 
                     <div class="form-group-minimal">
                         <label for="username">Nama Pengguna</label>
                         <input type="text" id="username" name="username" autocomplete="off"
-                               class="form-control-minimal" required />
+                            class="form-control-minimal" required />
                     </div>
 
                     <div class="form-group-minimal">
                         <label for="email">Email</label>
                         <input type="email" id="email" name="email" autocomplete="off"
-                               class="form-control-minimal" required />
+                            class="form-control-minimal" required />
                     </div>
 
-                    <div class="form-group-minimal">
+                    <div class="form-group-minimal password-wrapper">
                         <label for="password">Kata Sandi</label>
-                        <input class="form-control-minimal" type="password" id="password"
-                               name="password" autocomplete="off" required />
+                        <div class="password-field">
+                            <input class="form-control-minimal" type="password" id="password" name="password"
+                                autocomplete="off" required />
+                            <button type="button" class="toggle-password" data-target="password"
+                                aria-label="Toggle password visibility">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="form-group-minimal">
+                    <div class="form-group-minimal password-wrapper">
                         <label for="password_confirmation">Konfirmasi Kata Sandi</label>
-                        <input class="form-control-minimal" type="password" id="password_confirmation"
-                               name="password_confirmation" autocomplete="off" required />
+                        <div class="password-field">
+                            <input class="form-control-minimal" type="password" id="password_confirmation"
+                                name="password_confirmation" autocomplete="off" required />
+                            <button type="button" class="toggle-password" data-target="password_confirmation"
+                                aria-label="Toggle password visibility">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="d-grid mb-4">
@@ -94,7 +107,7 @@
                         <a href="{{ route('login') }}" class="link-register">Masuk</a>
                     </div>
                 </form>
-                </div>
+            </div>
         </div>
     </div>
 
@@ -123,16 +136,36 @@
             const form = document.querySelector('form');
             const btn = document.getElementById('register_submit');
 
-            if(form && btn) {
+            if (form && btn) {
                 form.addEventListener('submit', function() {
-                    if(form.checkValidity()) {
+                    if (form.checkValidity()) {
                         btn.disabled = true;
-                        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Memproses...';
+                        btn.innerHTML =
+                            '<span class="spinner-border spinner-border-sm me-2"></span> Memproses...';
                     }
                 });
             }
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+
+                    if (!input) return;
+
+                    const isHidden = input.type === 'password';
+                    input.type = isHidden ? 'text' : 'password';
+
+                    icon.classList.toggle('bi-eye');
+                    icon.classList.toggle('bi-eye-slash');
+                });
+            });
+        });
     </script>
 
 </body>
+
 </html>

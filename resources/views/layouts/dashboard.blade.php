@@ -123,6 +123,8 @@
             <div class="content-wrapper p-4">
                 @yield('content')
             </div>
+
+            @stack('modals')
         </main>
 
     </div>
