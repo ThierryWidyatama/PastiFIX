@@ -225,6 +225,10 @@ body.auth-page-new {
     margin-top: 15px;
 }
 
+.to-login:hover {
+    color: #bf3131;
+}
+
 .link-forgot:hover {
     color: #bf3131;
 }

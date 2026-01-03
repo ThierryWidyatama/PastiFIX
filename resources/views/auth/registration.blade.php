@@ -147,6 +147,7 @@
             }
         });
 
+        // Toggle Password Visibility
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.toggle-password').forEach(button => {
                 button.addEventListener('click', function() {
