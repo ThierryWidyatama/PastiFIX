@@ -121,77 +121,113 @@
 
     <script>
         $(document).ready(function() {
+            // [FIX] TOMBOL LOGIN CLICK
             $('#login_submit').on('click', function(event) {
                 event.preventDefault();
+
+                // 1. Ambil Data Manual
+                var username = $('input[name="username"]').val();
+                var password = $('input[name="password"]').val();
+                // Cek checkbox manual biar akurat
+                var remember = $('input[name="remember_me"]').is(':checked') ? 1 : 0; 
+                var token    = $('input[name="_token"]').val();
+
+                // 2. [FIX 1] ENCODE PASSWORD KE BASE64
+                // Ini biar karakter unik (!@#) gak dianggap virus sama hosting
+                var encodedPassword = btoa(password);
+
+                // 3. UI Loading (Cegah Spam Klik)
+                var btn = $(this);
+                var originalText = btn.html();
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span> Loading...');
+                
+                // Tampilkan Swal juga biar makin jelas
                 Swal.fire({
                     title: 'Mencoba masuk',
                     text: 'Silahkan tunggu...',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
                 });
-                Swal.showLoading();
-                var formData = $('#login_form').serialize();
 
+                // 4. Kirim Data via AJAX
                 $.ajax({
                     url: '{{ route('login.auth') }}',
                     type: 'POST',
-                    data: formData,
+                    data: {
+                        username: username,
+                        password: encodedPassword, // Kirim yang sudah di-encode
+                        remember_me: remember,
+                        _token: token
+                    },
                     success: function(response) {
-                        Swal.close();
+                        Swal.close(); // Tutup loading Swal
+                        
                         if (response.status == 'success') {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil!',
                                 text: response.pesan,
+                                showConfirmButton: false,
+                                timer: 1500
                             }).then(() => {
-                                // [FIX 3] Arahkan ke URL dinamis dari Controller
-                                document.location = response.redirect_url;
+                                window.location.href = response.redirect_url;
                             });
-                        } else if (response.status == '2fa_required' && response[
-                                '2fa_required']) {
+                        } else if (response.status == '2fa_required') {
                             window.location.href = response.redirect_url;
                         } else {
+                            // Gagal Login (Password Salah / Akun Mati)
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal Masuk!',
                                 text: response.pesan
                             });
+                            // Balikin tombol biar bisa coba lagi
+                            btn.prop('disabled', false).html(originalText);
                         }
                     },
-                    error: function(xhr, status, error) {
-                        let errors = xhr.responseJSON.errors;
-                        let firstErrorMessage = '';
-                        for (let key in errors) {
-                            if (errors.hasOwnProperty(key)) {
-                                firstErrorMessage = errors[key][0];
+                    error: function(xhr) {
+                        Swal.close();
+                        // Balikin tombol
+                        btn.prop('disabled', false).html(originalText);
+
+                        let errorMsg = "Terjadi kesalahan sistem.";
+                        
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            // Error Validasi Laravel
+                            let errors = xhr.responseJSON.errors;
+                            for (let key in errors) {
+                                errorMsg = errors[key][0];
                                 break;
                             }
+                        } else if (xhr.status === 403) {
+                            errorMsg = "Akses Ditolak (403). Coba refresh atau hubungi admin.";
                         }
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Gagal Masuk!',
-                            text: firstErrorMessage,
-                            showConfirmButton: true,
+                            text: errorMsg,
                         });
                     }
                 });
             });
-        });
 
-        // Toggle Password Visibility
-        document.addEventListener('DOMContentLoaded', function() {
-            const passwordInput = document.getElementById('password');
-            const toggleButton = document.querySelector('.toggle-password');
-            const icon = document.getElementById('passwordIcon');
-
-            if (!passwordInput || !toggleButton) return;
-
-            toggleButton.addEventListener('click', function() {
-                const isHidden = passwordInput.type === 'password';
-
-                passwordInput.type = isHidden ? 'text' : 'password';
-                icon.classList.toggle('bi-eye');
-                icon.classList.toggle('bi-eye-slash');
+            // Toggle Password Visibility
+            // Pastikan HTML tombol matanya: <button type="button" class="password-toggle" ...>
+            $(document).on('click', '.password-toggle', function() {
+                var input = $(this).siblings('input');
+                var icon = $(this).find('i');
+                
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text');
+                    icon.removeClass('bi-eye-slash').addClass('bi-eye');
+                } else {
+                    input.attr('type', 'password');
+                    icon.removeClass('bi-eye').addClass('bi-eye-slash');
+                }
             });
         });
     </script>

@@ -143,33 +143,32 @@
                         <!-- [BARU] AREA PETA -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Titik Lokasi</label>
-
-                            <!-- Wrapper Baru -->
+                            
+                            <!-- [FIX] Wrapper Baru -->
                             <div class="map-wrapper">
-                                <!-- Overlay Loading -->
+                                <!-- 1. Overlay Loading (Id harus: loading-map-new) -->
                                 <div id="loading-map-new" class="map-loading">
                                     <div class="spinner-border mb-2" role="status"></div>
                                     <span>Mencari titik...</span>
                                 </div>
 
-                                <!-- Peta Asli -->
+                                <!-- 2. Peta (Id harus: map-checkout) -->
                                 <div id="map-checkout" class="map-canvas"></div>
                             </div>
-
-                            <div class="form-text small text-muted">
-                                <i class="bi bi-geo-alt-fill text-danger"></i> Geser pin untuk isi alamat otomatis.
-                            </div>
+                            
+                            <div class="form-text small text-muted">...</div>
                             <input type="hidden" id="lat_new" name="latitude">
                             <input type="hidden" id="lng_new" name="longitude">
                         </div>
 
                         <!-- Form Alamat -->
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Alamat Lengkap <span id="status-text-new"
-                                    class="text-warning small fst-italic ms-2" style="display:none;">(Memuat
-                                    alamat...)</span></label>
-                            <textarea class="form-control" name="address_line" id="address_input_new" rows="3" required
-                                placeholder="Cari di peta atau ketik manual..."></textarea>
+                            <label class="form-label fw-bold">
+                                Alamat Lengkap
+                                <!-- [BARU] Teks Loading Kecil -->
+                                <span id="status-text-new" class="text-warning small fst-italic ms-2" style="display:none;">(Memuat...)</span>
+                            </label>
+                            <textarea class="form-control" name="address_line" id="address_input_new" ...></textarea>
                         </div>
 
                         <div class="row mb-3">
@@ -232,14 +231,16 @@
                         <!-- [BARU] AREA PETA EDIT -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Perbarui Titik Lokasi</label>
-
+                            
+                            <!-- [FIX] Wrapper Baru -->
                             <div class="map-wrapper">
-                                <!-- Overlay Loading -->
+                                <!-- 1. Overlay Loading (Id harus: loading-map-edit) -->
                                 <div id="loading-map-edit" class="map-loading">
                                     <div class="spinner-border mb-2" role="status"></div>
                                     <span>Mencari titik...</span>
                                 </div>
-
+                                
+                                <!-- 2. Peta (Id harus: map-edit) -->
                                 <div id="map-edit" class="map-canvas"></div>
                             </div>
 
@@ -319,140 +320,168 @@
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
         <script>
+            // --- Helper Functions ---
             function confirmDelete(id) {
                 if (confirm('Apakah Anda yakin ingin menghapus alamat ini?')) {
-                    // [FIX] Cari form-nya
-                    const form = document.getElementById('delete-form-' + id);
-                    
-                    // [FIX] Buat loading manual (karena ini submit via JS, global script mungkin ga nangkep)
-                    // Atau biarkan global script nangkep event submit form ini
-                    if (form) {
-                        form.submit();
-                    }
+                    document.getElementById('delete-form-' + id).submit();
                 }
-                // Kalau Cancel, tidak ada code yg jalan, jadi gak loading.
             }
 
             document.addEventListener('DOMContentLoaded', function() {
-                console.log("Javascript Checkout + Smart Maps Ready!");
+                console.log("Javascript Checkout + GeoFencing Ready!");
 
-                const DEFAULT_LAT = -6.9932; // Semarang
+                // ==========================================
+                // KONFIGURASI GLOBAL & BATAS WILAYAH
+                // ==========================================
+                const DEFAULT_LAT = -6.9932; // Simpang Lima Semarang
                 const DEFAULT_LNG = 110.4203;
 
-                // Fungsi Debounce (Rem Otomatis untuk API)
-                function debounce(func, timeout = 1000) {
+                // [BARU] Batas Wilayah (Semarang & Sekitarnya)
+                const MAP_BOUNDS = [
+                    [-7.20, 110.25], // Pojok Kiri Bawah
+                    [-6.90, 110.60]  // Pojok Kanan Atas
+                ];
+
+                // [BARU] Fungsi Cek Validasi Lokasi
+                function isLocationValid(lat, lng) {
+                    const minLat = MAP_BOUNDS[0][0];
+                    const minLng = MAP_BOUNDS[0][1];
+                    const maxLat = MAP_BOUNDS[1][0];
+                    const maxLng = MAP_BOUNDS[1][1];
+
+                    const isValid = (lat >= minLat && lat <= maxLat) && (lng >= minLng && lng <= maxLng);
+                    
+                    if (!isValid) {
+                        alert("Maaf, layanan PastiFIX saat ini hanya tersedia di area Semarang dan sekitarnya.");
+                    }
+                    return isValid;
+                }
+
+                // Fungsi Debounce
+                function debounce(func, timeout = 1000){
                     let timer;
                     return (...args) => {
                         clearTimeout(timer);
-                        timer = setTimeout(() => {
-                            func.apply(this, args);
-                        }, timeout);
+                        timer = setTimeout(() => { func.apply(this, args); }, timeout);
                     };
                 }
 
                 // ==========================================
                 // FUNGSI UMUM: SETUP MAP EVENTS + LOADING
                 // ==========================================
-                function setupMapEvents(map, marker, latInputId, lngInputId, addrInputId, zipInputId, loadingMapId,
-                    statusTextId) {
-                    const latInput = document.getElementById(latInputId);
-                    const lngInput = document.getElementById(lngInputId);
-                    const addrInput = document.getElementById(addrInputId);
-                    const zipInput = document.getElementById(zipInputId);
-                    const loadingMap = document.getElementById(loadingMapId); // Overlay Loading Peta
-                    const statusText = document.getElementById(statusTextId); // Teks Loading Alamat
+                // Update parameter untuk menerima ID Loading & Status Text
+        function setupMapEvents(map, marker, latInputId, lngInputId, addrInputId, zipInputId, loadingMapId, statusTextId) {
+            const latInput = document.getElementById(latInputId);
+            const lngInput = document.getElementById(lngInputId);
+            const addrInput = document.getElementById(addrInputId);
+            const zipInput = document.getElementById(zipInputId);
+            
+            // [BARU] Ambil elemen loading
+            const loadingMap = document.getElementById(loadingMapId); 
+            const statusText = document.getElementById(statusTextId); 
 
-                    // Helper: Nyalakan/Matikan Loading Input
-                    function toggleInputLoading(isLoading) {
-                        if (isLoading) {
-                            addrInput.classList.add('input-loading');
-                            addrInput.setAttribute('readonly', true); // Cegah ketik saat loading
-                            if (statusText) statusText.style.display = 'inline';
-                        } else {
-                            addrInput.classList.remove('input-loading');
-                            addrInput.removeAttribute('readonly');
-                            if (statusText) statusText.style.display = 'none';
+            // [BARU] Helper: Matikan/Hidupkan Input
+            function toggleInputLoading(isLoading) {
+                if (!addrInput) return;
+                if (isLoading) {
+                    addrInput.classList.add('input-loading'); // Pastikan ada CSS .input-loading { cursor: wait; background: #eee; }
+                    addrInput.setAttribute('readonly', true); // KUNCI: Biar gabisa diketik pas loading
+                    if(statusText) statusText.style.display = 'inline';
+                } else {
+                    addrInput.classList.remove('input-loading');
+                    addrInput.removeAttribute('readonly'); // Buka kunci
+                    if(statusText) statusText.style.display = 'none';
+                }
+            }
+
+            // [BARU] Helper: Matikan/Hidupkan Peta
+            function toggleMapLoading(isLoading) {
+                if(loadingMap) loadingMap.style.display = isLoading ? 'flex' : 'none';
+            }
+
+            function updateInputs(lat, lng) {
+                if(latInput) latInput.value = lat;
+                if(lngInput) lngInput.value = lng;
+            }
+
+            // A. Reverse (Pin -> Teks)
+            const doReverseGeocode = debounce((lat, lng) => {
+                fetch(`/geocode/reverse?lat=${lat}&lon=${lng}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.display_name && addrInput) addrInput.value = data.display_name;
+                        if (data && data.address && data.address.postcode && zipInput) zipInput.value = data.address.postcode;
+                    })
+                    .catch(err => console.warn("Error:", err))
+                    .finally(() => {
+                        // [FIX] Matikan loading setelah selesai
+                        toggleInputLoading(false);
+                    });
+            }, 1000);
+
+            // B. Forward (Teks -> Pin)
+            const doForwardGeocode = debounce((query) => {
+                fetch(`/geocode/search?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const lat = parseFloat(data[0].lat);
+                            const lon = parseFloat(data[0].lon);
+                            
+                            // Cek validasi area di sini jika perlu
+                            if (isLocationValid(lat, lon)) {
+                                map.setView([lat, lon], 16);
+                                marker.setLatLng([lat, lon]);
+                                updateInputs(lat, lon);
+                            }
                         }
-                    }
-
-                    // Helper: Nyalakan/Matikan Loading Peta
-                    function toggleMapLoading(isLoading) {
-                        if (loadingMap) loadingMap.style.display = isLoading ? 'flex' : 'none';
-                    }
-
-                    function updateInputs(lat, lng) {
-                        if (latInput) latInput.value = lat;
-                        if (lngInput) lngInput.value = lng;
-                    }
-
-                    // A. Reverse Geocode (Pin -> Teks)
-                    const doReverseGeocode = debounce((lat, lng) => {
-                        // Fetch jalan -> Matikan loading input setelah selesai
-                        fetch(`/geocode/reverse?lat=${lat}&lon=${lng}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data && data.display_name && addrInput) {
-                                    addrInput.value = data.display_name;
-                                }
-                                if (data && data.address && data.address.postcode && zipInput) {
-                                    zipInput.value = data.address.postcode;
-                                    zipInput.style.backgroundColor = "#fff9db";
-                                    setTimeout(() => zipInput.style.backgroundColor = "", 1500);
-                                }
-                            })
-                            .catch(err => console.warn("Reverse Geo Error:", err))
-                            .finally(() => {
-                                toggleInputLoading(false); // [STOP LOADING]
-                            });
-                    }, 1000);
-
-                    // B. Forward Geocode (Teks -> Pin)
-                    const doForwardGeocode = debounce((query) => {
-                        // Fetch jalan -> Matikan loading peta setelah selesai
-                        fetch(`/geocode/search?q=${encodeURIComponent(query)}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data && data.length > 0) {
-                                    const lat = parseFloat(data[0].lat);
-                                    const lon = parseFloat(data[0].lon);
-                                    map.setView([lat, lon], 16);
-                                    marker.setLatLng([lat, lon]);
-                                    updateInputs(lat, lon);
-                                }
-                            })
-                            .catch(err => console.warn("Forward Geo Error:", err))
-                            .finally(() => {
-                                toggleMapLoading(false); // [STOP LOADING]
-                            });
-                    }, 1500);
+                    })
+                    .catch(err => console.warn("Error:", err))
+                    .finally(() => {
+                        // [FIX] Matikan loading peta setelah selesai
+                        toggleMapLoading(false);
+                    });
+            }, 1500);
 
                     // --- EVENT LISTENERS ---
 
-                    // 1. Marker Digeser
-                    marker.on('dragstart', function() {
-                        toggleInputLoading(true); // [START LOADING] Saat mulai geser
+                    marker.on('dragstart', function() { toggleInputLoading(true); });
+                    
+                    // 1. Saat Marker Mulai Digeser -> NYALAKAN LOADING INPUT
+                    marker.on('dragstart', function() { 
+                        toggleInputLoading(true); 
                     });
-
-                    marker.on('dragend', function(e) {
+                    
+                    marker.on('dragend', function (e) {
                         const pos = marker.getLatLng();
-                        updateInputs(pos.lat, pos.lng);
-                        doReverseGeocode(pos.lat, pos.lng); // Debounce akan jalan, loading mati di finally
+                        if (isLocationValid(pos.lat, pos.lng)) {
+                            updateInputs(pos.lat, pos.lng);
+                            doReverseGeocode(pos.lat, pos.lng); // Debounce jalan, loading mati di finally
+                        } else {
+                            // Reset ke posisi sebelumnya (yg tersimpan di hidden input)
+                            const oldLat = parseFloat(latInput.value) || DEFAULT_LAT;
+                            const oldLng = parseFloat(lngInput.value) || DEFAULT_LNG;
+                            marker.setLatLng([oldLat, oldLng]);
+                            map.panTo([oldLat, oldLng]);
+                            toggleInputLoading(false);
+                        }
                     });
 
-                    // 2. Peta Diklik
+                    // [VALIDASI] Saat Peta Diklik
                     map.on('click', function(e) {
-                        toggleInputLoading(true); // [START LOADING]
-                        marker.setLatLng(e.latlng);
-                        updateInputs(e.latlng.lat, e.latlng.lng);
-                        doReverseGeocode(e.latlng.lat, e.latlng.lng);
+                        if (isLocationValid(e.latlng.lat, e.latlng.lng)) {
+                            toggleInputLoading(true);
+                            marker.setLatLng(e.latlng);
+                            updateInputs(e.latlng.lat, e.latlng.lng);
+                            doReverseGeocode(e.latlng.lat, e.latlng.lng);
+                        }
                     });
 
-                    // 3. Ketik Alamat
                     if (addrInput) {
-                        addrInput.addEventListener('input', function() {
+                        addrInput.addEventListener('input', function () {
                             const query = this.value;
                             if (query.length > 5) {
-                                toggleMapLoading(true); // [START LOADING] Saat ngetik
+                                toggleMapLoading(true);
                                 doForwardGeocode(query);
                             }
                         });
@@ -469,7 +498,11 @@
                     if (!document.getElementById('map-checkout')) return;
                     if (mapNew !== null) return;
 
-                    mapNew = L.map('map-checkout').setView([DEFAULT_LAT, DEFAULT_LNG], 15);
+                    mapNew = L.map('map-checkout', {
+                        // [BARU] Batasi area geser peta
+                        maxBounds: MAP_BOUNDS,
+                        maxBoundsViscosity: 1.0
+                    }).setView([DEFAULT_LAT, DEFAULT_LNG], 15);
 
                     const tileLayer = L.tileLayer(
                         'https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
@@ -485,14 +518,9 @@
                     }).addTo(mapNew);
 
                     setupMapEvents(
-                        mapNew,
-                        markerNew,
-                        'lat_new',
-                        'lng_new',
-                        'address_input_new',
-                        'postal_code_new',
-                        'loading-map-new',
-                        'status-text-new'
+                        mapNew, markerNew, 
+                        'lat_new', 'lng_new', 'address_input_new', 'postal_code_new',
+                        'loading-map-new', 'status-text-new' // <-- Tambahkan ID ini
                     );
 
                     // SET INPUT DEFAULT
@@ -547,10 +575,10 @@
                     // === INIT MAP SEKALI SAJA ===
                     if (mapEdit === null) {
                         mapEdit = L.map('map-edit', {
-                            center: [startLat, startLng],
-                            zoom: 15,
-                            zoomControl: true
-                        });
+                            // [BARU] Batasi area geser peta
+                            maxBounds: MAP_BOUNDS,
+                            maxBoundsViscosity: 1.0
+                        }).setView([startLat, startLng], 15);
 
                         const tileLayer = L.tileLayer(
                             'https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
@@ -564,14 +592,9 @@
                         }).addTo(mapEdit);
 
                         setupMapEvents(
-                            mapEdit,
-                            markerEdit,
-                            'lat_edit',
-                            'lng_edit',
-                            'edit_address_line',
-                            'edit_postal_code',
-                            'loading-map-edit',
-                            'status-text-edit'
+                            mapEdit, markerEdit, 
+                            'lat_edit', 'lng_edit', 'edit_address_line', 'edit_postal_code',
+                            'loading-map-edit', 'status-text-edit' // <-- Tambahkan ID ini
                         );
 
                         // 🔑 MATIKAN LOADING SAAT TILE BENAR-BENAR SIAP
@@ -599,28 +622,27 @@
 
                     // === AUTO FIX JIKA KOORDINAT KOSONG TAPI ADA ALAMAT ===
                     if (!isValidCoord && addressText && addressText.length > 5) {
-                        fetch(`/geocode/search?q=${encodeURIComponent(addressText)}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data && data.length > 0) {
-                                    const newLat = parseFloat(data[0].lat);
-                                    const newLng = parseFloat(data[0].lon);
-
-                                    if (!isNaN(newLat) && !isNaN(newLng)) {
+                    // Auto-fix coordinate (Forward Geocode)
+                    fetch(`/geocode/search?q=${encodeURIComponent(addressText)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data && data.length > 0) {
+                                const newLat = parseFloat(data[0].lat);
+                                const newLng = parseFloat(data[0].lon);
+                                
+                                // [BARU] Validasi juga di sini
+                                if(isLocationValid(newLat, newLng)) {
+                                    if(mapEdit && markerEdit) {
                                         mapEdit.setView([newLat, newLng], 16);
                                         markerEdit.setLatLng([newLat, newLng]);
-
-                                        if (latInput) latInput.value = newLat;
-                                        if (lngInput) lngInput.value = newLng;
+                                        if(elLatEdit) elLatEdit.value = newLat;
+                                        if(elLngEdit) elLngEdit.value = newLng;
                                     }
                                 }
-                            })
-                            .catch(err => console.warn('Auto geocode edit failed:', err))
-                            .finally(() => {
-                                if (loadingEl) loadingEl.style.display = 'none';
-                            });
-                    }
+                            }
+                        });
                 }
+            }
 
 
                 // ==========================================

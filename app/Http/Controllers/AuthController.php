@@ -58,12 +58,14 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required',
             'password' => 'required',
-            // 'g-recaptcha-response' => 'required' // Uncomment jika captcha sudah aktif
         ], [
             'username.required' => 'Username harus diisi',
             'password.required' => 'Password harus diisi',
-            // 'g-recaptcha-response.required' => 'Silahkan centang captcha'
         ]);
+
+        // [FIX 1] DECODE PASSWORD (Kebalikan dari Encode di JS)
+        // Kita terima string acak, kita balikin jadi password asli
+        $realPassword = base64_decode($request->password);
 
         $user = User::where('username', $request->username)->first();
         if (!$user) {
@@ -71,20 +73,22 @@ class AuthController extends Controller
         }
 
         if ($user->status != 1) {
-            // insert_log('Username ' . $request->username . ' mencoba masuk sistem, akun tidak aktif');
             return response()->json(['status' => false, 'pesan' => 'Akun Tidak Aktif']);
         }
 
-        // [FIX] Cara paling aman mendeteksi checkbox di Laravel
-        // Ini akan bernilai TRUE jika dicentang (value="1"), dan FALSE jika tidak.
-        $remember = $request->boolean('remember_me'); 
+        // [FIX 2] REMEMBER ME
+        $remember = $request->boolean('remember_me');
         
-        $credentials = ['username' => $request->username, 'password' => $request->password, 'status' => 1];
+        // Gunakan password asli yang sudah di-decode
+        $credentials = [
+            'username' => $request->username, 
+            'password' => $realPassword, // <-- PENTING
+            'status' => 1
+        ];
 
-        // [FIX] Masukkan variabel $remember ke parameter kedua Auth::attempt
         if (Auth::attempt($credentials, $remember)) {
             
-            // --- Logika 2FA (Biarkan Apa Adanya) ---
+            // --- Logika 2FA ---
             if ($user->is_twofa_enabled && $this->isUserLoggedInToday($user)) {
                 $user->twofa_code = Str::random(6);
                 $user->twofa_expires_at = now()->addMinutes(10);
@@ -93,35 +97,28 @@ class AuthController extends Controller
                 Auth::logout();
                 return response()->json([
                     'status' => '2fa_required',
-                    'pesan' => '2FA is required. A code has been sent to your email.',
-                    '2fa_required' => true,
+                    'pesan' => '2FA is required.',
                     'redirect_url' => route('2fa.verify')
                 ]);
             }
-            // ----------------------------------------
 
             $user->last_login_ip = $request->ip();
             $user->last_login_at = now();
             $user->save();
 
-            // insert_log('Username ' . $request->username . ' berhasil masuk sistem ');
-
-            // Logika Redirect Dinamis
-            $redirect_url = '/dashboard'; // Default Admin
+            // Logika Redirect
+            $redirect_url = '/dashboard'; 
             if ($user->role && $user->role->code == 'USR') {
-                $redirect_url = route('profil'); // Redirect User
+                $redirect_url = route('profil');
             }
-
-            $pesanSapaan = "Selamat datang di PastiFIX, " . $user->name . "!";
 
             return response()->json([
                 'status' => 'success',
-                'pesan' => $pesanSapaan,
+                'pesan' => "Selamat datang di PastiFIX, " . $user->name . "!",
                 'redirect_url' => $redirect_url
             ]);
         } else {
-            // insert_log('Username ' . $request->username . ' mencoba masuk sistem, password salah');
-            return response()->json(['status' => false, 'pesan' => 'Password Salah']);
+            return response()->json(['status' => false, 'pesan' => 'Username atau Password Salah']);
         }
     }
 

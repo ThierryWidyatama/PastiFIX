@@ -380,20 +380,39 @@
 
     <script>
         // =====================================================
-        // KONFIGURASI GLOBAL (Satu kali deklarasi aja biar ga error)
+        // KONFIGURASI GLOBAL & BATAS WILAYAH (GEOFENCING)
         // =====================================================
-        const DEFAULT_LAT = -6.9932; // Koordinat Default (Semarang/Pati)
+        const DEFAULT_LAT = -6.9932; 
         const DEFAULT_LNG = 110.4203;
 
-        // --- HELPER: DEBOUNCE (REM OTOMATIS) ---
-        // Fungsi Debounce (Jeda waktu biar ga spam server)
-        function debounce(func, timeout = 1000) {
+        // [BARU] Batas Wilayah (Semarang & Sekitarnya)
+        // Format: [Batas Selatan, Batas Barat], [Batas Utara, Batas Timur]
+        const MAP_BOUNDS = [
+            [-7.20, 110.25], // Pojok Kiri Bawah (Sekitar Ungaran/Kendal)
+            [-6.90, 110.60]  // Pojok Kanan Atas (Laut Jawa/Demak)
+        ];
+
+        // [BARU] Fungsi Cek Apakah Lokasi Valid (Masuk Area)
+        function isLocationValid(lat, lng) {
+            const minLat = MAP_BOUNDS[0][0];
+            const minLng = MAP_BOUNDS[0][1];
+            const maxLat = MAP_BOUNDS[1][0];
+            const maxLng = MAP_BOUNDS[1][1];
+
+            const isValid = (lat >= minLat && lat <= maxLat) && (lng >= minLng && lng <= maxLng);
+            
+            if (!isValid) {
+                alert("Maaf, untuk saat ini PastiFIX hanya melayani area Semarang dan sekitarnya.");
+            }
+            return isValid;
+        }
+
+        // Helper Debounce
+        function debounce(func, timeout = 1000){
             let timer;
             return (...args) => {
                 clearTimeout(timer);
-                timer = setTimeout(() => {
-                    func.apply(this, args);
-                }, timeout);
+                timer = setTimeout(() => { func.apply(this, args); }, timeout);
             };
         }
 
@@ -511,39 +530,57 @@
                         if (data && data.length > 0) {
                             const lat = parseFloat(data[0].lat);
                             const lon = parseFloat(data[0].lon);
-                            map.setView([lat, lon], 16);
-                            marker.setLatLng([lat, lon]);
-                            updateInputs(lat, lon);
+                            
+                            // [BARU] Cek Validasi Area Sebelum Pindah
+                            if (isLocationValid(lat, lon)) {
+                                map.setView([lat, lon], 16);
+                                marker.setLatLng([lat, lon]);
+                                updateInputs(lat, lon);
+                            } 
+                            // Jika luar area, peta tidak pindah & input tidak update
                         }
                     })
                     .catch(err => console.warn("Geo Error:", err))
-                    .finally(() => toggleMapLoading(false)); // STOP LOADING
+                    .finally(() => toggleMapLoading(false));
             }, 1500);
 
-            // Listeners
-            marker.on('dragstart', function() {
-                toggleInputLoading(true);
-            });
-            marker.on('dragend', function(e) {
+            // --- LISTENERS ---
+
+            marker.on('dragstart', function() { toggleInputLoading(true); });
+            
+            // [BARU] Validasi saat selesai geser
+            marker.on('dragend', function (e) {
                 const pos = marker.getLatLng();
-                updateInputs(pos.lat, pos.lng);
-                doReverseGeocode(pos.lat, pos.lng);
+                
+                if (isLocationValid(pos.lat, pos.lng)) {
+                    // Jika dalam area: Update
+                    updateInputs(pos.lat, pos.lng);
+                    doReverseGeocode(pos.lat, pos.lng);
+                } else {
+                    // Jika luar area: Kembalikan marker ke posisi sebelumnya (yg tersimpan di input)
+                    const oldLat = parseFloat(latInput.value) || DEFAULT_LAT;
+                    const oldLng = parseFloat(lngInput.value) || DEFAULT_LNG;
+                    marker.setLatLng([oldLat, oldLng]);
+                    map.panTo([oldLat, oldLng]);
+                    toggleInputLoading(false); // Stop loading
+                }
             });
 
+            // [BARU] Validasi saat klik peta
             map.on('click', function(e) {
-                if (marker.dragging.enabled()) { // Cek if draggable (mode edit)
-                    toggleInputLoading(true);
-                    marker.setLatLng(e.latlng);
-                    updateInputs(e.latlng.lat, e.latlng.lng);
-                    doReverseGeocode(e.latlng.lat, e.latlng.lng);
+                if (marker.dragging.enabled()) { 
+                    if (isLocationValid(e.latlng.lat, e.latlng.lng)) {
+                        toggleInputLoading(true);
+                        marker.setLatLng(e.latlng);
+                        updateInputs(e.latlng.lat, e.latlng.lng);
+                        doReverseGeocode(e.latlng.lat, e.latlng.lng);
+                    }
                 }
             });
 
             if (addrInput) {
-                addrInput.addEventListener('input', function() {
-                    // Cek disabled (untuk main map)
-                    if (this.disabled) return;
-
+                addrInput.addEventListener('input', function () {
+                    if(this.disabled) return;
                     const query = this.value;
                     if (query.length > 5) {
                         toggleMapLoading(true);
@@ -668,11 +705,10 @@
             mainMap = L.map("map-profile-main", {
                 center: [lat, lng],
                 zoom: 16,
-                dragging: false,
-                touchZoom: false,
-                scrollWheelZoom: false,
-                doubleClickZoom: false,
-                zoomControl: false
+                dragging: false, touchZoom: false, scrollWheelZoom: false, doubleClickZoom: false, zoomControl: false,
+                // [BARU] Max Bounds (Visual Limit) - User gabisa geser peta jauh2
+                maxBounds: MAP_BOUNDS,
+                maxBoundsViscosity: 1.0
             });
 
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -782,7 +818,12 @@
             if (!document.getElementById('map-container')) return;
             if (mapModal !== null) return;
 
-            mapModal = L.map('map-container').setView([DEFAULT_LAT, DEFAULT_LNG], 15);
+            mapModal = L.map('map-container', {
+                // [BARU] Max Bounds untuk Modal juga
+                maxBounds: MAP_BOUNDS,
+                maxBoundsViscosity: 1.0
+            }).setView([DEFAULT_LAT, DEFAULT_LNG], 15);
+            
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '© OSM'
@@ -852,47 +893,51 @@
         }
 
         // --- FUNGSI BARU: Pencarian Alamat pakai PHOTON ---
-        let typingTimerMain;
-        if (inputAddressMain) {
-            inputAddressMain.addEventListener('input', function() {
-                if (this.disabled) return;
+        // --- FUNGSI BARU: Pencarian Alamat via Photon (Tanpa Proxy) ---
+            let typingTimerMain;
+            
+            if (inputAddressMain) {
+                inputAddressMain.addEventListener('input', function() {
+                    // Cek apakah sedang mode edit (jika disabled, jangan jalan)
+                    if (this.disabled) return;
 
-                clearTimeout(typingTimerMain);
-                const query = this.value;
+                    clearTimeout(typingTimerMain);
+                    const query = this.value;
 
-                // Tunggu user selesai ngetik 1 detik
-                if (query.length > 4) {
-                    typingTimerMain = setTimeout(() => {
-                        console.log("Mencari di Photon:", query);
+                    // Tunggu user selesai ngetik 1 detik (Debounce)
+                    if (query.length > 4) {
+                        typingTimerMain = setTimeout(() => {
+                            console.log("Mencari di Photon:", query);
 
-                        // Cari lokasi via Photon
-                        fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=1`)
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data && data.features && data.features.length > 0) {
-                                    const coords = data.features[0].geometry.coordinates;
-                                    const lat = coords[1]; // Photon urutannya [lon, lat]
-                                    const lon = coords[0];
+                            // Fetch ke API Photon (Gratis & Bebas CORS)
+                            fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=1`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data && data.features && data.features.length > 0) {
+                                        // Photon mengembalikan koordinat dalam format [LON, LAT]
+                                        const coords = data.features[0].geometry.coordinates;
+                                        const lat = coords[1]; 
+                                        const lon = coords[0];
 
-                                    // Pindahkan Peta & Marker
-                                    mainMap.setView([lat, lon], 16);
-                                    mainMarker.setLatLng([lat, lon]);
+                                        // Pindahkan Peta & Marker
+                                        mainMap.setView([lat, lon], 16);
+                                        mainMarker.setLatLng([lat, lon]);
 
-                                    // Update hidden input
-                                    inputLatMain.value = lat;
-                                    inputLngMain.value = lon;
-
-                                    // Update kode pos jika ada
-                                    if (data.features[0].properties.postcode && inputPostcodeMain) {
-                                        inputPostcodeMain.value = data.features[0].properties.postcode;
+                                        // Update hidden input agar tersimpan
+                                        inputLatMain.value = lat;
+                                        inputLngMain.value = lon;
+                                        
+                                        // Optional: Update Kode Pos jika ada datanya
+                                        if (data.features[0].properties.postcode && inputPostcodeMain) {
+                                            inputPostcodeMain.value = data.features[0].properties.postcode;
+                                        }
                                     }
-                                }
-                            })
-                            .catch(err => console.error("Gagal cari lokasi:", err));
-                    }, 1000);
-                }
-            });
-        }
+                                })
+                                .catch(err => console.error("Gagal cari lokasi:", err));
+                        }, 1000);
+                    }
+                });
+            }
 
         /* FIX MODAL KELOLA + TAMBAH ALAMAT */
         document.addEventListener('DOMContentLoaded', function() {
