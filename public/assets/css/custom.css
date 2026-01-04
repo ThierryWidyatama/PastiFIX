@@ -448,6 +448,10 @@ body {
     margin-bottom: 30px;
 }
 
+.review-market-filter i {
+    color: #FEC81A;
+}
+
 .review-market-filter a {
     padding: 8px 16px;
     border-radius: 8px;
@@ -456,6 +460,12 @@ body {
     font-weight: 600;
     color: #333;
     white-space: nowrap;
+    text-decoration: none;
+}
+
+.review-market-filter a:hover,
+.review-market-filter a:focus {
+    text-decoration: none;
 }
 
 .review-market-filter a.active {
