@@ -69,7 +69,7 @@
 
                         </div>
                         <button type="button" id="editButton" class="btn btn-brand mt-4">Ganti</button>
-                        <button type="submit" id="saveButton" class="btn btn-success mt-4 d-none">Simpan Perubahan</button>
+                        <button type="button" id="saveButton" class="btn btn-success mt-4 d-none">Simpan Perubahan</button>
                     </div>
                 </div>
 
@@ -569,6 +569,78 @@
                 document.getElementById('delete-form-profile-' + id).submit();
             }
             // Kalau pilih Cancel, kode di atas gak jalan, jadi tombol TETAP AMAN (gak loading).
+        }
+        
+        const btnSave = document.getElementById("saveButton");
+        
+        if (btnSave) {
+            btnSave.addEventListener("click", function(e) {
+                e.preventDefault(); // Cegah submit bawaan
+
+                // 1. Ubah tombol jadi loading
+                const originalText = btnSave.innerHTML;
+                btnSave.disabled = true;
+                btnSave.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan...';
+
+                // 2. Siapkan FormData (Wadah pengiriman)
+                const form = document.getElementById('profileForm');
+                const formData = new FormData(form);
+
+                // 3. Fungsi untuk mengirim data
+                const sendData = () => {
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            // Jangan set Content-Type, biarkan browser yg atur boundary-nya
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (response.redirected) {
+                            window.location.href = response.url; // Ikuti redirect (misal ke profil sukses)
+                        } else {
+                            return response.json();
+                        }
+                    })
+                    .then(data => {
+                        // Handle jika ada error validasi JSON
+                        if (data && data.errors) {
+                            alert('Gagal: ' + JSON.stringify(data.errors));
+                            btnSave.disabled = false;
+                            btnSave.innerHTML = originalText;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Jika bukan redirect, berarti error jaringan/server
+                        // alert('Terjadi kesalahan saat menyimpan.');
+                        btnSave.disabled = false;
+                        btnSave.innerHTML = originalText;
+                    });
+                };
+
+                // 4. Cek apakah ada gambar yang di-crop?
+                if (cropper) {
+                    // Konversi Canvas ke BLOB (File Beneran)
+                    cropper.getCroppedCanvas({
+                        width: 500,
+                        height: 500
+                    }).toBlob((blob) => {
+                        // Timpa input 'avatar' dengan file blob ini
+                        formData.set('avatar', blob, 'profile.jpg');
+                        
+                        // Hapus data base64 biar gak dobel dan gak kena firewall
+                        formData.delete('cropped_avatar_data');
+                        
+                        // Kirim!
+                        sendData();
+                    }, 'image/jpeg', 0.9); // Kualitas 90%
+                } else {
+                    // Kalau gak ada crop (cuma edit nama/alamat), langsung kirim
+                    sendData();
+                }
+            });
         }
 
 

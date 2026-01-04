@@ -1,5 +1,6 @@
 The email has already been taken. di bagian email notifikasi kontak dashboard user, harusnya email sama gapapa
 kasih template text di admin untuk konfirmasi progress
-
+Username hosting: pastifixdev
+Password hosting: 0Vl$HoE!c@,a
 Error bagus:
 logo mata password di login & register tidak ada
