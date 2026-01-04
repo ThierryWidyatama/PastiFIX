@@ -34,21 +34,39 @@
                         <hr class="my-4">
                         <div class="text-start">
                             <div class="row mb-3 align-items-center">
-                                <div class="col-sm-4"><label for="name" class="profile-info-label">Nama Lengkap:</label>
+                                <div class="col-sm-4">
+                                    <label for="name" class="profile-info-label">Nama Lengkap:</label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control form-control-static" id="name"
-                                        name="name" value="{{ $user->name }}" disabled>
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-static"
+                                        id="name"
+                                        name="name"
+                                        value="{{ $user->name }}"
+                                        placeholder="Nama lengkap belum diisi"
+                                        disabled
+                                    >
                                 </div>
                             </div>
+
                             <div class="row mb-3 align-items-center">
-                                <div class="col-sm-4"><label for="phone_number" class="profile-info-label">No. Hp:</label>
+                                <div class="col-sm-4">
+                                    <label for="phone_number" class="profile-info-label">No. Hp:</label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control form-control-static" id="phone_number"
-                                        name="phone_number" value="{{ $user->phone_number ?? '' }}" disabled>
+                                    <input
+                                        type="text"
+                                        class="form-control form-control-static"
+                                        id="phone_number"
+                                        name="phone_number"
+                                        value="{{ $user->phone_number ?? '' }}"
+                                        placeholder="Nomor handphone belum ditambahkan"
+                                        disabled
+                                    >
                                 </div>
                             </div>
+
                         </div>
                         <button type="button" id="editButton" class="btn btn-brand mt-4">Ganti</button>
                         <button type="submit" id="saveButton" class="btn btn-success mt-4 d-none">Simpan Perubahan</button>

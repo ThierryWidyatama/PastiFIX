@@ -152,7 +152,7 @@ class AuthController extends Controller
                 'confirmed',
                 Password::min(8)
                     // ->mixedCase() // Wajib huruf besar & kecil
-                    // ->numbers()   // Wajib angka
+                    ->numbers()   // Wajib angka
                     // ->symbols()   // Wajib simbol
             ],
         ]);
