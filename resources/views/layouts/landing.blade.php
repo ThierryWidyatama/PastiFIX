@@ -141,7 +141,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}">Beranda</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#about">Tentang Kami</a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" hhref="{{ route('services.index') }}">Layanan</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ route('services.index') }}">Layanan</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('home') }}#why-us">Mengapa Kami</a>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="{{ route('reviews.index') }}">Testimoni</a>

@@ -20,7 +20,8 @@ body.auth-page-new {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     /* Shadow lebih lembut */
     position: relative;
-    overflow: hidden;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 /* === BAGIAN KIRI (PUTIH + S-CURVE) === */
