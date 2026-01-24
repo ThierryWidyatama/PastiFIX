@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+{
+    Schema::table('categories', function (Blueprint $table) {
+        // Self-referencing Foreign Key (Relasi ke tabel yang sama)
+        $table->foreignUuid('parent_id')
+              ->nullable()
+              ->after('id')
+              ->constrained('categories')
+              ->onDelete('cascade'); // Kalo induk dihapus, anak ikut kehapus
+    });
+}
+
+public function down(): void
+{
+    Schema::table('categories', function (Blueprint $table) {
+        $table->dropForeign(['parent_id']);
+        $table->dropColumn('parent_id');
+    });
+}
+};

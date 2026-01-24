@@ -13,11 +13,25 @@ class Category extends Model
      */
     protected $fillable = [
         'id',
+        'parent_id',
         'name',
         'description',
         'price',        // <-- IZIN DITAMBAHKAN
         'image_url',    // <-- IZIN DITAMBAHKAN
     ];
+
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    /**
+     * Relasi ke Anak (Sub Categories / Services)
+     */
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
 
     /**
      * Relasi ke Order (sudah ada)

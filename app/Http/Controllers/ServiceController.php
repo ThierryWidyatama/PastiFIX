@@ -13,48 +13,41 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Ambil SEMUA kategori (untuk filter sidebar)
-        $all_categories = Category::orderBy('name', 'asc')->get();
+        // 1. Sidebar: Ambil HANYA Kategori Utama (Parent)
+        $all_categories = \App\Models\Category::whereNull('parent_id')->orderBy('name', 'asc')->get();
 
-        // 2. Mulai query untuk layanan/jasa
-        $query = Category::query(); // Kita query dari tabel Kategori
+        // 2. Main List: Query HANYA Layanan Jasa (Child)
+        // Kita eager load 'parent' biar bisa nampilin nama kategori di badge
+        $query = \App\Models\Category::whereNotNull('parent_id')->with('parent');
 
-        // 3. Implementasi Search
+        // [LOGIC SEARCH] Cari berdasarkan nama jasa
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        // 4. Implementasi Filter (filters[] dari checkbox)
+        // [LOGIC FILTER] Filter berdasarkan Kategori Utama (Parent ID)
         if ($request->filled('filters')) {
-            $query->whereIn('id', $request->filters);
+            $query->whereIn('parent_id', $request->filters);
         }
 
-        // 5. Implementasi Sort
+        // [LOGIC SORT]
         switch ($request->sort) {
             case 'price_asc':
-                // $query->orderBy('price', 'asc'); // Kita belum punya kolom 'price'
-                $query->orderBy('name', 'asc');
+                $query->orderBy('price', 'asc');
                 break;
             case 'price_desc':
-                // $query->orderBy('price', 'desc');
-                $query->orderBy('name', 'desc');
+                $query->orderBy('price', 'desc');
                 break;
             case 'newest':
                 $query->orderBy('created_at', 'desc');
                 break;
             default:
-                // Default sort: Popular (bisa diganti 'name' dulu)
-                $query->orderBy('name', 'asc');
+                $query->orderBy('name', 'asc'); // Popular
         }
 
-        // 6. Ambil data dengan Pagination (9 per halaman)
-        $services = $query->paginate(9)->withQueryString(); // withQueryString() biar filter tetap nempel
+        $services = $query->paginate(9)->withQueryString();
 
-        // 7. Lempar data ke view
-        return view('services.main', [
-            'services' => $services,
-            'all_categories' => $all_categories
-        ]);
+        return view('services.main', compact('services', 'all_categories'));
     }
 
     /**

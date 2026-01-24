@@ -4,94 +4,111 @@
 @section('title', 'Tambah Kategori Baru')
 
 @section('content')
-
-<!--begin::Card-->
 <div class="card card-flush">
-    <!--begin::Card header-->
     <div class="card-header mt-6">
         <div class="card-title">
-            <h2>Tambah Kategori Layanan Baru</h2>
+            <h2>Tambah Data Baru</h2>
         </div>
     </div>
-    <!--end::Card header-->
-
-    <!--begin::Card body-->
     <div class="card-body pt-0">
         
-        <!-- Tampilkan error validasi (jika ada) -->
         @if ($errors->any())
             <div class="alert alert-danger">
-                <strong>Whoops! Ada yang salah:</strong>
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+                <ul>@foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach</ul>
             </div>
         @endif
 
-        <!--[FIX] Tambah 'enctype' untuk upload file-->
         <form action="{{ route('kategori.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf <!-- Token Keamanan Laravel -->
+            @csrf
 
-            <!--begin::Input group - Nama Kategori-->
+            <!-- PILIHAN JENIS INPUT (Radio Button) -->
+            <div class="mb-10">
+                <label class="form-label fw-bold">Apa yang ingin Anda tambahkan?</label>
+                <div class="d-flex gap-5">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="type" id="type_main" value="main" checked onchange="toggleFormType()">
+                        <label class="form-check-label" for="type_main">
+                            Kategori Utama (Induk) <br> <span class="text-muted small">Cth: Pekerjaan Atap, Pekerjaan Lantai</span>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="type" id="type_sub" value="sub" onchange="toggleFormType()">
+                        <label class="form-check-label" for="type_sub">
+                            Layanan Jasa (Sub Kategori) <br> <span class="text-muted small">Cth: Pasang Genteng, Cat Tembok</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DROPDOWN PARENT (Hanya muncul jika Sub Kategori) -->
+            <div class="mb-10 fv-row" id="parent_input_group" style="display: none;">
+                <label for="parent_id" class="required form-label">Pilih Kategori Induk</label>
+                <select name="parent_id" id="parent_id" class="form-select form-select-solid" data-control="select2" data-placeholder="Pilih Induk...">
+                    <option></option>
+                    @foreach($parentCategories as $parent)
+                        <option value="{{ $parent->id }}">{{ $parent->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- NAMA (Selalu Muncul) -->
             <div class="mb-10 fv-row">
-                <label for="name" class="required form-label">Nama Kategori</label>
-                <input type="text" class="form-control form-control-solid" id="name" name="name" 
-                       placeholder="Contoh: Perbaikan Atap Bocor" value="{{ old('name') }}" required>
-                <div class="text-muted fs-7">Nama kategori layanan yang akan dilihat oleh user.</div>
+                <label for="name" class="required form-label">Nama</label>
+                <input type="text" class="form-control form-control-solid" id="name" name="name" placeholder="Masukkan nama..." required>
             </div>
-            <!--end::Input group-->
 
-            <!--[MODIFIKASI] Input Harga-->
+            <!-- AREA KHUSUS LAYANAN (Harga & Gambar) -->
+            <div id="service_input_group" style="display: none;">
+                <div class="mb-10 fv-row">
+                    <label for="price" class="form-label">Harga Mulai Dari</label>
+                    <input type="text" class="form-control form-control-solid rupiah-input" id="price" name="price" placeholder="Contoh: 150.000">
+                </div>
+
+                <div class="mb-10 fv-row">
+                    <label for="image" class="form-label">Gambar Layanan</label>
+                    <input type="file" class="form-control form-control-solid" id="image" name="image" accept="image/*">
+                </div>
+            </div>
+
+            <!-- DESKRIPSI (Selalu Muncul) -->
             <div class="mb-10 fv-row">
-                <label for="price" class="form-label">Harga Mulai Dari</label>
-                <!-- [UBAH] type="text" dan tambah class "rupiah-input" -->
-                <input type="text" class="form-control form-control-solid rupiah-input" id="price" name="price" 
-                       placeholder="Contoh: 150.000" value="{{ old('price') }}">
-                <div class="text-muted fs-7">Masukkan angka saja.</div>
+                <label for="description" class="form-label">Deskripsi</label>
+                <textarea class="form-control form-control-solid" id="description" name="description" rows="3"></textarea>
             </div>
-            <!--end::Input group-->
 
-            <!--begin::Input group - Deskripsi-->
-            <div class.mb-10 fv-row">
-                <label for="description" class="form-label">Deskripsi (Opsional)</label>
-                <textarea class="form-control form-control-solid" id="description" name="description" 
-                          rows="3" placeholder="Jelaskan sedikit tentang layanan ini">{{ old('description') }}</textarea>
-            </div>
-            <!--end::Input group-->
-
-            <!--[BARU] Input Gambar-->
-            <div class="mb-10 fv-row">
-                <label for="image" class="form-label">Gambar Kategori</label>
-                <input type="file" class="form-control form-control-solid" id="image" name="image" accept="image/*">
-                <div class="text-muted fs-7">Upload gambar (JPG, PNG, GIF) maks 2MB.</div>
-            </div>
-            <!--end::Input group-->
-            
-            <!--begin::Actions-->
             <div class="d-flex justify-content-end">
-                <!--begin::Button-->
-                <a href="{{ route('kategori.index') }}" class="btn btn-light me-3">
-                    Batal
-                </a>
-                <!--end::Button-->
-                
-                <!--begin::Button-->
-                <button type="submit" class="btn btn-primary">
-                    <span class="indicator-label">
-                        Simpan Kategori
-                    </span>
-                </button>
-                <!--end::Button-->
+                <a href="{{ route('kategori.index') }}" class="btn btn-light me-3">Batal</a>
+                <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
-            <!--end::Actions-->
-
         </form>
-        <!--end::Form-->
     </div>
-    <!--end::Card body-->
 </div>
-<!--end::Card-->
-
 @endsection
+
+@push('scripts')
+<script>
+    function toggleFormType() {
+        const isSub = document.getElementById('type_sub').checked;
+        const parentGroup = document.getElementById('parent_input_group');
+        const serviceGroup = document.getElementById('service_input_group');
+        
+        if (isSub) {
+            // Mode Sub Kategori: Tampilkan Dropdown & Harga/Gambar
+            parentGroup.style.display = 'block';
+            serviceGroup.style.display = 'block';
+        } else {
+            // Mode Kategori Utama: Sembunyikan
+            parentGroup.style.display = 'none';
+            serviceGroup.style.display = 'none';
+            
+            // Reset value select2 jika pindah ke Main
+            $('#parent_id').val(null).trigger('change');
+        }
+    }
+
+    // Jalankan saat load (jaga-jaga old input)
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleFormType();
+    });
+</script>
+@endpush

@@ -16,7 +16,7 @@
                 type="text"
                 name="search"
                 value="{{ request('search') }}"
-                placeholder="Cari jasa, contoh: Tukang Atap"
+                placeholder="Cari jasa, contoh: Pasang Keramik"
             >
             <button type="submit">
                 <i class="bi bi-search"></i> Cari
@@ -26,56 +26,81 @@
 </section>
 
 <!-- FORM FILTER UTAMA -->
-<form action="{{ route('services.index') }}" method="GET">
+<form action="{{ route('services.index') }}" method="GET" id="filterForm">
+    <!-- Pertahankan search query saat filter diganti -->
+    @if(request('search'))
+        <input type="hidden" name="search" value="{{ request('search') }}">
+    @endif
+
 <section class="services-wrapper">
     <div class="container">
         <div class="services-layout">
 
-            <!-- FILTER -->
+            <!-- FILTER SIDEBAR -->
             <aside class="services-filter">
 
                 <h4>Filter Jasa</h4>
 
                 <!-- SORT -->
                 <div class="filter-group">
-                    <label>Urutkan</label>
-                    <select name="sort" onchange="this.form.submit()">
-                        <option value="popular" {{ request('sort') == 'popular' ? 'selected' : '' }}>Popular</option>
-                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Harga Terendah</option>
-                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Harga Tertinggi</option>
+                    <label class="mb-2 fw-bold small text-uppercase text-muted">Urutkan</label>
+                    <select name="sort" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                        <option value="" disabled {{ !request('sort') ? 'selected' : '' }}>Pilih Urutan</option>
                         <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Terbaru</option>
+                        <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Harga Terendah</option>
+                        <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Harga Tertinggi</option>
                     </select>
                 </div>
 
-                <!-- KATEGORI (DINAMIS) -->
-                <div class="filter-group">
-                    <label>Kategori</label>
+                <hr class="my-4" style="opacity: 0.1">
 
-                    @forelse ($all_categories as $category)
-                        <div class="rating-option">
-                            <input
-                                type="checkbox"
-                                name="filters[]"
-                                value="{{ $category->id }}"
-                                onchange="this.form.submit()"
-                                {{ in_array($category->id, request('filters', [])) ? 'checked' : '' }}
-                            >
-                            {{ $category->name }}
-                        </div>
-                    @empty
-                        <small class="text-muted">Belum ada kategori</small>
-                    @endforelse
+                <!-- KATEGORI UTAMA (PARENT) -->
+                <div class="filter-group">
+                    <label class="mb-3 fw-bold small text-uppercase text-muted">Kategori</label>
+
+                    <div class="d-flex flex-column gap-2">
+                        @forelse ($all_categories as $parent)
+                            <!-- [FIX] Gunakan class 'form-check' bawaan Bootstrap biar rapi sejajar -->
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="filters[]"
+                                    value="{{ $parent->id }}"
+                                    id="cat_{{ $parent->id }}"
+                                    onchange="document.getElementById('filterForm').submit()"
+                                    {{ in_array($parent->id, request('filters', [])) ? 'checked' : '' }}
+                                    style="cursor: pointer;"
+                                >
+                                <label class="form-check-label" for="cat_{{ $parent->id }}" style="cursor: pointer;">
+                                    {{ $parent->name }}
+                                </label>
+                            </div>
+                        @empty
+                            <small class="text-muted">Belum ada kategori utama</small>
+                        @endforelse
+                    </div>
                 </div>
+
+                <!-- [BARU] TOMBOL CLEAR FILTER -->
+                <!-- Muncul hanya jika ada filter/search/sort yang aktif -->
+                @if(request()->hasAny(['search', 'filters', 'sort']))
+                    <div class="mt-4 pt-3 border-top">
+                        <a href="{{ route('services.index') }}" class="btn btn-outline-danger w-100 btn-sm">
+                            <i class="bi bi-x-lg me-1"></i> Hapus Filter
+                        </a>
+                    </div>
+                @endif
 
             </aside>
 
-            <!-- LIST JASA -->
+            <!-- LIST JASA (CHILDREN) -->
             <div>
 
                 <div class="services-grid">
 
                     @forelse ($services as $service)
-                        <a href="{{ route('services.detail', $service->id) }}" class="service-item">
+                        <a href="{{ route('services.detail', $service->id) }}" class="service-item text-decoration-none">
 
                             <div class="service-thumb">
                                 <img
@@ -84,21 +109,25 @@
                                         : 'https://placehold.co/600x400/cccccc/333?text=' . urlencode($service->name)
                                     }}"
                                     alt="{{ $service->name }}"
+                                    style="height: 200px; object-fit: cover; width: 100%;"
                                 >
-                                <span class="service-badge">Populer</span>
+                                <!-- Badge Nama Kategori Utama -->
+                                <span class="service-badge">
+                                    {{ $service->parent->name ?? 'Umum' }}
+                                </span>
                             </div>
 
                             <div class="service-info">
-                                <h3>{{ $service->name }}</h3>
+                                <h3 class="text-dark">{{ $service->name }}</h3>
 
-                                <p class="service-desc">
+                                <p class="service-desc text-muted">
                                     {{ Str::limit($service->description ?? 'Layanan profesional terpercaya.', 80) }}
                                 </p>
 
                                 <div class="service-meta">
-                                    <span class="price">
+                                    <span class="price" style="color: #FEC81A; font-weight: 700;">
                                         {{ $service->price
-                                            ? 'Rp' . number_format($service->price, 0, ',', '.')
+                                            ? 'Mulai Rp' . number_format($service->price, 0, ',', '.')
                                             : 'Harga via Survei'
                                         }}
                                     </span>
@@ -111,8 +140,12 @@
 
                         </a>
                     @empty
-                        <div class="alert alert-secondary text-center">
-                            Tidak ada layanan yang cocok dengan filter.
+                        <div class="col-12" style="grid-column: 1 / -1;">
+                            <div class="alert alert-secondary text-center p-5 border-0">
+                                <i class="bi bi-search fs-1 d-block mb-3 text-muted"></i>
+                                <h5 class="text-muted">Jasa tidak ditemukan</h5>
+                                <p class="small mb-0">Coba ubah filter atau kata kunci pencarian Anda.</p>
+                            </div>
                         </div>
                     @endforelse
 

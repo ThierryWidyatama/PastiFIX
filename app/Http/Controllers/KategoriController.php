@@ -53,10 +53,13 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        // Ambil semua kategori, urutkan, dan PAGINASI (10 data per halaman)
-        $categories = Category::orderBy('created_at', 'desc')->paginate(10); // <-- INI FIX-NYA
+        // Ambil Kategori Utama (yang parent_id NULL)
+        // Eager load 'children' biar query efisien
+        $categories = Category::whereNull('parent_id')
+                              ->with('children')
+                              ->orderBy('name', 'asc')
+                              ->paginate(10); // Paginasi per Induk
         
-        // Arahkan ke view 'index' (daftar) yang baru kita buat
         return view('kategori.index', compact('categories'));
     }
 
@@ -65,7 +68,10 @@ class KategoriController extends Controller
      */
     public function create()
     {
-        return view('kategori.tambahkategori');
+        // Ambil kategori yang TIDAK punya parent (berarti dia Kategori Utama)
+        $parentCategories = Category::whereNull('parent_id')->orderBy('name', 'asc')->get();
+        
+        return view('kategori.tambahkategori', compact('parentCategories'));
     }
 
     /**
@@ -73,32 +79,43 @@ class KategoriController extends Controller
      */
     public function store(Request $request)
     {
-        // [FIX PENTING] Hapus titik DULUAN sebelum validasi
-        // Biar "150.000" jadi "150000" (Angka murni)
-        if ($request->has('price')) {
+        // 1. [FIX KRUSIAL] Ubah String Kosong jadi NULL
+        // Ini mencegah error UUID invalid saat parent_id dikirim sebagai ""
+        if (empty($request->parent_id)) {
+            $request->merge(['parent_id' => null]);
+        }
+
+        // [FIX] Bersihkan titik harga (Rupiah)
+        if (empty($request->price)) {
+            $request->merge(['price' => null]); // Jika kosong, set null
+        } else {
             $cleanPrice = str_replace('.', '', $request->price);
             $request->merge(['price' => $cleanPrice]);
         }
 
-        // Baru divalidasi
+        // 2. Validasi
         $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
+            'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:categories,id', // Sekarang aman karena nilainya NULL
             'description' => 'nullable|string',
-            'price' => 'nullable|numeric|min:0', // Sekarang aman karena sudah jadi angka
+            'price' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // 3. Proses Gambar
         $imageUrl = null;
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('categories', 'public');
             $imageUrl = $path;
         }
 
+        // 4. Simpan ke Database
         Category::create([
             'id' => Str::uuid(),
+            'parent_id' => $request->parent_id, // Ini sekarang NULL (aman) atau UUID (aman)
             'name' => $request->name,
             'description' => $request->description,
-            'price' => $request->price, // Ini sekarang sudah 150000
+            'price' => $request->price, 
             'image_url' => $imageUrl,
         ]);
 
@@ -120,45 +137,42 @@ class KategoriController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        if ($request->has('price')) {
+        // 1. [FIX] Sanitasi Input (Sama seperti store)
+        if (empty($request->parent_id)) {
+            $request->merge(['parent_id' => null]);
+        }
+
+        if (empty($request->price)) {
+            $request->merge(['price' => null]);
+        } else {
             $cleanPrice = str_replace('.', '', $request->price);
             $request->merge(['price' => $cleanPrice]);
         }
-        // 1. Validasi
+
+        // 2. Validasi
         $request->validate([
-            // Validasi unik, tapi 'ignore' (abaikan) ID kategori ini sendiri
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('categories')->ignore($category->id),
-            ],
+            'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
             'price' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // 2. Siapkan data update
-        $data = $request->only(['name', 'description', 'price']);
+        // 3. Siapkan data update
+        $data = $request->only(['name', 'description', 'price', 'parent_id']);
 
-        // 3. Logika Upload Gambar Baru (jika ada)
+        // 4. Update Gambar jika ada
         if ($request->hasFile('image')) {
-            // Hapus gambar lama (jika ada)
             if ($category->image_url) {
                 Storage::disk('public')->delete($category->image_url);
             }
-
-            // Simpan gambar baru
-            $path = $request->file('image')->store('categories', 'public');
-            $data['image_url'] = $path;
+            $data['image_url'] = $request->file('image')->store('categories', 'public');
         }
 
-        // 4. Update data ke database
+        // 5. Update
         $category->update($data);
 
-        // 5. Redirect ke halaman daftar (index)
-        return redirect()->route('kategori.index')
-                         ->with('success', 'Kategori berhasil diperbarui!');
+        return redirect()->route('kategori.index')->with('success', 'Kategori diperbarui!');
     }
 
     /**
