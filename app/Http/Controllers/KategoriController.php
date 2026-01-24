@@ -128,8 +128,15 @@ class KategoriController extends Controller
      */
     public function edit(Category $category)
     {
-        // Laravel otomatis mencari Kategori berdasarkan ID ($category)
-        return view('kategori.editkategori', compact('category'));
+        // [FIX] Kita harus ambil daftar "Calon Bapak" (Kategori Utama)
+        // Syarat: Ambil yang Induk (parent_id null) DAN bukan diri sendiri
+        $parentCategories = Category::whereNull('parent_id')
+                                    ->where('id', '!=', $category->id) 
+                                    ->orderBy('name', 'asc')
+                                    ->get();
+
+        // Kirim $parentCategories ke view
+        return view('kategori.editkategori', compact('category', 'parentCategories'));
     }
 
     /**
@@ -138,20 +145,26 @@ class KategoriController extends Controller
     public function update(Request $request, Category $category)
     {
         // 1. [FIX] Sanitasi Input (Sama seperti store)
+        // Ubah string kosong jadi NULL
         if (empty($request->parent_id)) {
             $request->merge(['parent_id' => null]);
         }
 
-        if (empty($request->price)) {
-            $request->merge(['price' => null]);
-        } else {
+        // Hapus titik Rupiah
+        if ($request->has('price') && $request->price != null) {
             $cleanPrice = str_replace('.', '', $request->price);
             $request->merge(['price' => $cleanPrice]);
+        } else {
+            $request->merge(['price' => null]);
         }
 
         // 2. Validasi
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required', 'string', 'max:255',
+                Rule::unique('categories')->ignore($category->id),
+            ],
+            // Pastikan parent_id valid (boleh null, boleh id kategori lain)
             'parent_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
             'price' => 'nullable|numeric|min:0',
@@ -159,6 +172,7 @@ class KategoriController extends Controller
         ]);
 
         // 3. Siapkan data update
+        // [PENTING] Jangan lupa masukkan 'parent_id' ke sini
         $data = $request->only(['name', 'description', 'price', 'parent_id']);
 
         // 4. Update Gambar jika ada
@@ -169,7 +183,7 @@ class KategoriController extends Controller
             $data['image_url'] = $request->file('image')->store('categories', 'public');
         }
 
-        // 5. Update
+        // 5. Eksekusi Update
         $category->update($data);
 
         return redirect()->route('kategori.index')->with('success', 'Kategori diperbarui!');
