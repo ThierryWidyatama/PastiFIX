@@ -118,7 +118,7 @@
                 <div class="flip-card">
                     <div class="flip-card-inner">
                         <div class="flip-card-front">
-                            <img src="{{ asset('assets/img/service1.jpg') }}" alt="Service 1">
+                            <img src="{{ asset('assets/img/service1.png') }}" alt="Service 1">
                         </div>
                         <div class="flip-card-back">
                             <h5 class="fw-bold">Renovasi Atap</h5>
@@ -131,7 +131,7 @@
                 <div class="flip-card">
                     <div class="flip-card-inner">
                         <div class="flip-card-front">
-                            <img src="{{ asset('assets/img/service2.jpg') }}" alt="Service 2">
+                            <img src="{{ asset('assets/img/service2.png') }}" alt="Service 2">
                         </div>
                         <div class="flip-card-back">
                             <h5 class="fw-bold">Pengecatan Ulang</h5>
@@ -144,7 +144,7 @@
                  <div class="flip-card">
                     <div class="flip-card-inner">
                         <div class="flip-card-front">
-                            <img src="{{ asset('assets/img/service3.jpg') }}" alt="Service 3">
+                            <img src="{{ asset('assets/img/service3.png') }}" alt="Service 3">
                         </div>
                         <div class="flip-card-back">
                             <h5 class="fw-bold">Instalasi Listrik</h5>
@@ -157,7 +157,7 @@
                 <div class="flip-card">
                     <div class="flip-card-inner">
                         <div class="flip-card-front">
-                            <img src="{{ asset('assets/img/service4.jpg') }}" alt="Service 4">
+                            <img src="{{ asset('assets/img/service4.png') }}" alt="Service 4">
                         </div>
                         <div class="flip-card-back">
                             <h5 class="fw-bold">Desain Interior</h5>

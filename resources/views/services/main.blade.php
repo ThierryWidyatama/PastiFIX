@@ -125,7 +125,7 @@
                                 </p>
 
                                 <div class="service-meta">
-                                    <span class="price" style="color: #FEC81A; font-weight: 700;">
+                                    <span class="price" style="color: #bf3131; font-weight: 700;">
                                         {{ $service->price
                                             ? 'Mulai Rp' . number_format($service->price, 0, ',', '.')
                                             : 'Harga via Survei'
