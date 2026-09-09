@@ -3,79 +3,70 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Models\Payment; // Kita akan isi tabel payments juga
 use Illuminate\Http\Request;
 use Midtrans\Config;
 use Midtrans\Notification;
+use Illuminate\Support\Facades\Log; // [PENTING] Tambahkan Log
 
 class PaymentCallbackController extends Controller
 {
     public function receive(Request $request)
     {
-        // 1. Konfigurasi Midtrans
+        // 1. Setup Konfigurasi
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = config('midtrans.is_sanitized');
         Config::$is3ds = config('midtrans.is_3ds');
 
-        // 2. Baca Notifikasi dari Midtrans
         try {
+            // 2. Baca Notifikasi
             $notification = new Notification();
-        } catch (\Exception $e) {
-            return response(['message' => 'Notification invalid'], 400);
-        }
+            
+            // [DEBUG] Catat di Log kalau ada notifikasi masuk
+            Log::info('Midtrans Webhook Masuk: ' . json_encode($notification));
 
-        // 3. Ambil data penting
-        $transactionStatus = $notification->transaction_status;
-        $type = $notification->payment_type;
-        $orderId = $notification->order_id;
-        $fraud = $notification->fraud_status;
+            $transactionStatus = $notification->transaction_status;
+            $type = $notification->payment_type;
+            $orderIdMidtrans = $notification->order_id;
+            $fraud = $notification->fraud_status;
 
-        // 4. Cari Order di Database
-        $order = Order::find($orderId);
+            // 3. Potong UUID (Hilangkan Timestamp -12345)
+            // Format: UUID-TIMESTAMP (36 karakter UUID)
+            $realOrderId = substr($orderIdMidtrans, 0, 36);
 
-        if (!$order) {
-            return response(['message' => 'Order not found'], 404);
-        }
+            // 4. Cari Order
+            $order = Order::find($realOrderId);
 
-        // 5. Logika Status Pembayaran
-        if ($transactionStatus == 'capture') {
-            if ($type == 'credit_card') {
-                if ($fraud == 'challenge') {
-                    $order->status = 'COMPLETED_PENDING_PAYMENT'; // Masih challenge
-                } else {
-                    $order->status = 'FINISHED'; // Sukses
-                }
+            if (!$order) {
+                Log::error('Midtrans Error: Order ID tidak ditemukan - ' . $realOrderId);
+                return response(['message' => 'Order not found'], 404);
             }
-        } else if ($transactionStatus == 'settlement') {
-            // INI YANG PALING PENTING (LUNAS)
-            $order->status = 'FINISHED'; 
-        } else if ($transactionStatus == 'pending') {
-            $order->status = 'COMPLETED_PENDING_PAYMENT';
-        } else if ($transactionStatus == 'deny') {
-            $order->status = 'CANCELLED';
-        } else if ($transactionStatus == 'expire') {
-            $order->status = 'CANCELLED';
-        } else if ($transactionStatus == 'cancel') {
-            $order->status = 'CANCELLED';
+
+            // 5. Update Status
+            if ($transactionStatus == 'capture') {
+                if ($type == 'credit_card') {
+                    if ($fraud == 'challenge') {
+                        $order->update(['status' => 'COMPLETED_PENDING_PAYMENT']);
+                    } else {
+                        $order->update(['status' => 'FINISHED']);
+                    }
+                }
+            } else if ($transactionStatus == 'settlement') {
+                // [LUNAS] -> Ubah jadi FINISHED
+                $order->update(['status' => 'FINISHED']);
+                Log::info('Order ' . $order->id . ' Berhasil Diupdate ke FINISHED');
+                
+            } else if ($transactionStatus == 'pending') {
+                $order->update(['status' => 'COMPLETED_PENDING_PAYMENT']);
+            } else if ($transactionStatus == 'deny' || $transactionStatus == 'expire' || $transactionStatus == 'cancel') {
+                $order->update(['status' => 'CANCELLED']);
+            }
+
+            return response(['message' => 'OK']);
+
+        } catch (\Exception $e) {
+            Log::error('Midtrans Webhook Error: ' . $e->getMessage());
+            return response(['message' => 'Error processing notification'], 500);
         }
-
-        // 6. Simpan perubahan status Order
-        $order->save();
-
-        // 7. (Opsional) Simpan log ke tabel 'payments' jika belum ada
-        // Pastikan kamu sudah punya model Payment
-        /*
-        \App\Models\Payment::create([
-            'id' => \Illuminate\Support\Str::uuid(),
-            'order_id' => $order->id,
-            'amount' => $notification->gross_amount,
-            'payment_gateway_ref' => $notification->transaction_id,
-            'status' => ($order->status == 'FINISHED') ? 'success' : 'pending',
-            'paid_at' => ($order->status == 'FINISHED') ? now() : null,
-        ]);
-        */
-
-        return response(['message' => 'Notification processed']);
     }
 }

@@ -70,6 +70,9 @@
                         </div>
                         <button type="button" id="editButton" class="btn btn-brand mt-4">Ganti</button>
                         <button type="button" id="saveButton" class="btn btn-success mt-4 d-none">Simpan Perubahan</button>
+                        <button type="button" id="cancelButton" class="btn btn-secondary mt-4 d-none">
+                        Batal
+                        </button>
                     </div>
                 </div>
 
@@ -110,7 +113,7 @@
                         <!-- Form Input (ID ditambahkan untuk sinkronisasi Map) -->
                         <div class="mb-3">
                             <label for="address_line" class="form-minimal-label">
-                                Alamat Lengkap
+                                Alamat Lengkap, Ketik nama jalan atau daerah di Semarang...
                                 <span id="status-text-main" class="text-danger small fst-italic ms-2" style="display:none;">
                                     <div class="spinner-border spinner-border-sm me-1" role="status"></div>Memuat...
                                 </span>
@@ -319,7 +322,7 @@
                         <!-- FORM ALAMAT -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">
-                                Alamat Lengkap
+                                Alamat Lengkap, Ketik nama jalan atau daerah di Semarang...
                                 <!-- Teks Loading Kecil -->
                                 <span id="status-text-modal" class="text-warning small fst-italic ms-2"
                                     style="display:none;">(Memuat alamat...)</span>
@@ -522,22 +525,37 @@
                     .finally(() => toggleInputLoading(false)); // STOP LOADING
             }, 1000);
 
-            // B. Forward (Teks -> Pin)
+            // B. Forward Geocode (Teks -> Pin)
             const doForwardGeocode = debounce((query) => {
-                fetch(`/geocode/search?q=${encodeURIComponent(query)}`)
+                
+                // [SOLUSI CERDAS]
+                // Cek apakah user sudah mengetik "Semarang"?
+                // Kalau belum, kita tambahkan otomatis di belakang layar.
+                let searchQuery = query;
+                if (!searchQuery.toLowerCase().includes("semarang")) {
+                    searchQuery += ", Semarang";
+                }
+                
+                console.log("Mencari dengan keyword:", searchQuery); // Debugging
+
+                // Kirim searchQuery (yang sudah ada kotanya) ke API
+                fetch(`/geocode/search?q=${encodeURIComponent(searchQuery)}`)
                     .then(res => res.json())
                     .then(data => {
                         if (data && data.length > 0) {
                             const lat = parseFloat(data[0].lat);
                             const lon = parseFloat(data[0].lon);
                             
-                            // [BARU] Cek Validasi Area Sebelum Pindah
+                            // Validasi Area (Geofencing)
                             if (isLocationValid(lat, lon)) {
                                 map.setView([lat, lon], 16);
                                 marker.setLatLng([lat, lon]);
                                 updateInputs(lat, lon);
-                            } 
-                            // Jika luar area, peta tidak pindah & input tidak update
+                            } else {
+                                // Opsional: Beri tahu user kalau hasilnya kejauhan
+                                // Tapi karena kita sudah paksa "Semarang", harusnya jarang terjadi
+                                console.warn("Hasil pencarian di luar area layanan.");
+                            }
                         }
                     })
                     .catch(err => console.warn("Geo Error:", err))
@@ -740,6 +758,8 @@
                 // 1. HIDUPKAN KOLOM NAMA & HP (Selalu boleh)
                 const inputName = document.getElementById('name');
                 const inputPhone = document.getElementById('phone_number');
+                const cancelButton = document.getElementById("cancelButton");
+
 
                 if (inputName) {
                     inputName.disabled = false;
@@ -799,11 +819,18 @@
 
                 // 3. UI Umum (Tombol & Foto)
                 saveButton.classList.remove("d-none");
+                cancelButton.classList.remove("d-none");
                 editButton.classList.add("d-none");
 
                 const editIcon = document.querySelector(".profile-pic-edit-button");
                 if (editIcon) editIcon.classList.remove("d-none");
                 if (previewImg) previewImg.style.cursor = 'pointer';
+                if (cancelButton) {
+                    cancelButton.addEventListener("click", function () {
+                        window.location.reload();
+                    });
+                }
+
             });
         }
 

@@ -164,7 +164,7 @@
                         <!-- Form Alamat -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">
-                                Alamat Lengkap
+                                Alamat Lengkap, Ketik nama jalan atau daerah di Semarang...
                                 <!-- [BARU] Teks Loading Kecil -->
                                 <span id="status-text-new" class="text-warning small fst-italic ms-2" style="display:none;">(Memuat...)</span>
                             </label>
@@ -250,10 +250,10 @@
 
                         <!-- Form Alamat (Tambahkan ID untuk Geocoding) -->
                         <div class="mb-3">
-                            <label class="form-label">Alamat Lengkap <span id="status-text-edit"
+                            <label class="form-label">Alamat Lengkap, Ketik nama jalan atau daerah di Semarang... <span id="status-text-edit"
                                     class="text-warning small fst-italic ms-2" style="display:none;">(Memuat
                                     alamat...)</span></label>
-                            <textarea class="form-control" id="edit_address_line" name="address_line" rows="3" required></textarea>
+                            <textarea class="form-control" id="edit_address_line" name="address_line" rows="3" required placeholder="Ketik nama jalan atau daerah di Semarang..."></textarea>
                         </div>
 
                         <div class="row mb-3">
@@ -419,28 +419,41 @@
                     });
             }, 1000);
 
-            // B. Forward (Teks -> Pin)
+            // B. Forward Geocode (Teks -> Pin)
             const doForwardGeocode = debounce((query) => {
-                fetch(`/geocode/search?q=${encodeURIComponent(query)}`)
+                
+                // [SOLUSI CERDAS]
+                // Cek apakah user sudah mengetik "Semarang"?
+                // Kalau belum, kita tambahkan otomatis di belakang layar.
+                let searchQuery = query;
+                if (!searchQuery.toLowerCase().includes("semarang")) {
+                    searchQuery += ", Semarang";
+                }
+                
+                console.log("Mencari dengan keyword:", searchQuery); // Debugging
+
+                // Kirim searchQuery (yang sudah ada kotanya) ke API
+                fetch(`/geocode/search?q=${encodeURIComponent(searchQuery)}`)
                     .then(res => res.json())
                     .then(data => {
                         if (data && data.length > 0) {
                             const lat = parseFloat(data[0].lat);
                             const lon = parseFloat(data[0].lon);
                             
-                            // Cek validasi area di sini jika perlu
+                            // Validasi Area (Geofencing)
                             if (isLocationValid(lat, lon)) {
                                 map.setView([lat, lon], 16);
                                 marker.setLatLng([lat, lon]);
                                 updateInputs(lat, lon);
+                            } else {
+                                // Opsional: Beri tahu user kalau hasilnya kejauhan
+                                // Tapi karena kita sudah paksa "Semarang", harusnya jarang terjadi
+                                console.warn("Hasil pencarian di luar area layanan.");
                             }
                         }
                     })
-                    .catch(err => console.warn("Error:", err))
-                    .finally(() => {
-                        // [FIX] Matikan loading peta setelah selesai
-                        toggleMapLoading(false);
-                    });
+                    .catch(err => console.warn("Geo Error:", err))
+                    .finally(() => toggleMapLoading(false));
             }, 1500);
 
                     // --- EVENT LISTENERS ---

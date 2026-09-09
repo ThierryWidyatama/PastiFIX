@@ -365,6 +365,41 @@ div:where(.swal2-container) .swal2-icon.swal2-error [class^='swal2-x-mark-line']
     /* Merah */
 }
 
+.password-field {
+    position: relative; /* Kunci biar tombol bisa absolute di dalamnya */
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-field input {
+    width: 100%;
+    padding-right: 44px; /* Kasih ruang biar teks gak nabrak icon */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 0; /* Tempel ke kanan */
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 10px; /* Area klik lebih luas */
+    cursor: pointer;
+    color: #A1A5B7;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password:hover {
+    color: #FEC81A;
+}
+
+.toggle-password:focus {
+    outline: none;
+}
+
 /* Responsif untuk Mobile */
 @media (max-width: 1024.98px) {
     /* ... (style body dll tetap) ... */
@@ -461,40 +496,7 @@ div:where(.swal2-container) .swal2-icon.swal2-error [class^='swal2-x-mark-line']
     }
 }
 
-.password-wrapper {
-    position: relative;
-}
+/* Di file public/assets/css/auth-new.css */
 
-.password-field {
-    position: relative; /* INI KUNCI UTAMA */
-    display: flex;
-    align-items: center;
-}
 
-.password-field input {
-    width: 100%;
-    padding-right: 44px; /* ruang icon */
-}
-
-.toggle-password {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: #999;
-    font-size: 1.2rem;
-    line-height: 1;
-}
-
-.toggle-password:hover {
-    color: #bf3131;
-}
-
-.toggle-password:focus {
-    outline: none;
-}
 

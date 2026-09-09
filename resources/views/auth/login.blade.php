@@ -65,15 +65,17 @@
                             class="form-control-minimal" required />
                     </div>
 
-                    <div class="form-group-minimal password-wrapper">
+                    <div class="form-group-minimal">
                         <label for="password">Kata Sandi</label>
-
+                        
+                        <!-- Wrapper sesuai CSS kamu -->
                         <div class="password-field">
                             <input class="form-control-minimal" type="password" id="password" name="password"
                                 autocomplete="off" required />
 
-                            <button type="button" class="toggle-password" aria-label="Toggle password visibility">
-                                <i class="bi bi-eye-slash" id="passwordIcon"></i>
+                            <!-- Class disamakan jadi 'toggle-password' -->
+                            <button type="button" class="toggle-password">
+                                <i class="bi bi-eye-slash"></i>
                             </button>
                         </div>
                     </div>
@@ -216,8 +218,9 @@
             });
 
             // Toggle Password Visibility
-            // Pastikan HTML tombol matanya: <button type="button" class="password-toggle" ...>
-            $(document).on('click', '.password-toggle', function() {
+            // [FIX] Selector disesuaikan dengan CSS kamu: '.toggle-password'
+            $(document).on('click', '.toggle-password', function() {
+                // Cari input saudara-nya (sibling) di dalam div yang sama
                 var input = $(this).siblings('input');
                 var icon = $(this).find('i');
                 

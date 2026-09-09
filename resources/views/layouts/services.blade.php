@@ -173,8 +173,8 @@
                             <img src="{{ asset('assets/img/logo.png') }}" alt="PastiFIX Logo" class="mb-3"
                                 style="height: 120px;">
                             <h5 class="text-white">PT. PastiFIX Indonesia</h5>
-                            <p class="text-white-50">Jl. Klipang No. 123, Semarang, Indonesia.<br> Kami adalah solusi
-                                terpercaya untuk semua kebutuhan renovasi dan perbaikan bangunan Anda.</p>
+                            <p class="text-white-50">Klipang Pesona Asri 2 F/70 Sendang Mulyo, Tembalang, Semarang, Jawa Tengah, Indonesia.<br> Kami adalah solusi
+                            terpercaya untuk semua kebutuhan renovasi dan perbaikan bangunan Anda.</p>
                         </div>
                         <div class="col-lg-6 col-md-12 text-lg-end">
                             <h5 class="text-white mb-3">Bantuan & Sosial Media</h5>
